@@ -1,0 +1,49 @@
+############### Root ###############
+.idea
+**/.DS_Store
+
+
+############### Back End ###############
+
+job-portal-backend/HELP.md
+job-portal-backend/target/
+job-portal-backend/!.mvn/wrapper/maven-wrapper.jar
+job-portal-backend/!**/src/main/**/target/
+job-portal-backend/!**/src/test/**/target/
+
+### IntelliJ IDEA ###
+job-portal-backend/.idea
+job-portal-backend/*.iws
+job-portal-backend/*.iml
+job-portal-backend/*.ipr
+
+### we do not push the configuration file with the Google Cloud OAuth credentials ###
+job-portal-backend/src/main/resources/application.yml
+### Copy the file application-with-place-holders.yml to a file named application.yml and enter the Google Cloud OAuth credentials for the Back End app ###
+
+
+############### Front End ###############
+
+# Logs
+job-portal-frontend/logs
+job-portal-frontend/*.log
+job-portal-frontend/npm-debug.log*
+job-portal-frontend/yarn-debug.log*
+job-portal-frontend/yarn-error.log*
+job-portal-frontend/pnpm-debug.log*
+job-portal-frontend/lerna-debug.log*
+
+job-portal-frontend/node_modules
+job-portal-frontend/dist
+job-portal-frontend/dist-ssr
+job-portal-frontend/*.local
+
+# Editor directories and files
+job-portal-frontend/.vscode/*
+job-portal-frontend/!.vscode/extensions.json
+job-portal-frontend/.idea
+job-portal-frontend/*.suo
+job-portal-frontend/*.ntvs*
+job-portal-frontend/*.njsproj
+job-portal-frontend/*.sln
+job-portal-frontend/*.sw?

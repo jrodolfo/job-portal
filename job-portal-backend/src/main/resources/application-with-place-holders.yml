@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: jobportal
+  datasource:
+    url: jdbc:mysql://localhost:3307/jobportal?createDatabaseIfNotExist=true
+    username: jobuser
+    password: jobpass
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    hibernate:
+      ddl-auto: update
+  # Google OAuth2 Configuration (use environment variables for production)
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: enter-the-client-id-here
+            client-secret: enter-the-client-secret-here
+            scope: openid,profile,email
+        provider:
+          google:
+            user-name-attribute: email
+
+logging:
+  level:
+    org:
+      hibernate:
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE
+
+# JWT Secret Key - should be at least 256 bits for HS256
+jwt:
+  secret: MY_SECRET_KEY_123456789012345678901234567890
