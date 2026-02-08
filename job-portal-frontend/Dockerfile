@@ -19,11 +19,11 @@ FROM node:20-alpine
 WORKDIR /app
 RUN npm install -g serve
 
-# Copy the build output from the build stage
-COPY --from=build /app/dist ./dist
+# Copy build output
+COPY --from=build /app/build ./build
 
 # Expose the port your app runs on
 EXPOSE 5173
 
 # Start the server
-CMD ["serve", "-s", "dist", "-l", "5173"]
+CMD ["serve", "-s", "build", "-l", "5173"]

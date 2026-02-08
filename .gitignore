@@ -41,6 +41,7 @@ job-portal-frontend/lerna-debug.log*
 
 job-portal-frontend/node_modules
 job-portal-frontend/dist
+job-portal-frontend/build
 job-portal-frontend/dist-ssr
 job-portal-frontend/*.local
 
