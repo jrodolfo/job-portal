@@ -16,7 +16,8 @@ run a clean code and deploy it at my localhost and at AWS.
 
 ### A. Environment Configuration:
 
-To run this project locally using Docker, you need to create a file named `.env` in the root directory and enter the following MySQL credentials:
+To run this project locally using Docker, you need to create a file named `.env` in the root directory and enter 
+the following MySQL credentials:
 
 ```env
 # Common MySQL credentials
@@ -150,7 +151,7 @@ MYSQL_PASSWORD=jobpass
    ```
 2. **Go to the URL of the Web Application**: [http://localhost:5173](http://localhost:5173)
 3. **Login with credentials**: `user`, `user123` and run tests.
-4. **Try to apply for a job**. Check the database running the queries on `queries.sql`.
+4. **Try to apply for a job**. Check the database running the queries on `doc/queries.sql`.
 
 ---
 
@@ -158,7 +159,8 @@ MYSQL_PASSWORD=jobpass
 
 Do you know Qodana?
 
-Static code analysis by Qodana helps development teams follow agreed quality standards, and deliver readable, maintainable, and secure code. Powered by JetBrains.
+Static code analysis by Qodana helps development teams follow agreed quality standards, and deliver readable, 
+maintainable, and secure code. Powered by JetBrains.
 
 [https://www.jetbrains.com/qodana/](https://www.jetbrains.com/qodana/)
 
