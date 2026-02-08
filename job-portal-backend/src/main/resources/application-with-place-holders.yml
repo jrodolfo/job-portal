@@ -2,9 +2,9 @@ spring:
   application:
     name: jobportal
   datasource:
-    url: jdbc:mysql://localhost:3307/jobportal?createDatabaseIfNotExist=true
-    username: jobuser
-    password: jobpass
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3307/jobportal?createDatabaseIfNotExist=true}
+    username: ${SPRING_DATASOURCE_USERNAME:jobuser}
+    password: ${SPRING_DATASOURCE_PASSWORD:jobpass}
   jpa:
     database-platform: org.hibernate.dialect.MySQL8Dialect
     show-sql: true

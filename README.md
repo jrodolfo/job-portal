@@ -14,7 +14,21 @@ run a clean code and deploy it at my localhost and at AWS.
 
 ---
 
-### A. Steps to smoke test the Google Cloud OAuth feature:
+### A. Environment Configuration:
+
+To run this project locally using Docker, you need to create a file named `.env` in the root directory and enter the following MySQL credentials:
+
+```env
+# Common MySQL credentials
+MYSQL_ROOT_PASSWORD=rootpassword
+MYSQL_DATABASE=jobportal
+MYSQL_USER=jobuser
+MYSQL_PASSWORD=jobpass
+```
+
+---
+
+### B. Steps to smoke test the Google Cloud OAuth feature:
 
 1. **Go to Google Cloud** and get the secrets for your Web Application (not Desktop, not Mobile application):
    - **Client ID**: `xxxx`
@@ -102,7 +116,7 @@ run a clean code and deploy it at my localhost and at AWS.
 
 ---
 
-### B. Steps for smoke test the backend API:
+### C. Steps for smoke test the backend API:
 
 1. **Load the Insomnia collection** (inside the folder `doc/insomnia`).
 2. **Execute the "add user" POST request** to add a new user:
@@ -126,7 +140,7 @@ run a clean code and deploy it at my localhost and at AWS.
 
 ---
 
-### C. Integration Test
+### D. Integration Test
 
 1. **Start the front end**:
    Go to the folder `job-portal-frontend` and type:
@@ -140,7 +154,7 @@ run a clean code and deploy it at my localhost and at AWS.
 
 ---
 
-### D. Static Code Analysis with Qodana
+### E. Static Code Analysis with Qodana
 
 Do you know Qodana?
 
