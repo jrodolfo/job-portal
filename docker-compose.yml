@@ -1,0 +1,44 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: mysql-db
+    restart: always
+    environment:
+      MYSQL_DATABASE: jobportal
+      MYSQL_USER: jobuser
+      MYSQL_PASSWORD: jobpass
+      MYSQL_ROOT_PASSWORD: rootpassword
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  backend:
+    build:
+      context: ./job-portal-backend
+      dockerfile: Dockerfile
+    container_name: job-portal-backend
+    restart: always
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/jobportal?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: jobuser
+      SPRING_DATASOURCE_PASSWORD: jobpass
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build:
+      context: ./job-portal-frontend
+      dockerfile: Dockerfile
+    container_name: job-portal-frontend
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "5173:5173"
+
+volumes:
+  mysql-data:

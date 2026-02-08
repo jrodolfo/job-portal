@@ -4,6 +4,8 @@ import axios from "axios";
 import {setUserDetails} from "../store/userActions";
 import {useDispatch} from "react-redux";
 
+import { BACKEND_API_URL } from "../config/backend";
+
 const OAuthLogin = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -15,13 +17,13 @@ const OAuthLogin = () => {
 
         if (code) {
             //Exchange the code for an access token
-            axios.post("http://localhost:8080/api/oauth/exchange-token", {code})
+            axios.post(`${BACKEND_API_URL}/api/oauth/exchange-token`, {code})
                 .then(response => {
                     const token = response.data.token;
                     localStorage.setItem("token", token);
 
                     if (token) {
-                        axios.get("http://localhost:8080/api/oauth/user-details", {
+                        axios.get(`${BACKEND_API_URL}/api/oauth/user-details`, {
                             headers: {
                                 Authorization: `Bearer ${token}`
                             }

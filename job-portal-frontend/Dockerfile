@@ -1,5 +1,6 @@
 # Use the official Node.js image as the base image
-FROM node:20-alpine
+FROM node:20-alpine AS build
+WORKDIR /app
 
 # Copy only the package.json and package-lock.json to install dependencies
 COPY package*.json ./
@@ -12,8 +13,14 @@ COPY . .
 
 # Build the React application
 RUN npm run build
+
 # Use a lightweight server for serving the build files
+FROM node:20-alpine
+WORKDIR /app
 RUN npm install -g serve
+
+# Copy the build output from the build stage
+COPY --from=build /app/dist ./dist
 
 # Expose the port your app runs on
 EXPOSE 5173

@@ -97,7 +97,7 @@ const Login = () => {
                             <h6 className="text-center">Or</h6>
                             <div className="text-center mt-3">
                                 <button
-                                    onClick={() => window.location.href = "http://localhost:8080/oauth2/authorization/google"}
+                                    onClick={() => window.location.href = `${BACKEND_API_URL}/oauth2/authorization/google`}
                                     className="btn btn-danger w-75">
                                     Sign in with Google
                                 </button>
