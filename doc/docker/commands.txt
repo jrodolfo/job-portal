@@ -1,0 +1,20 @@
+
+If you want to build and run locally:
+
+cd job-portal-backend
+docker build -t job-portal-backend:latest .
+docker run -p 8080:8080 job-portal-backend:latest
+
+cd ../job-portal-frontend
+docker build -t job-portal-frontend:latest .
+docker run -p 5173:5173 job-portal-frontend:latest
+
+If you want to push to docker hub:
+
+cd job-portal-backend
+docker build -t jrodolfo/job-portal-backend:latest .
+docker push jrodolfo/job-portal-backend:latest
+
+cd ../job-portal-frontend
+docker build -t jrodolfo/job-portal-frontend:latest .
+docker push jrodolfo/job-portal-frontend:latest
