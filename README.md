@@ -17,7 +17,7 @@ run a clean code and deploy it at my localhost and at AWS.
 ### A. Environment Configuration:
 
 To run this project locally using Docker, you need to create a file named `.env` in the root directory and enter 
-the following MySQL credentials:
+the following credentials:
 
 ```env
 # Common MySQL credentials
@@ -25,6 +25,13 @@ MYSQL_ROOT_PASSWORD=rootpassword
 MYSQL_DATABASE=jobportal
 MYSQL_USER=jobuser
 MYSQL_PASSWORD=jobpass
+
+# Google OAuth2 Credentials (Optional, required for Google Login)
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+
+# JWT Secret Key (Optional, uses default if not provided)
+JWT_SECRET_KEY=your-secure-jwt-secret-key-at-least-32-chars
 ```
 
 ---
@@ -35,24 +42,13 @@ MYSQL_PASSWORD=jobpass
    - **Client ID**: `xxxx`
    - **Client Secret**: `yyyy`
 
-   Copy the file application-with-place-holders.yml to a file named application.yml (we do not push the application.yml
-   into the GitHub because we do not want to share the Google credentials with anyone).
-   Enter these two values in `application.yml` of your Spring Boot application:
-   ```yaml
-   # Google OAuth2 Configuration (use environment variables for production)
-   spring:
-     security:
-       oauth2:
-         client:
-           registration:
-             google:
-               client-id: xxxx
-               client-secret: yyyy
-               scope: openid,profile,email
-           provider:
-             google:
-               user-name-attribute: email
+   Enter these two values in the `.env` file at the root of the project:
+   ```env
+   GOOGLE_CLIENT_ID=xxxx
+   GOOGLE_CLIENT_SECRET=yyyy
    ```
+
+   The `application.yml` file is configured to use these environment variables.
 
 2. **Go to**: [http://localhost:8080/oauth2/authorization/google](http://localhost:8080/oauth2/authorization/google) and enter your Google credentials.
 

@@ -19,8 +19,8 @@ spring:
       client:
         registration:
           google:
-            client-id: enter-the-client-id-here
-            client-secret: enter-the-client-secret-here
+            client-id: ${GOOGLE_CLIENT_ID:enter-the-client-id-here}
+            client-secret: ${GOOGLE_CLIENT_SECRET:enter-the-client-secret-here}
             scope: openid,profile,email
         provider:
           google:
@@ -37,4 +37,4 @@ logging:
 
 # JWT Secret Key - should be at least 256 bits for HS256
 jwt:
-  secret: MY_SECRET_KEY_123456789012345678901234567890
+  secret: ${JWT_SECRET_KEY:MY_SECRET_KEY_123456789012345678901234567890}

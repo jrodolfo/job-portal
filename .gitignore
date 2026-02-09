@@ -23,10 +23,8 @@ job-portal-backend/*.iws
 job-portal-backend/*.iml
 job-portal-backend/*.ipr
 
-### we do not push the configuration file with the Google Cloud OAuth credentials
-### Copy the file application-with-place-holders.yml to a file named application.yml
-# and enter the Google Cloud OAuth credentials for the Back End app
-job-portal-backend/src/main/resources/application.yml
+### Configuration file now uses environment variables
+# job-portal-backend/src/main/resources/application.yml
 
 
 ############### Front End ###############
