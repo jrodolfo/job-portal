@@ -137,7 +137,48 @@ JWT_SECRET_KEY=your-secure-jwt-secret-key-at-least-32-chars
 
 ---
 
-### D. Integration Test
+### D. Database for Local Development
+
+You have two options when working on the backend locally:
+
+1) Quick builds/tests (no Docker/MySQL required)
+- The Maven build is configured so unit tests do NOT require a running database. You can run:
+  - `mvn -f job-portal-backend clean verify`
+- The application itself (when you actually run it) still expects MySQL as configured in `application.yml`.
+
+2) Run MySQL in Docker (recommended for running the app locally)
+- Start a MySQL container for the Job Portal backend with a non-root user:
+
+```
+# Remove any previous container with the same name (safe to ignore errors)
+docker rm -f mysql-jobportal
+
+# Start MySQL on localhost port 3307
+# Credentials match the defaults in application.yml
+#   user: jobuser
+#   password: jobpass
+#   database: jobportal
+
+docker run -d \
+  --name mysql-jobportal \
+  -e MYSQL_ROOT_PASSWORD=root \
+  -e MYSQL_DATABASE=jobportal \
+  -e MYSQL_USER=jobuser \
+  -e MYSQL_PASSWORD=jobpass \
+  -p 3307:3306 \
+  mysql:latest
+```
+
+- Then run the backend (outside Docker) from `job-portal-backend`:
+  - `mvn spring-boot:run`
+- Or use docker-compose to bring up db + backend + frontend together:
+  - `docker compose up --build`
+
+This mirrors production-like setups (non-root DB user, isolated containerized DB), while keeping builds smooth.
+
+---
+
+### E. Integration Test
 
 1. **Start the front end**:
    Go to the folder `job-portal-frontend` and type:
