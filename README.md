@@ -158,6 +158,7 @@ JWT_SECRET_KEY=MY_SECRET_KEY_123456789012345678901234567890
    }
    ```
 3. **Execute the "add job" POST request** to add a new job:
+   Use Basic Auth with `admin` / `admin123` (ROLE_ADMIN). The default `user` / `user123` (ROLE_APPLICANT) will receive 403 Forbidden for this endpoint by design.
    ```json
    {
      "title": "Java Developer",
