@@ -14,29 +14,60 @@ run a clean code and deploy it at my localhost and at AWS.
 
 ---
 
-### A. Environment Configuration:
+### A. Database for Local Development
 
-To run this project locally using Docker, you need to create a file named `.env` in the root directory and enter 
-the following credentials:
+You have two options when working on the backend locally:
 
+1) Quick builds/tests (no Docker/MySQL required)
+- The Maven build is configured so unit tests do NOT require a running database. You can run:
+  - `mvn -f job-portal-backend clean verify`
+- The application itself (when you actually run it) still expects MySQL as configured in `application.yml`.
+
+2) Run MySQL using Docker Compose (recommended for running the app locally)
+- You can start **only** the MySQL database container by running the following command in the root directory:
+
+```bash
+docker compose up -d db
+```
+
+- This will create and start the `mysql-db` container (mapped to `localhost:3307`).
+- Once the database is running, you can run the backend application:
+  - **Via IntelliJ/IDE**: Simply run the `JobportalApplication` main class.
+  - **Via Maven**: Run `mvn spring-boot:run` inside the `job-portal-backend` directory.
+  - **Via Dockerfile**: You can build and run the backend container separately if needed.
+
+- Alternatively, if you want to bring up the **entire stack** (DB + backend + frontend) together:
+
+```bash
+docker compose up --build
+```
+
+This mirrors production-like setups (non-root DB user, isolated containerized DB), while keeping local development flexible.
+
+---
+
+### B. Environment Configuration:
+ 
+The project is configured with safe defaults for local development. However, you can override them by creating a file named `.env` in the root directory:
+ 
 ```env
 # Common MySQL credentials
-MYSQL_ROOT_PASSWORD=rootpassword
+MYSQL_ROOT_PASSWORD=root
 MYSQL_DATABASE=jobportal
 MYSQL_USER=jobuser
 MYSQL_PASSWORD=jobpass
-
+ 
 # Google OAuth2 Credentials (Optional, required for Google Login)
 GOOGLE_CLIENT_ID=your-google-client-id
 GOOGLE_CLIENT_SECRET=your-google-client-secret
-
+ 
 # JWT Secret Key (Optional, uses default if not provided)
-JWT_SECRET_KEY=your-secure-jwt-secret-key-at-least-32-chars
+JWT_SECRET_KEY=MY_SECRET_KEY_123456789012345678901234567890
 ```
 
 ---
 
-### B. Steps to smoke test the Google Cloud OAuth feature:
+### C. Steps to smoke test the Google Cloud OAuth feature:
 
 1. **Go to Google Cloud** and get the secrets for your Web Application (not Desktop, not Mobile application):
    - **Client ID**: `xxxx`
@@ -113,7 +144,7 @@ JWT_SECRET_KEY=your-secure-jwt-secret-key-at-least-32-chars
 
 ---
 
-### C. Steps for smoke test the backend API:
+### D. Steps for smoke test the backend API:
 
 1. **Load the Insomnia collection** (inside the folder `doc/insomnia`).
 2. **Execute the "add user" POST request** to add a new user:
@@ -134,39 +165,6 @@ JWT_SECRET_KEY=your-secure-jwt-secret-key-at-least-32-chars
      "company": "XYZ"
    }
    ```
-
----
-
-### D. Database for Local Development
-
-You have two options when working on the backend locally:
-
-1) Quick builds/tests (no Docker/MySQL required)
-- The Maven build is configured so unit tests do NOT require a running database. You can run:
-  - `mvn -f job-portal-backend clean verify`
-- The application itself (when you actually run it) still expects MySQL as configured in `application.yml`.
-
-2) Run MySQL using Docker Compose (recommended for running the app locally)
-- You can start **only** the MySQL database container by running the following command in the root directory:
-
-```bash
-docker compose up -d db
-```
-
-- This will create and start the `mysql-db` container (mapped to `localhost:3307`).
-- Once the database is running, you can run the backend application:
-  - **Via IntelliJ/IDE**: Simply run the `JobportalApplication` main class.
-  - **Via Maven**: Run `mvn spring-boot:run` inside the `job-portal-backend` directory.
-  - **Via Dockerfile**: You can build and run the backend container separately if needed.
-
-- Alternatively, if you want to bring up the **entire stack** (DB + backend + frontend) together:
-
-```bash
-docker compose up --build
-```
-
-This mirrors production-like setups (non-root DB user, isolated containerized DB), while keeping local development flexible.
-
 ---
 
 ### E. Integration Test
@@ -183,7 +181,7 @@ This mirrors production-like setups (non-root DB user, isolated containerized DB
 
 ---
 
-### E. Static Code Analysis with Qodana
+### F. Static Code Analysis with Qodana
 
 Do you know Qodana?
 

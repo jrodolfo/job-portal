@@ -4,10 +4,10 @@ services:
     container_name: mysql-db
     restart: always
     environment:
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-jobportal}
+      MYSQL_USER: ${MYSQL_USER:-jobuser}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-jobpass}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
     ports:
       - "3307:3306"
     volumes:
@@ -22,13 +22,13 @@ services:
     depends_on:
       - db
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${MYSQL_DATABASE}?createDatabaseIfNotExist=true
-      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
-      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${MYSQL_DATABASE:-jobportal}?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER:-jobuser}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD:-jobpass}
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
-      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
-      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
-      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-enter-the-client-id-here}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-enter-the-client-secret-here}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-MY_SECRET_KEY_123456789012345678901234567890}
     ports:
       - "8080:8080"
 
