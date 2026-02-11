@@ -14,60 +14,88 @@ run a clean code and deploy it at my localhost and at AWS.
 
 ---
 
-### A. Database for Local Development
+### A. Running the Application with Docker Compose
 
-You have two options when working on the backend locally:
+This is the easiest way to run the entire stack (Database, Backend, and Frontend) with a single command.
+
+#### 1. Configure Environment Variables
+Ensure you have a `.env` file in the root directory (see **Section C** below) with the necessary credentials, especially for Google OAuth2 if you plan to use it.
+
+#### 2. Start the entire stack
+To build and start all services (Database, Backend, and Frontend):
+
+```bash
+docker compose up --build
+```
+
+- **Frontend**: Accessible at [http://localhost:5173](http://localhost:5173)
+- **Backend API**: Accessible at [http://localhost:8080](http://localhost:8080)
+- **Database**: Accessible at `localhost:3307`
+
+#### 3. Start specific services
+If you only want to run part of the stack:
+
+- **Only the Database**:
+  ```bash
+  docker compose up -d db
+  ```
+- **Database and Backend**:
+  ```bash
+  docker compose up --build db backend
+  ```
+
+#### 4. Stop the application
+To stop and remove the containers:
+
+```bash
+docker compose down
+```
+
+---
+
+### B. Database for Local Development (Alternative)
+
+If you prefer to run the backend or frontend locally (not in Docker) while still using a containerized database:
 
 1) Quick builds/tests (no Docker/MySQL required)
 - The Maven build is configured so unit tests do NOT require a running database. You can run:
   - `mvn -f job-portal-backend clean verify`
 - The application itself (when you actually run it) still expects MySQL as configured in `application.yml`.
 
-2) Run MySQL using Docker Compose (recommended for running the app locally)
-- You can start **only** the MySQL database container by running the following command in the root directory:
-
-```bash
-docker compose up -d db
-```
-
-- This will create and start the `mysql-db` container (mapped to `localhost:3307`).
-- Once the database is running, you can run the backend application:
-  - **Via IntelliJ/IDE**: Simply run the `JobportalApplication` main class.
-  - **Via Maven**: Run `mvn spring-boot:run` inside the `job-portal-backend` directory.
-  - **Via Dockerfile**: You can build and run the backend container separately if needed.
-
-- Alternatively, if you want to bring up the **entire stack** (DB + backend + frontend) together:
-
-```bash
-docker compose up --build
-```
-
-This mirrors production-like setups (non-root DB user, isolated containerized DB), while keeping local development flexible.
+2) Run only MySQL using Docker Compose
+- Start the MySQL database:
+  ```bash
+  docker compose up -d db
+  ```
+- Once the database is running, you can run the applications:
+  - **Backend (IDE)**: Run `JobportalApplication` main class.
+  - **Backend (Maven)**: `mvn spring-boot:run` inside `job-portal-backend`.
+  - **Frontend (npm)**: `npm install` and `npm run dev` inside `job-portal-frontend`.
 
 ---
 
-### B. Environment Configuration:
- 
+### C. Environment Configuration:
+
 The project is configured with safe defaults for local development. However, you can override them by creating a file named `.env` in the root directory:
- 
+
 ```env
 # Common MySQL credentials
 MYSQL_ROOT_PASSWORD=root
 MYSQL_DATABASE=jobportal
 MYSQL_USER=jobuser
 MYSQL_PASSWORD=jobpass
- 
+
 # Google OAuth2 Credentials (Optional, required for Google Login)
 GOOGLE_CLIENT_ID=your-google-client-id
 GOOGLE_CLIENT_SECRET=your-google-client-secret
- 
+
 # JWT Secret Key (Optional, uses default if not provided)
 JWT_SECRET_KEY=MY_SECRET_KEY_123456789012345678901234567890
 ```
 
 ---
 
-### C. Steps to smoke test the Google Cloud OAuth feature:
+### D. Steps to smoke test the Google Cloud OAuth feature:
 
 1. **Go to Google Cloud** and get the secrets for your Web Application (not Desktop, not Mobile application):
    - **Client ID**: `xxxx`
