@@ -51,6 +51,15 @@ To stop and remove the containers:
 docker compose down
 ```
 
+#### 5. Build Multi-Platform Images (ARM64 & AMD64)
+If you are developing on a Mac (ARM64) but need to deploy to Windows/Linux (AMD64), use:
+
+```bash
+docker buildx bake --push
+```
+
+*Note: This command uses the settings in `docker-compose.yml` to build for both architectures and push them to Docker Hub.*
+
 ---
 
 ### B. Database for Local Development (Alternative)
