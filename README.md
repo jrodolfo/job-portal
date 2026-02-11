@@ -58,7 +58,7 @@ If you are developing on a Mac (ARM64) but need to deploy to Windows/Linux (AMD6
 docker buildx bake --push
 ```
 
-*Note: This command uses the settings in `docker-compose.yml` to build for both architectures and push them to Docker Hub.*
+*Note: This command uses the settings in `docker-compose.yml` to build both backend and frontend for both architectures and push them to Docker Hub.*
 
 ---
 

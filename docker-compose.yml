@@ -40,6 +40,10 @@ services:
     build:
       context: ./job-portal-frontend
       dockerfile: Dockerfile
+      platforms:
+        - "linux/amd64"
+        - "linux/arm64"
+    image: jrodolfo/job-portal-frontend:latest
     container_name: job-portal-frontend
     restart: always
     depends_on:
