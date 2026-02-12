@@ -100,6 +100,9 @@ GOOGLE_CLIENT_SECRET=your-google-client-secret
 
 # JWT Secret Key (Optional, uses default if not provided)
 JWT_SECRET_KEY=MY_SECRET_KEY_123456789012345678901234567890
+
+# Allowed Origins for CORS (Optional, defaults to http://localhost:5173)
+ALLOWED_ORIGINS=http://localhost:5173,http://your-ec2-ip:5173
 ```
 
 ---
