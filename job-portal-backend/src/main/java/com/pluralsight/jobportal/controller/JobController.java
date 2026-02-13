@@ -27,7 +27,7 @@ public class JobController {
         } catch (Exception e) {
             throw new ResourceException("Not able to create the job " + job.getTitle());
         }
-        return ResponseEntity.ok(jobService.createJob(job));
+        return ResponseEntity.ok(job);
     }
     
     // Get all jobs

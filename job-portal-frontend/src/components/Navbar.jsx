@@ -14,7 +14,7 @@ const Navbar = () => {
             username: "",
             role: ""
         }
-        setUserDetails(dispatch, initialuserState)
+        setUserDetails(dispatch)(initialuserState)
         navigate("/")
 
     }

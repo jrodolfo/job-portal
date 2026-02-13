@@ -6,5 +6,11 @@ export default defineConfig({
   base: '/',
   build: {
     outDir: 'build'
+  },
+  test: {
+    pool: 'threads',
+    globals: true,
+    environment: 'happy-dom',
+    setupFiles: './src/test/setupTests.js'
   }
 })
