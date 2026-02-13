@@ -53,3 +53,11 @@ job-portal-frontend/*.ntvs*
 job-portal-frontend/*.njsproj
 job-portal-frontend/*.sln
 job-portal-frontend/*.sw?
+
+############### Insomnia ###############
+
+# Keep sanitized templates in git, keep private exports out of git.
+doc/insomnia/*-private.yaml
+doc/insomnia/*-local.yaml
+doc/insomnia/insomnia-*.yaml
+!doc/insomnia/insomnia-template.yaml

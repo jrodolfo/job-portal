@@ -1,0 +1,1413 @@
+type: collection.insomnia.rest/5.0
+schema_version: "5.1"
+name: full-stack-java-dev-springboot-react
+meta:
+  id: wrk_51beed591b214a5f8934be749b690b1d
+  created: 1770753516641
+  modified: 1770753516641
+  description: ""
+collection:
+  - name: full-stack-java-dev-springboot-react
+    meta:
+      id: fld_ad42fa8c20d74c21b623693ab60354c6
+      created: 1769732706018
+      modified: 1771006609047
+      sortKey: -1769732699448
+      description: |-
+        # 🚀 Get started here
+
+        This template guides you through CRUD operations (GET, POST, PUT, DELETE), variables, and tests.
+
+        ## 🔖 **How to use this template**
+
+        #### **Step 1: Send requests**
+
+        RESTful APIs allow you to perform CRUD operations using the POST, GET, PUT, and DELETE HTTP methods.
+
+        This collection contains each of these [request](https://learning.postman.com/docs/sending-requests/requests/) types. Open each request and click "Send" to see what happens.
+
+        #### **Step 2: View responses**
+
+        Observe the response tab for status code (200 OK), response time, and size.
+
+        #### **Step 3: Send new Body data**
+
+        Update or add new data in "Body" in the POST request. Typically, Body data is also used in PUT request.
+
+        ```
+        {
+            "name": "Add your name in the body"
+        }
+
+         ```
+
+        #### **Step 4: Update the variable**
+
+        Variables enable you to store and reuse values in Postman. We have created a [variable](https://learning.postman.com/docs/sending-requests/variables/) called `base_url` with the sample request [https://postman-api-learner.glitch.me](https://postman-api-learner.glitch.me). Replace it with your API endpoint to customize this collection.
+
+        #### **Step 5: Add tests in the "Scripts" tab**
+
+        Adding tests to your requests can help you confirm that your API is working as expected. You can write test scripts in JavaScript and view the output in the "Test Results" tab.
+
+        <img src="https://content.pstmn.io/fa30ea0a-373d-4545-a668-e7b283cca343/aW1hZ2UucG5n" alt="" height="1530" width="2162">
+
+        ## 💪 Pro tips
+
+        - Use folders to group related requests and organize the collection.
+            
+        - Add more [scripts](https://learning.postman.com/docs/writing-scripts/intro-to-scripts/) to verify if the API works as expected and execute workflows.
+            
+
+        ## 💡Related templates
+
+        [API testing basics](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=e9a37a28-055b-49cd-8c7e-97494a21eb54&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)  
+        [API documentation](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=e9c28f47-1253-44af-a2f3-20dce4da1f18&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)  
+        [Authorization methods](https://go.postman.co/redirect/workspace?type=personal&collectionTemplateId=31a9a6ed-4cdf-4ced-984c-d12c9aec1c27&sourceTemplateId=ddb19591-3097-41cf-82af-c84273e56719)
+    children:
+      - name: job
+        meta:
+          id: fld_52249e950d094ccb90ee7e89c894d1db
+          created: 1769732706018
+          modified: 1771006077086
+          sortKey: -1769732699447
+          description: ""
+        children:
+          - name: local
+            meta:
+              id: fld_c8b459894a2348e69e94e014947ba935
+              created: 1771005863622
+              modified: 1771005863622
+              sortKey: -1771005863622
+              description: ""
+            children:
+              - url: http://localhost:8080/api/jobs
+                name: add job
+                meta:
+                  id: req_e92c470a44094d208fabe489c1d11948
+                  created: 1769732706018
+                  modified: 1771005883989
+                  isPrivate: false
+                  description: >-
+                    This is a POST request, submitting data to an API via the
+                    request body. This request submits JSON data, and the data
+                    is reflected in the response.
+
+
+                    A successful POST request typically returns a `200 OK` or
+                    `201 Created` response code.
+                  sortKey: -1771005871589
+                method: POST
+                body:
+                  mimeType: application/json
+                  text: |-
+                    {
+                    	"title": "AI Developer",
+                        "description": "Develop AI applications and systems",
+                        "company": "ABC"
+                    }
+                headers:
+                  - name: Content-Type
+                    value: application/json
+                authentication:
+                  type: basic
+                  useISO88591: false
+                  username: admin
+                  password: admin123
+                  disabled: false
+                scripts:
+                  afterResponse: >
+                    insomnia.test("Successful POST request", function () {
+                        insomnia.expect(insomnia.response.code).to.be.oneOf([200, 201]);
+                    });
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+              - url: http://localhost:8080/api/jobs/2
+                name: get job by id
+                meta:
+                  id: req_975b766c858541ec81420814140832c2
+                  created: 1769732706019
+                  modified: 1771005890462
+                  isPrivate: false
+                  description: >-
+                    This is a GET request and it is used to "get" data from an
+                    endpoint. There is no request body for a GET request, but
+                    you can use query parameters to help specify the resource
+                    you want data on (e.g., in this request, we have `id=1`).
+
+
+                    A successful GET response will have a `200 OK` status, and
+                    should include some kind of response body - for example,
+                    HTML web content or JSON data.
+                  sortKey: -1771005871514
+                method: GET
+                authentication:
+                  type: basic
+                  username: admin
+                  password: admin123
+                  disabled: false
+                scripts:
+                  afterResponse: |-
+                    insomnia.test("Status code is 200", function () {
+                        insomnia.response.to.have.status(200);
+                    });
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+              - url: http://localhost:8080/api/jobs
+                name: get all jobs
+                meta:
+                  id: req_fe885f693c04490bb8760e40808e6a1c
+                  created: 1769732706019
+                  modified: 1771005886944
+                  isPrivate: false
+                  description: >-
+                    This is a GET request and it is used to "get" data from an
+                    endpoint. There is no request body for a GET request, but
+                    you can use query parameters to help specify the resource
+                    you want data on (e.g., in this request, we have `id=1`).
+
+
+                    A successful GET response will have a `200 OK` status, and
+                    should include some kind of response body - for example,
+                    HTML web content or JSON data.
+                  sortKey: -1771005871539
+                method: GET
+                authentication:
+                  type: basic
+                  username: admin
+                  password: admin123
+                  disabled: false
+                scripts:
+                  afterResponse: |-
+                    insomnia.test("Status code is 200", function () {
+                        insomnia.response.to.have.status(200);
+                    });
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+              - url: "{{base_url}}/info"
+                name: delete job
+                meta:
+                  id: req_287f6c4d23ab4ac89ed26243e211c541
+                  created: 1769732706020
+                  modified: 1771005881330
+                  isPrivate: false
+                  description: >-
+                    This is a DELETE request, and it is used to delete data that
+                    was previously created via a POST request. You typically
+                    identify the entity being updated by including an identifier
+                    in the URL (eg. `id=1`).
+
+
+                    A successful DELETE request typically returns a `200 OK`,
+                    `202 Accepted`, or `204 No Content` response code.
+                  sortKey: -1771005871489
+                method: DELETE
+                parameters:
+                  - name: id
+                    value: "1"
+                    disabled: false
+                scripts:
+                  afterResponse: >
+                    insomnia.test("Successful DELETE request", function () {
+                        insomnia.expect(insomnia.response.code).to.be.oneOf([200, 202, 204]);
+                    });
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+              - url: "{{base_url}}/info"
+                name: update job
+                meta:
+                  id: req_b2ef52fe020545ec84d9b405f8644a7d
+                  created: 1769732706020
+                  modified: 1771005893172
+                  isPrivate: false
+                  description: >-
+                    This is a PUT request and it is used to overwrite an
+                    existing piece of data. For instance, after you create an
+                    entity with a POST request, you may want to modify that
+                    later. You can do that using a PUT request. You typically
+                    identify the entity being updated by including an identifier
+                    in the URL (eg. `id=1`).
+
+
+                    A successful PUT request typically returns a `200 OK`, `201
+                    Created`, or `204 No Content` response code.
+                  sortKey: -1771005871501.5
+                method: PUT
+                body:
+                  mimeType: application/json
+                  text: |-
+                    {
+                    	"name": "Add your name in the body"
+                    }
+                parameters:
+                  - name: id
+                    value: "1"
+                    disabled: false
+                headers:
+                  - name: Content-Type
+                    value: application/json
+                scripts:
+                  afterResponse: >
+                    insomnia.test("Successful PUT request", function () {
+                        insomnia.expect(insomnia.response.code).to.be.oneOf([200, 201, 204]);
+                    });
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+          - name: aws
+            meta:
+              id: fld_ec37a6f5df0841599e2e90841dcd8879
+              created: 1771005917081
+              modified: 1771006077086
+              sortKey: -1770490042120.5
+              description: ""
+            children:
+              - url: http://aws-api.example.com:8080/api/jobs
+                name: add job
+                meta:
+                  id: req_6b934f4c66984d6e817062cc1b02c8af
+                  created: 1771005917082
+                  modified: 1771006014653
+                  isPrivate: false
+                  description: >-
+                    This is a POST request, submitting data to an API via the
+                    request body. This request submits JSON data, and the data
+                    is reflected in the response.
+
+
+                    A successful POST request typically returns a `200 OK` or
+                    `201 Created` response code.
+                  sortKey: -1771005871589
+                method: POST
+                body:
+                  mimeType: application/json
+                  text: |-
+                    {
+                    	"title": "Product Owner",
+                        "description": "Manage Product Development",
+                        "company": "DEF"
+                    }
+                headers:
+                  - name: Content-Type
+                    value: application/json
+                authentication:
+                  type: basic
+                  useISO88591: false
+                  username: admin
+                  password: admin123
+                  disabled: false
+                scripts:
+                  afterResponse: >
+                    insomnia.test("Successful POST request", function () {
+                        insomnia.expect(insomnia.response.code).to.be.oneOf([200, 201]);
+                    });
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+              - url: http://aws-api.example.com:8080/api/jobs/1
+                name: get job by id
+                meta:
+                  id: req_a93a51e743f940f6a162c0037638c8f8
+                  created: 1771005917082
+                  modified: 1771006074824
+                  isPrivate: false
+                  description: >-
+                    This is a GET request and it is used to "get" data from an
+                    endpoint. There is no request body for a GET request, but
+                    you can use query parameters to help specify the resource
+                    you want data on (e.g., in this request, we have `id=1`).
+
+
+                    A successful GET response will have a `200 OK` status, and
+                    should include some kind of response body - for example,
+                    HTML web content or JSON data.
+                  sortKey: -1771005871514
+                method: GET
+                authentication:
+                  type: basic
+                  username: admin
+                  password: admin123
+                  disabled: false
+                scripts:
+                  afterResponse: |-
+                    insomnia.test("Status code is 200", function () {
+                        insomnia.response.to.have.status(200);
+                    });
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+              - url: "{{base_url}}/info"
+                name: update job
+                meta:
+                  id: req_6e9e5bacd9fc41869e147ab444b511bb
+                  created: 1771005917083
+                  modified: 1771005917083
+                  isPrivate: false
+                  description: >-
+                    This is a PUT request and it is used to overwrite an
+                    existing piece of data. For instance, after you create an
+                    entity with a POST request, you may want to modify that
+                    later. You can do that using a PUT request. You typically
+                    identify the entity being updated by including an identifier
+                    in the URL (eg. `id=1`).
+
+
+                    A successful PUT request typically returns a `200 OK`, `201
+                    Created`, or `204 No Content` response code.
+                  sortKey: -1771005871501.5
+                method: PUT
+                body:
+                  mimeType: application/json
+                  text: |-
+                    {
+                    	"name": "Add your name in the body"
+                    }
+                parameters:
+                  - name: id
+                    value: "1"
+                    disabled: false
+                headers:
+                  - name: Content-Type
+                    value: application/json
+                scripts:
+                  afterResponse: >
+                    insomnia.test("Successful PUT request", function () {
+                        insomnia.expect(insomnia.response.code).to.be.oneOf([200, 201, 204]);
+                    });
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+              - url: http://aws-api.example.com:8080/api/jobs
+                name: get all jobs
+                meta:
+                  id: req_7a943c52cdc242829a88c6f6fe9d19c6
+                  created: 1771005917083
+                  modified: 1771006045703
+                  isPrivate: false
+                  description: >-
+                    This is a GET request and it is used to "get" data from an
+                    endpoint. There is no request body for a GET request, but
+                    you can use query parameters to help specify the resource
+                    you want data on (e.g., in this request, we have `id=1`).
+
+
+                    A successful GET response will have a `200 OK` status, and
+                    should include some kind of response body - for example,
+                    HTML web content or JSON data.
+                  sortKey: -1771005871539
+                method: GET
+                authentication:
+                  type: basic
+                  username: admin
+                  password: admin123
+                  disabled: false
+                scripts:
+                  afterResponse: |-
+                    insomnia.test("Status code is 200", function () {
+                        insomnia.response.to.have.status(200);
+                    });
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+              - url: "{{base_url}}/info"
+                name: delete job
+                meta:
+                  id: req_a0772e7d4015439daf607667eaddfa73
+                  created: 1771005917083
+                  modified: 1771005917083
+                  isPrivate: false
+                  description: >-
+                    This is a DELETE request, and it is used to delete data that
+                    was previously created via a POST request. You typically
+                    identify the entity being updated by including an identifier
+                    in the URL (eg. `id=1`).
+
+
+                    A successful DELETE request typically returns a `200 OK`,
+                    `202 Accepted`, or `204 No Content` response code.
+                  sortKey: -1771005871489
+                method: DELETE
+                parameters:
+                  - name: id
+                    value: "1"
+                    disabled: false
+                scripts:
+                  afterResponse: >
+                    insomnia.test("Successful DELETE request", function () {
+                        insomnia.expect(insomnia.response.code).to.be.oneOf([200, 202, 204]);
+                    });
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+      - name: user
+        meta:
+          id: fld_0efc76b29ece4bc49f511bc6291d6ef5
+          created: 1769732706021
+          modified: 1771006527222
+          sortKey: -1769732699441
+          description: ""
+        children:
+          - name: local
+            meta:
+              id: fld_a5fcb28998954f1c817b4142e18d10e4
+              created: 1771006270987
+              modified: 1771006270987
+              sortKey: -1771006270987
+              description: ""
+            children:
+              - url: http://localhost:8080/api/users
+                name: get all users
+                meta:
+                  id: req_146941cb5ad249d9acba6052c23562dd
+                  created: 1769732706021
+                  modified: 1771006296540
+                  isPrivate: false
+                  description: >-
+                    This is a GET request and it is used to "get" data from an
+                    endpoint. There is no request body for a GET request, but
+                    you can use query parameters to help specify the resource
+                    you want data on (e.g., in this request, we have `id=1`).
+
+
+                    A successful GET response will have a `200 OK` status, and
+                    should include some kind of response body - for example,
+                    HTML web content or JSON data.
+                  sortKey: -1771006287492
+                method: GET
+                authentication:
+                  type: basic
+                  username: admin
+                  password: admin123
+                  disabled: false
+                scripts:
+                  afterResponse: |-
+                    insomnia.test("Status code is 200", function () {
+                        insomnia.response.to.have.status(200);
+                    });
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+              - url: http://localhost:8080/api/users/1
+                name: get user by id
+                meta:
+                  id: req_37a6bf3748264142bd50a8e24b998f81
+                  created: 1769732706021
+                  modified: 1771006294395
+                  isPrivate: false
+                  description: >-
+                    This is a GET request and it is used to "get" data from an
+                    endpoint. There is no request body for a GET request, but
+                    you can use query parameters to help specify the resource
+                    you want data on (e.g., in this request, we have `id=1`).
+
+
+                    A successful GET response will have a `200 OK` status, and
+                    should include some kind of response body - for example,
+                    HTML web content or JSON data.
+                  sortKey: -1771006287392
+                method: GET
+                authentication:
+                  type: basic
+                  username: admin
+                  password: admin123
+                  disabled: false
+                scripts:
+                  afterResponse: |-
+                    insomnia.test("Status code is 200", function () {
+                        insomnia.response.to.have.status(200);
+                    });
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+              - url: http://18.220.131.117:8080/api/users
+                name: add user
+                meta:
+                  id: req_fa9ae080aa6046168b71c082ad3751a2
+                  created: 1769732706021
+                  modified: 1771006299399
+                  isPrivate: false
+                  description: >-
+                    This is a POST request, submitting data to an API via the
+                    request body. This request submits JSON data, and the data
+                    is reflected in the response.
+
+
+                    A successful POST request typically returns a `200 OK` or
+                    `201 Created` response code.
+                  sortKey: -1771006287592
+                method: POST
+                body:
+                  mimeType: application/json
+                  text: |-
+                    {
+                    	"name": "user",
+                      "email": "user@test.com",
+                      "password": "user123",
+                      "authProvider": "LOCAL",
+                      "role": "APPLICANT"
+                    }
+                headers:
+                  - name: Content-Type
+                    value: application/json
+                authentication:
+                  type: basic
+                  username: admin
+                  password: admin123
+                  disabled: false
+                scripts:
+                  afterResponse: >
+                    insomnia.test("Successful POST request", function () {
+                        insomnia.expect(insomnia.response.code).to.be.oneOf([200, 201]);
+                    });
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+              - url: "{{base_url}}/info"
+                name: update user
+                meta:
+                  id: req_ab432e5ca2704288965db73746f78c8a
+                  created: 1769732706022
+                  modified: 1771006290999
+                  isPrivate: false
+                  description: >-
+                    This is a PUT request and it is used to overwrite an
+                    existing piece of data. For instance, after you create an
+                    entity with a POST request, you may want to modify that
+                    later. You can do that using a PUT request. You typically
+                    identify the entity being updated by including an identifier
+                    in the URL (eg. `id=1`).
+
+
+                    A successful PUT request typically returns a `200 OK`, `201
+                    Created`, or `204 No Content` response code.
+                  sortKey: -1771006287292
+                method: PUT
+                body:
+                  mimeType: application/json
+                  text: |-
+                    {
+                    	"name": "Add your name in the body"
+                    }
+                parameters:
+                  - name: id
+                    value: "1"
+                    disabled: false
+                headers:
+                  - name: Content-Type
+                    value: application/json
+                scripts:
+                  afterResponse: >
+                    insomnia.test("Successful PUT request", function () {
+                        insomnia.expect(insomnia.response.code).to.be.oneOf([200, 201, 204]);
+                    });
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+              - url: "{{base_url}}/info"
+                name: delete user
+                meta:
+                  id: req_f2c017ee1b0943c59d02aec09b04cf64
+                  created: 1769732706022
+                  modified: 1771006287231
+                  isPrivate: false
+                  description: >-
+                    This is a DELETE request, and it is used to delete data that
+                    was previously created via a POST request. You typically
+                    identify the entity being updated by including an identifier
+                    in the URL (eg. `id=1`).
+
+
+                    A successful DELETE request typically returns a `200 OK`,
+                    `202 Accepted`, or `204 No Content` response code.
+                  sortKey: -1771006287192
+                method: DELETE
+                parameters:
+                  - name: id
+                    value: "1"
+                    disabled: false
+                scripts:
+                  afterResponse: >
+                    insomnia.test("Successful DELETE request", function () {
+                        insomnia.expect(insomnia.response.code).to.be.oneOf([200, 202, 204]);
+                    });
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+          - name: aws
+            meta:
+              id: fld_6176b032e1a0435d8a24c721ab2787ce
+              created: 1771006312797
+              modified: 1771006527222
+              sortKey: -1771006067304.5
+              description: ""
+            children:
+              - url: "{{base_url}}/info"
+                name: update user
+                meta:
+                  id: req_474a20ea704945feb2f81cc317ec8f4b
+                  created: 1771006312798
+                  modified: 1771006312798
+                  isPrivate: false
+                  description: >-
+                    This is a PUT request and it is used to overwrite an
+                    existing piece of data. For instance, after you create an
+                    entity with a POST request, you may want to modify that
+                    later. You can do that using a PUT request. You typically
+                    identify the entity being updated by including an identifier
+                    in the URL (eg. `id=1`).
+
+
+                    A successful PUT request typically returns a `200 OK`, `201
+                    Created`, or `204 No Content` response code.
+                  sortKey: -1771006287292
+                method: PUT
+                body:
+                  mimeType: application/json
+                  text: |-
+                    {
+                    	"name": "Add your name in the body"
+                    }
+                parameters:
+                  - name: id
+                    value: "1"
+                    disabled: false
+                headers:
+                  - name: Content-Type
+                    value: application/json
+                scripts:
+                  afterResponse: >
+                    insomnia.test("Successful PUT request", function () {
+                        insomnia.expect(insomnia.response.code).to.be.oneOf([200, 201, 204]);
+                    });
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+              - url: http://aws-api.example.com:8080/api/users
+                name: get all users
+                meta:
+                  id: req_8bc5de58983b40f2b642322779726d2b
+                  created: 1771006312798
+                  modified: 1771006410009
+                  isPrivate: false
+                  description: >-
+                    This is a GET request and it is used to "get" data from an
+                    endpoint. There is no request body for a GET request, but
+                    you can use query parameters to help specify the resource
+                    you want data on (e.g., in this request, we have `id=1`).
+
+
+                    A successful GET response will have a `200 OK` status, and
+                    should include some kind of response body - for example,
+                    HTML web content or JSON data.
+                  sortKey: -1771006287492
+                method: GET
+                authentication:
+                  type: basic
+                  username: admin
+                  password: admin123
+                  disabled: false
+                scripts:
+                  afterResponse: |-
+                    insomnia.test("Status code is 200", function () {
+                        insomnia.response.to.have.status(200);
+                    });
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+              - url: http://aws-api.example.com:8080/api/users/1
+                name: get user by id
+                meta:
+                  id: req_8c4bac3338a14089ab35600e579a8059
+                  created: 1771006312798
+                  modified: 1771006525053
+                  isPrivate: false
+                  description: >-
+                    This is a GET request and it is used to "get" data from an
+                    endpoint. There is no request body for a GET request, but
+                    you can use query parameters to help specify the resource
+                    you want data on (e.g., in this request, we have `id=1`).
+
+
+                    A successful GET response will have a `200 OK` status, and
+                    should include some kind of response body - for example,
+                    HTML web content or JSON data.
+                  sortKey: -1771006287392
+                method: GET
+                authentication:
+                  type: basic
+                  username: admin
+                  password: admin123
+                  disabled: false
+                scripts:
+                  afterResponse: |-
+                    insomnia.test("Status code is 200", function () {
+                        insomnia.response.to.have.status(200);
+                    });
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+              - url: "{{base_url}}/info"
+                name: delete user
+                meta:
+                  id: req_a37596be775f458fb21b418d7bf34227
+                  created: 1771006312798
+                  modified: 1771006312798
+                  isPrivate: false
+                  description: >-
+                    This is a DELETE request, and it is used to delete data that
+                    was previously created via a POST request. You typically
+                    identify the entity being updated by including an identifier
+                    in the URL (eg. `id=1`).
+
+
+                    A successful DELETE request typically returns a `200 OK`,
+                    `202 Accepted`, or `204 No Content` response code.
+                  sortKey: -1771006287192
+                method: DELETE
+                parameters:
+                  - name: id
+                    value: "1"
+                    disabled: false
+                scripts:
+                  afterResponse: >
+                    insomnia.test("Successful DELETE request", function () {
+                        insomnia.expect(insomnia.response.code).to.be.oneOf([200, 202, 204]);
+                    });
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+              - url: http://aws-api.example.com:8080/api/users
+                name: add user
+                meta:
+                  id: req_fd75232ea252423b98588599ad3719e9
+                  created: 1771006312798
+                  modified: 1771006379310
+                  isPrivate: false
+                  description: >-
+                    This is a POST request, submitting data to an API via the
+                    request body. This request submits JSON data, and the data
+                    is reflected in the response.
+
+
+                    A successful POST request typically returns a `200 OK` or
+                    `201 Created` response code.
+                  sortKey: -1771006287592
+                method: POST
+                body:
+                  mimeType: application/json
+                  text: |-
+                    {
+                    	"name": "Donald Duck",
+                      "email": "donald.duck@disney.com",
+                      "password": "donald123",
+                      "authProvider": "LOCAL",
+                      "role": "APPLICANT"
+                    }
+                headers:
+                  - name: Content-Type
+                    value: application/json
+                authentication:
+                  type: basic
+                  username: admin
+                  password: admin123
+                  disabled: false
+                scripts:
+                  afterResponse: >
+                    insomnia.test("Successful POST request", function () {
+                        insomnia.expect(insomnia.response.code).to.be.oneOf([200, 201]);
+                    });
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+      - name: application
+        meta:
+          id: fld_982af80fb6cd42ac840017589290310d
+          created: 1769732706022
+          modified: 1771006609047
+          sortKey: -1769732699435
+          description: ""
+        children:
+          - name: localhost
+            meta:
+              id: fld_03f2c88ad10741c487a9188956ecf322
+              created: 1771006674477
+              modified: 1771006674477
+              sortKey: -1771006674477
+              description: ""
+            children:
+              - url: http://localhost:8080/api/applications/apply/1
+                name: add application
+                meta:
+                  id: req_609a0d590a5443df934994560c5a121d
+                  created: 1769732706022
+                  modified: 1771006719137
+                  isPrivate: false
+                  description: >-
+                    This is a POST request, submitting data to an API via the
+                    request body. This request submits JSON data, and the data
+                    is reflected in the response.
+
+
+                    A successful POST request typically returns a `200 OK` or
+                    `201 Created` response code.
+                  sortKey: -1771006684692
+                method: POST
+                body:
+                  mimeType: application/json
+                  text: |-
+                    {
+                    	  "title": "QA Tester",
+                        "description": "Testing software application",
+                        "company": "Tech Corp"
+                    }
+                headers:
+                  - name: Content-Type
+                    value: application/json
+                scripts:
+                  afterResponse: >
+                    insomnia.test("Successful POST request", function () {
+                        insomnia.expect(insomnia.response.code).to.be.oneOf([200, 201]);
+                    });
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+          - name: aws
+            meta:
+              id: fld_8906b956d34847768858a2d06bbe4ab3
+              created: 1771006698153
+              modified: 1771006698153
+              sortKey: -1771006472732
+              description: ""
+            children:
+              - url: http://aws-api.example.com:8080/api/applications/apply/1
+                name: add application
+                meta:
+                  id: req_69aa8e641df8495a9fbd353e67660887
+                  created: 1771006698153
+                  modified: 1771006698153
+                  isPrivate: false
+                  description: >-
+                    This is a POST request, submitting data to an API via the
+                    request body. This request submits JSON data, and the data
+                    is reflected in the response.
+
+
+                    A successful POST request typically returns a `200 OK` or
+                    `201 Created` response code.
+                  sortKey: -1771006684692
+                method: POST
+                body:
+                  mimeType: application/json
+                  text: |-
+                    {
+                    	  "title": "QA Tester",
+                        "description": "Testing software application",
+                        "company": "Tech Corp"
+                    }
+                headers:
+                  - name: Content-Type
+                    value: application/json
+                scripts:
+                  afterResponse: >
+                    insomnia.test("Successful POST request", function () {
+                        insomnia.expect(insomnia.response.code).to.be.oneOf([200, 201]);
+                    });
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+      - name: auth
+        meta:
+          id: fld_d788fa6949794724836d97dffd89ad3c
+          created: 1769732706023
+          modified: 1769966517288
+          sortKey: -1769732699433
+          description: ""
+        children:
+          - name: localhost
+            meta:
+              id: fld_3e91299777194272a1ffb8fcf6501e18
+              created: 1771006750649
+              modified: 1771006750649
+              sortKey: -1771006750649
+              description: ""
+            children:
+              - url: http://localhost:8080/api/auth/login
+                name: user login
+                meta:
+                  id: req_e68dbe82d8514685947f947559802202
+                  created: 1769732706023
+                  modified: 1771006768231
+                  isPrivate: false
+                  description: >-
+                    This is a POST request, submitting data to an API via the
+                    request body. This request submits JSON data, and the data
+                    is reflected in the response.
+
+
+                    A successful POST request typically returns a `200 OK` or
+                    `201 Created` response code.
+                  sortKey: -1771006763718
+                method: POST
+                authentication:
+                  type: basic
+                  username: admin
+                  password: admin123
+                  disabled: false
+                scripts:
+                  afterResponse: >
+                    insomnia.test("Successful POST request", function () {
+                        insomnia.expect(insomnia.response.code).to.be.oneOf([200, 201]);
+                    });
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+              - url: http://localhost:8080/api/auth/details
+                name: user details
+                meta:
+                  id: req_83e2f2627a7e49708e7f95ed94fdf28e
+                  created: 1769964872451
+                  modified: 1771006765490
+                  isPrivate: false
+                  description: >-
+                    This is a POST request, submitting data to an API via the
+                    request body. This request submits JSON data, and the data
+                    is reflected in the response.
+
+
+                    A successful POST request typically returns a `200 OK` or
+                    `201 Created` response code.
+                  sortKey: -1771006763618
+                method: GET
+                authentication:
+                  type: bearer
+                  disabled: true
+                  token: ""
+                  prefix: ""
+                scripts:
+                  afterResponse: >
+                    insomnia.test("Successful POST request", function () {
+                        insomnia.expect(insomnia.response.code).to.be.oneOf([200, 201]);
+                    });
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+          - name: aws
+            meta:
+              id: fld_76d37a91a51e4e02b40310a1e6ec0809
+              created: 1771006797209
+              modified: 1771006797209
+              sortKey: -1771006712563
+              description: ""
+            children:
+              - url: http://aws-api.example.com:8080/api/auth/login
+                name: user login
+                meta:
+                  id: req_89484dbe1d3d4382a227189b36099db7
+                  created: 1771006797209
+                  modified: 1771006809781
+                  isPrivate: false
+                  description: >-
+                    This is a POST request, submitting data to an API via the
+                    request body. This request submits JSON data, and the data
+                    is reflected in the response.
+
+
+                    A successful POST request typically returns a `200 OK` or
+                    `201 Created` response code.
+                  sortKey: -1771006763718
+                method: POST
+                authentication:
+                  type: basic
+                  username: admin
+                  password: admin123
+                  disabled: false
+                scripts:
+                  afterResponse: >
+                    insomnia.test("Successful POST request", function () {
+                        insomnia.expect(insomnia.response.code).to.be.oneOf([200, 201]);
+                    });
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+              - url: http://aws-api.example.com:8080/api/auth/details
+                name: user details
+                meta:
+                  id: req_62617d6c963a47a8bed7a566ba7053ba
+                  created: 1771006797212
+                  modified: 1771006822634
+                  isPrivate: false
+                  description: >-
+                    This is a POST request, submitting data to an API via the
+                    request body. This request submits JSON data, and the data
+                    is reflected in the response.
+
+
+                    A successful POST request typically returns a `200 OK` or
+                    `201 Created` response code.
+                  sortKey: -1771006763618
+                method: GET
+                authentication:
+                  type: bearer
+                  disabled: true
+                  token: ""
+                  prefix: ""
+                scripts:
+                  afterResponse: >
+                    insomnia.test("Successful POST request", function () {
+                        insomnia.expect(insomnia.response.code).to.be.oneOf([200, 201]);
+                    });
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+      - name: steps
+        meta:
+          id: fld_f2b040ff1fd340bba3ef82d4c0b8c6fb
+          created: 1769974220619
+          modified: 1769974220619
+          sortKey: -1769974220619
+          description: ""
+        children:
+          - name: localhost
+            meta:
+              id: fld_c119de4be6444d43aca3f57e990dbe4e
+              created: 1771006867547
+              modified: 1771006867547
+              sortKey: -1771006867547
+              description: ""
+            children:
+              - url: http://localhost:8080/oauth2/authorization/google
+                name: 1 - oauth google
+                meta:
+                  id: req_86a3f8f3d48340a6af6fa0b18399717e
+                  created: 1769974253381
+                  modified: 1771006877965
+                  isPrivate: false
+                  description: ""
+                  sortKey: -1771006873364
+                method: GET
+                headers:
+                  - name: User-Agent
+                    value: insomnia/12.3.0
+                    description: ""
+                    disabled: false
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+              - url: http://localhost:8080/api/oauth/user
+                name: 2 - get google json
+                meta:
+                  id: req_01580be6f7294e068eaab30b50b53005
+                  created: 1769974368699
+                  modified: 1771006875328
+                  isPrivate: false
+                  description: ""
+                  sortKey: -1771006873264
+                method: GET
+                headers:
+                  - name: User-Agent
+                    value: insomnia/12.3.0
+                    description: ""
+                    disabled: false
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+              - url: http://localhost:8080/api/oauth/token
+                name: 3 - get google token
+                meta:
+                  id: req_57553253b92a48dab4f7363da886fd7f
+                  created: 1769974414605
+                  modified: 1771006873241
+                  isPrivate: false
+                  description: ""
+                  sortKey: -1771006873164
+                method: GET
+                headers:
+                  - name: User-Agent
+                    value: insomnia/12.3.0
+                    description: ""
+                    disabled: false
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+          - name: aws
+            meta:
+              id: fld_f981cc2e070f455c96727e6128947d3a
+              created: 1771006888309
+              modified: 1771006888309
+              sortKey: -1771006809098
+              description: ""
+            children:
+              - url: http://aws-api.example.com:8080/oauth2/authorization/google
+                name: 1 - oauth google
+                meta:
+                  id: req_170bab14cc294befa7a7d3a504846f92
+                  created: 1771006888309
+                  modified: 1771006897363
+                  isPrivate: false
+                  description: ""
+                  sortKey: -1771006873364
+                method: GET
+                headers:
+                  - name: User-Agent
+                    value: insomnia/12.3.0
+                    description: ""
+                    disabled: false
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+              - url: http://aws-api.example.com:8080/api/oauth/user
+                name: 2 - get google json
+                meta:
+                  id: req_47aa21b6d2ce4be7adcd7ce0ebbf45c2
+                  created: 1771006888309
+                  modified: 1771006909097
+                  isPrivate: false
+                  description: ""
+                  sortKey: -1771006873264
+                method: GET
+                headers:
+                  - name: User-Agent
+                    value: insomnia/12.3.0
+                    description: ""
+                    disabled: false
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+              - url: http://aws-api.example.com:8080/api/oauth/token
+                name: 3 - get google token
+                meta:
+                  id: req_60b0d6bea5c144549adf8341d800c088
+                  created: 1771006888309
+                  modified: 1771006922575
+                  isPrivate: false
+                  description: ""
+                  sortKey: -1771006873164
+                method: GET
+                headers:
+                  - name: User-Agent
+                    value: insomnia/12.3.0
+                    description: ""
+                    disabled: false
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_6dc788d571b1474cb1d569e61ed26f2e
+    created: 1769732706024
+    modified: 1771006609046
+  cookies:
+    - id: 838eb8b2-906e-4aa5-b34f-5be57add26ca
+      key: JSESSIONID
+      value: <redacted>
+      domain: localhost
+      path: /
+      secure: false
+      httpOnly: true
+      hostOnly: true
+    - id: b4793214-d5d4-43e3-8a27-6dc9f0bb7a94
+      key: __Host-GAPS
+      value: <redacted>
+      domain: localhost
+      path: /
+      secure: true
+      httpOnly: true
+      hostOnly: true
+    - id: 78d2260a-bce2-46ca-9c7b-2ba36099c8b9
+      key: JSESSIONID
+      value: <redacted>
+      domain: aws-api.example.com
+      path: /
+      secure: false
+      httpOnly: true
+      hostOnly: true
+    - id: fe14f5c6-370a-4d6a-a54d-479e7086e066
+      key: JSESSIONID
+      value: <redacted>
+      domain: localhost
+      path: /
+      secure: false
+      httpOnly: true
+      hostOnly: true
+    - id: 2056acd8-3a31-4735-b653-cea3f2e9853e
+      key: __Host-GAPS
+      value: <redacted>
+      domain: localhost
+      path: /
+      secure: true
+      httpOnly: true
+      hostOnly: true
+environments:
+  name: Variables
+  meta:
+    id: env_f6c5d04c807f4a95b4cba360c8b684ab
+    created: 1769732706023
+    modified: 1771006609047
+    isPrivate: false
+  data:
+    id: "1"
+    base_url: https://template.postman-echo.com
