@@ -10,6 +10,10 @@ by Imtiyaz Hirani
 I made several changes, fixed bugs, added new files, documentation etc. to help me to
 run a clean code and deploy it at my localhost and at AWS.
 
+Backend namespace reference:
+- Maven coordinates: `net.jrodolfo:jobportal`
+- Java base package: `net.jrodolfo.jobportal`
+
 **Rod Oliveira** | Software Developer | [jrodolfo.net](https://jrodolfo.net) | Halifax, Canada 🍁
 
 ---
