@@ -155,6 +155,25 @@ JWT_SECRET_KEY=MY_SECRET_KEY_123456789012345678901234567890
 
 # Allowed Origins for CORS (Optional, defaults to http://localhost:5173)
 ALLOWED_ORIGINS=http://localhost:5173,http://your-ec2-ip:5173
+
+# OpenTelemetry defaults (local)
+OTEL_SERVICE_NAME=job-portal-backend
+OTEL_RESOURCE_ATTRIBUTES=service.namespace=job-portal,service.version=0.0.1-SNAPSHOT,deployment.environment=local
+OTEL_TRACES_SAMPLER=parentbased_traceidratio
+OTEL_TRACES_SAMPLER_ARG=1.0
+OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+OTEL_PROPAGATORS=tracecontext,baggage
+OTEL_TRACES_EXPORTER=otlp
+OTEL_METRICS_EXPORTER=none
+OTEL_LOGS_EXPORTER=none
+
+# OpenTelemetry upstream endpoint for EC2/prod collector (required in prod override)
+# Example:
+# OTEL_UPSTREAM_OTLP_ENDPOINT=https://otlp.your-vendor.com/v1/traces
+# OTEL_UPSTREAM_AUTH_HEADER=Bearer your-token
+#OTEL_UPSTREAM_OTLP_ENDPOINT=
+#OTEL_UPSTREAM_AUTH_HEADER=
 ```
 
 ---
