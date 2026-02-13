@@ -78,8 +78,8 @@ Use the prod override file, which:
 - disables local Jaeger by default
 
 Required env var for prod collector export:
-- `OTEL_UPSTREAM_OTLP_ENDPOINT` (for example, your observability vendor OTLP endpoint)
-- optional: `OTEL_UPSTREAM_AUTH_HEADER` (for example, `Bearer <token>`)
+- `OTEL_UPSTREAM_OTLP_ENDPOINT` (New Relic US: `https://otlp.nr-data.net`, EU: `https://otlp.eu01.nr-data.net`)
+- `OTEL_UPSTREAM_API_KEY` (your New Relic ingest/license key)
 
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
@@ -170,10 +170,10 @@ OTEL_LOGS_EXPORTER=none
 
 # OpenTelemetry upstream endpoint for EC2/prod collector (required in prod override)
 # Example:
-# OTEL_UPSTREAM_OTLP_ENDPOINT=https://otlp.your-vendor.com/v1/traces
-# OTEL_UPSTREAM_AUTH_HEADER=Bearer your-token
+# OTEL_UPSTREAM_OTLP_ENDPOINT=https://otlp.nr-data.net
+# OTEL_UPSTREAM_API_KEY=your-new-relic-ingest-key
 #OTEL_UPSTREAM_OTLP_ENDPOINT=
-#OTEL_UPSTREAM_AUTH_HEADER=
+#OTEL_UPSTREAM_API_KEY=
 ```
 
 ---
@@ -316,6 +316,7 @@ Scripts are organized by environment:
 
 `doc/script/prod/start.sh` uses both compose files and requires:
 - `OTEL_UPSTREAM_OTLP_ENDPOINT` to be set
+- `OTEL_UPSTREAM_API_KEY` to be set
 
 ### H. Do you know Qodana?
 

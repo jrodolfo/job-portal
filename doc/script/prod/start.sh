@@ -3,7 +3,14 @@ set -e
 
 if [ -z "${OTEL_UPSTREAM_OTLP_ENDPOINT}" ]; then
   echo "ERROR: OTEL_UPSTREAM_OTLP_ENDPOINT is required for prod startup."
-  echo "Example: export OTEL_UPSTREAM_OTLP_ENDPOINT=https://otlp.your-vendor.com/v1/traces"
+  echo "Example (US): export OTEL_UPSTREAM_OTLP_ENDPOINT=https://otlp.nr-data.net"
+  echo "Example (EU): export OTEL_UPSTREAM_OTLP_ENDPOINT=https://otlp.eu01.nr-data.net"
+  exit 1
+fi
+
+if [ -z "${OTEL_UPSTREAM_API_KEY}" ]; then
+  echo "ERROR: OTEL_UPSTREAM_API_KEY is required for prod startup."
+  echo "Set it to your New Relic ingest/license key."
   exit 1
 fi
 

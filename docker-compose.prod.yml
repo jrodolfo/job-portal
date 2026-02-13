@@ -10,7 +10,7 @@ services:
       - ./doc/otel/collector-prod.yaml:/etc/otelcol-contrib/config.yaml:ro
     environment:
       OTEL_UPSTREAM_OTLP_ENDPOINT: ${OTEL_UPSTREAM_OTLP_ENDPOINT}
-      OTEL_UPSTREAM_AUTH_HEADER: ${OTEL_UPSTREAM_AUTH_HEADER:-}
+      OTEL_UPSTREAM_API_KEY: ${OTEL_UPSTREAM_API_KEY}
 
   jaeger:
     profiles:

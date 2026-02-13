@@ -24,7 +24,7 @@ exporters:
   otlphttp/upstream:
     endpoint: ${env:OTEL_UPSTREAM_OTLP_ENDPOINT}
     headers:
-      Authorization: ${env:OTEL_UPSTREAM_AUTH_HEADER}
+      api-key: ${env:OTEL_UPSTREAM_API_KEY}
     compression: gzip
     timeout: 10s
     retry_on_failure:
