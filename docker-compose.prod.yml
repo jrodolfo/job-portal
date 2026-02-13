@@ -1,16 +1,34 @@
 services:
   backend:
+    depends_on:
+      - db
+      - otel-collector
     environment:
+      OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME:-job-portal-backend}
       OTEL_RESOURCE_ATTRIBUTES: ${OTEL_RESOURCE_ATTRIBUTES:-service.namespace=job-portal,service.version=0.0.1-SNAPSHOT,deployment.environment=prod}
+      OTEL_TRACES_EXPORTER: ${OTEL_TRACES_EXPORTER:-otlp}
+      OTEL_METRICS_EXPORTER: ${OTEL_METRICS_EXPORTER:-none}
+      OTEL_LOGS_EXPORTER: ${OTEL_LOGS_EXPORTER:-none}
+      OTEL_EXPORTER_OTLP_PROTOCOL: ${OTEL_EXPORTER_OTLP_PROTOCOL:-grpc}
+      OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-http://otel-collector:4317}
       OTEL_TRACES_SAMPLER: ${OTEL_TRACES_SAMPLER:-parentbased_traceidratio}
       OTEL_TRACES_SAMPLER_ARG: ${OTEL_TRACES_SAMPLER_ARG:-0.1}
+      OTEL_PROPAGATORS: ${OTEL_PROPAGATORS:-tracecontext,baggage}
 
   otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.120.0
+    container_name: otel-collector
+    restart: always
+    command: ["--config=/etc/otelcol-contrib/config.yaml"]
     volumes:
       - ./doc/otel/collector-prod.yaml:/etc/otelcol-contrib/config.yaml:ro
     environment:
       OTEL_UPSTREAM_OTLP_ENDPOINT: ${OTEL_UPSTREAM_OTLP_ENDPOINT}
       OTEL_UPSTREAM_API_KEY: ${OTEL_UPSTREAM_API_KEY}
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+      - "13133:13133"
 
   jaeger:
     profiles:
