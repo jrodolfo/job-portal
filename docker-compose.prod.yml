@@ -1,0 +1,17 @@
+services:
+  backend:
+    environment:
+      OTEL_RESOURCE_ATTRIBUTES: ${OTEL_RESOURCE_ATTRIBUTES:-service.namespace=job-portal,service.version=0.0.1-SNAPSHOT,deployment.environment=prod}
+      OTEL_TRACES_SAMPLER: ${OTEL_TRACES_SAMPLER:-parentbased_traceidratio}
+      OTEL_TRACES_SAMPLER_ARG: ${OTEL_TRACES_SAMPLER_ARG:-0.1}
+
+  otel-collector:
+    volumes:
+      - ./doc/otel/collector-prod.yaml:/etc/otelcol-contrib/config.yaml:ro
+    environment:
+      OTEL_UPSTREAM_OTLP_ENDPOINT: ${OTEL_UPSTREAM_OTLP_ENDPOINT}
+      OTEL_UPSTREAM_AUTH_HEADER: ${OTEL_UPSTREAM_AUTH_HEADER:-}
+
+  jaeger:
+    profiles:
+      - local-only

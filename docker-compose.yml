@@ -25,6 +25,7 @@ services:
     restart: always
     depends_on:
       - db
+      - otel-collector
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${MYSQL_DATABASE:-jobportal}?createDatabaseIfNotExist=true
       SPRING_DATASOURCE_USERNAME: ${MYSQL_USER:-jobuser}
@@ -33,8 +34,39 @@ services:
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-enter-the-client-id-here}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-enter-the-client-secret-here}
       JWT_SECRET_KEY: ${JWT_SECRET_KEY:-MY_SECRET_KEY_123456789012345678901234567890}
+      OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME:-job-portal-backend}
+      OTEL_RESOURCE_ATTRIBUTES: ${OTEL_RESOURCE_ATTRIBUTES:-service.namespace=job-portal,service.version=0.0.1-SNAPSHOT,deployment.environment=local}
+      OTEL_TRACES_EXPORTER: ${OTEL_TRACES_EXPORTER:-otlp}
+      OTEL_METRICS_EXPORTER: ${OTEL_METRICS_EXPORTER:-none}
+      OTEL_LOGS_EXPORTER: ${OTEL_LOGS_EXPORTER:-none}
+      OTEL_EXPORTER_OTLP_PROTOCOL: ${OTEL_EXPORTER_OTLP_PROTOCOL:-grpc}
+      OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-http://otel-collector:4317}
+      OTEL_TRACES_SAMPLER: ${OTEL_TRACES_SAMPLER:-parentbased_traceidratio}
+      OTEL_TRACES_SAMPLER_ARG: ${OTEL_TRACES_SAMPLER_ARG:-1.0}
+      OTEL_PROPAGATORS: ${OTEL_PROPAGATORS:-tracecontext,baggage}
     ports:
       - "8080:8080"
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.120.0
+    container_name: otel-collector
+    restart: always
+    command: ["--config=/etc/otelcol-contrib/config.yaml"]
+    volumes:
+      - ./doc/otel/collector-local.yaml:/etc/otelcol-contrib/config.yaml:ro
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+      - "13133:13133"
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.65.0
+    container_name: jaeger
+    restart: always
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    ports:
+      - "16686:16686"
 
   frontend:
     build:

@@ -55,7 +55,55 @@ To stop and remove the containers:
 docker compose down
 ```
 
-#### 5. Build Multi-Platform Images (ARM64 & AMD64)
+#### 5. OpenTelemetry (Local)
+The Docker setup includes OpenTelemetry Java auto-instrumentation for the backend and an OpenTelemetry Collector.
+
+- Collector OTLP endpoints:
+  - gRPC: `http://localhost:4317`
+  - HTTP: `http://localhost:4318`
+- Collector health: `http://localhost:13133`
+- Jaeger UI: [http://localhost:16686](http://localhost:16686)
+
+Use this command (same as standard local stack):
+
+```bash
+docker compose up --build
+```
+
+#### 6. OpenTelemetry (EC2 / Prod)
+Use the prod override file, which:
+- switches collector config to `doc/otel/collector-prod.yaml`
+- keeps backend tracing enabled
+- sets a lower default trace sampling (`OTEL_TRACES_SAMPLER_ARG=0.1`)
+- disables local Jaeger by default
+
+Required env var for prod collector export:
+- `OTEL_UPSTREAM_OTLP_ENDPOINT` (for example, your observability vendor OTLP endpoint)
+- optional: `OTEL_UPSTREAM_AUTH_HEADER` (for example, `Bearer <token>`)
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+```
+
+#### 7. OpenTelemetry Smoke Test (Local)
+After starting with `docker compose up --build`, run:
+
+```bash
+curl -i http://localhost:8080/api/jobs
+curl -i -u user:user123 -X POST http://localhost:8080/api/auth/login
+curl -i -u admin:admin123 -H "Content-Type: application/json" \
+  -d '{"title":"OTel Test","description":"trace smoke test","company":"Local"}' \
+  http://localhost:8080/api/jobs
+```
+
+Then verify in Jaeger (`http://localhost:16686`):
+
+1. Service `job-portal-backend` appears in the service list.
+2. New traces exist for `GET /api/jobs`, `POST /api/auth/login`, and `POST /api/jobs`.
+3. At least one trace includes child spans (for example Spring MVC/security/database work).
+4. Trace attributes include `deployment.environment=local`.
+
+#### 8. Build Multi-Platform Images (ARM64 & AMD64)
 If you are developing on a Mac (ARM64) but need to deploy to Windows/Linux (AMD64), use:
 
 ```bash
