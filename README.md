@@ -293,30 +293,29 @@ OTEL_LOGS_EXPORTER=none
 
 ---
 
-### G. Helper Scripts for Deployment
+### G. Helper Scripts
 
-To make it easier to manage the application on your EC2 instance, you can create these two helper scripts in the project root:
+Scripts are organized by environment:
 
-#### 1. `start.sh`
-This script ensures you always have the latest images and starts the application in the background.
-```bash
-#!/bin/bash
-docker compose pull
-docker compose up -d
-```
+#### 1. Local scripts (`doc/script/local`)
 
-#### 2. `stop.sh`
-This script stops and removes the containers.
-```bash
-#!/bin/bash
-docker compose down
-```
+- macOS/Linux:
+  - Start: `bash doc/script/local/start.sh`
+  - Stop: `bash doc/script/local/stop.sh`
+- Windows CMD:
+  - Start: `doc\\script\\local\\start.bat`
+  - Stop: `doc\\script\\local\\stop.bat`
+- Windows PowerShell:
+  - Start: `./doc/script/local/start.ps1`
+  - Stop: `./doc/script/local/stop.ps1`
 
-#### 3. Make them executable
-After creating the files, run:
-```bash
-chmod +x start.sh stop.sh
-```
+#### 2. Prod scripts (`doc/script/prod`) for EC2 Linux
+
+- Start: `bash doc/script/prod/start.sh`
+- Stop: `bash doc/script/prod/stop.sh`
+
+`doc/script/prod/start.sh` uses both compose files and requires:
+- `OTEL_UPSTREAM_OTLP_ENDPOINT` to be set
 
 ### H. Do you know Qodana?
 
