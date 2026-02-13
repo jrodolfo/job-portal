@@ -895,8 +895,8 @@ collection:
                   mimeType: application/json
                   text: |-
                     {
-                    	"name": "Donald Duck",
-                      "email": "donald.duck@disney.com",
+                      "name": "Donald Duck",
+                      "email": "user@test.com",
                       "password": "donald123",
                       "authProvider": "LOCAL",
                       "role": "APPLICANT"
