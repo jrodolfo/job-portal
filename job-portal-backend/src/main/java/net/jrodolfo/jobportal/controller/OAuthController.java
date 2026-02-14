@@ -1,5 +1,9 @@
 package net.jrodolfo.jobportal.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -16,6 +20,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/oauth")
 @CrossOrigin(origins = "http://localhost:5173")
+@Tag(name = "OAuth", description = "Google OAuth helper endpoints")
 public class OAuthController {
 
     @Value("${spring.security.oauth2.client.registration.google.client-id}")
@@ -25,6 +30,8 @@ public class OAuthController {
     private String clientSecret;
 
     @GetMapping("/user")
+    @Operation(summary = "Get OAuth authenticated user attributes", security = @SecurityRequirement(name = "basicAuth"))
+    @ApiResponse(responseCode = "200", description = "OAuth user attributes returned")
     public Map<String, Object> getUserInfo(OAuth2AuthenticationToken authentication) {
         if (authentication == null) {
             throw new IllegalStateException("User is not authenticated");
@@ -35,12 +42,16 @@ public class OAuthController {
     }
 
     @GetMapping("/token")
+    @Operation(summary = "Get Google ID token for authenticated OAuth user", security = @SecurityRequirement(name = "basicAuth"))
+    @ApiResponse(responseCode = "200", description = "Google token returned")
     public String getAccessToken(OAuth2AuthenticationToken authentication) {
         OidcUser user = (OidcUser) authentication.getPrincipal();
         return user.getIdToken().getTokenValue(); //Access token from google
     }
 
     @PostMapping("/exchange-token")
+    @Operation(summary = "Exchange OAuth authorization code for token")
+    @ApiResponse(responseCode = "200", description = "Exchanged token returned")
     public Map<String, String> exchangeToken(@RequestBody Map<String, String> body) {
         String code = body.get("code");
 
@@ -71,6 +82,8 @@ public class OAuthController {
     }
 
     @GetMapping("/user-details")
+    @Operation(summary = "Get user details from Google token", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponse(responseCode = "200", description = "Google user details returned")
     public Map<String, Object> getUserInfo(@RequestHeader("Authorization") String token) {
         String idToken = token.replace("Bearer ", "");
 

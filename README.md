@@ -34,6 +34,8 @@ docker compose up --build
 
 - **Frontend**: Accessible at [http://localhost:5173](http://localhost:5173)
 - **Backend API**: Accessible at [http://localhost:8080](http://localhost:8080)
+- **Swagger UI**: [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+- **OpenAPI JSON**: [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs)
 - **Database**: Accessible at `localhost:3307`
 
 #### 3. Start specific services
@@ -342,3 +344,16 @@ At the end of the process you will get something like:
 ? Do you want to open the latest report [Y/n]Yes
 ✓ Report is successfully uploaded to https://qodana.cloud/projects/40Edn/reports/xyz
 ```
+
+### I. API Documentation (Swagger/OpenAPI)
+
+After the backend is running:
+
+- Swagger UI: `http://localhost:8080/swagger-ui.html`
+- OpenAPI JSON: `http://localhost:8080/v3/api-docs`
+
+Authentication in Swagger UI:
+
+1. Use **Authorize** and provide Basic credentials for endpoints protected with `basicAuth`.
+2. For bearer-protected endpoints, first call `/api/auth/login`, copy the returned token, and authorize with:
+   - `Bearer <token>`

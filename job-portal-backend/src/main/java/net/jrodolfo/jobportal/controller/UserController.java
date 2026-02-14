@@ -1,9 +1,16 @@
 package net.jrodolfo.jobportal.controller;
 
 import net.jrodolfo.jobportal.exception.ResourceException;
+import net.jrodolfo.jobportal.exception.ErrorResponse;
 import net.jrodolfo.jobportal.model.User;
 import net.jrodolfo.jobportal.service.UserService;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +21,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
+@Tag(name = "Users", description = "User CRUD operations")
 public class UserController {
 
     @Autowired
@@ -21,19 +29,31 @@ public class UserController {
 
     // Create a new user, Allowed user: ADMIN
     @PostMapping
+    @Operation(summary = "Create user", security = @SecurityRequirement(name = "basicAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "User created"),
+            @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
     public ResponseEntity<User> createUser(@RequestBody User user) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(user));
     }
 
     // Get all users
     @GetMapping
+    @Operation(summary = "Get all users", security = @SecurityRequirement(name = "basicAuth"))
+    @ApiResponse(responseCode = "200", description = "Users returned")
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
     @Operation(summary = "Get a user by id", description = "Retrieve a user by id")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "User returned"),
+            @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{id}")
+    @SecurityRequirement(name = "basicAuth")
     public ResponseEntity<User> getUserById(@io.swagger.v3.oas.annotations.Parameter(description = "id of the user to retrieve") @PathVariable @Min(value = 1) long id) {
         User user;
         try {
@@ -45,6 +65,11 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Update user", security = @SecurityRequirement(name = "basicAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "User updated"),
+            @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
     public ResponseEntity<User> updateUser(@PathVariable @Min(value = 1) long id, @RequestBody User user) {
         try {
             return ResponseEntity.ok(userService.updateUser(id, user));
@@ -54,6 +79,11 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete user", security = @SecurityRequirement(name = "basicAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "User deleted"),
+            @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
     public ResponseEntity<Void> deleteUser(@PathVariable @Min(value = 1) long id) {
         try {
             userService.deleteUser(id);

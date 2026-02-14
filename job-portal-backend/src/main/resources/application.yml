@@ -38,3 +38,13 @@ logging:
 # JWT Secret Key - should be at least 256 bits for HS256
 jwt:
   secret: ${JWT_SECRET_KEY:MY_SECRET_KEY_123456789012345678901234567890}
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+    display-request-duration: true
+    try-it-out-enabled: true

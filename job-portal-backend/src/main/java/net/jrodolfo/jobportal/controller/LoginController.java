@@ -2,6 +2,13 @@ package net.jrodolfo.jobportal.controller;
 
 
 import net.jrodolfo.jobportal.util.JwtUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -17,12 +24,18 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = "http://localhost:5173")
+@Tag(name = "Auth", description = "Authentication and user identity endpoints")
 public class LoginController {
 
     @Autowired
     private JwtUtil jwtUtil;
 
     @PostMapping("/login")
+    @Operation(summary = "Login and get JWT token", security = @SecurityRequirement(name = "basicAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "JWT token returned"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
+    })
     public Map<String, String> login(Principal principal) {
         String username = principal.getName(); // fetched from Spring Security
         System.out.println("username: " + username);
@@ -38,6 +51,8 @@ public class LoginController {
     }
 
     @GetMapping("/details")
+    @Operation(summary = "Get authenticated user details", security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponse(responseCode = "200", description = "User details returned", content = @Content(schema = @Schema(implementation = Map.class)))
     public Map<String, Object> getUserDetails(Principal principal) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
