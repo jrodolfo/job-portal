@@ -9,9 +9,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -50,14 +53,50 @@ class UserServiceTest {
     }
 
     @Test
-    void getUserByIdShouldReturnReferenceFromRepository() {
+    void getUserByIdShouldReturnUserWhenFound() {
         User user = new User();
         user.setId(7L);
-        when(userRepository.getReferenceById(7L)).thenReturn(user);
+        when(userRepository.findById(7L)).thenReturn(Optional.of(user));
 
         User result = userService.getUserById(7L);
 
         assertSame(user, result);
-        verify(userRepository).getReferenceById(7L);
+        verify(userRepository).findById(7L);
+    }
+
+    @Test
+    void updateUserShouldPersistNewValues() {
+        User existing = new User();
+        existing.setId(1L);
+        existing.setName("old");
+        User incoming = new User();
+        incoming.setName("new");
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(existing));
+        when(userRepository.save(existing)).thenReturn(existing);
+
+        User result = userService.updateUser(1L, incoming);
+
+        assertEquals("new", result.getName());
+        verify(userRepository).save(existing);
+    }
+
+    @Test
+    void deleteUserShouldDeleteWhenExists() {
+        when(userRepository.existsById(3L)).thenReturn(true);
+
+        userService.deleteUser(3L);
+
+        verify(userRepository).deleteById(3L);
+    }
+
+    @Test
+    void deleteUserShouldThrowWhenMissing() {
+        when(userRepository.existsById(4L)).thenReturn(false);
+
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> userService.deleteUser(4L));
+
+        assertEquals("User not found", ex.getMessage());
+        verify(userRepository, never()).deleteById(4L);
     }
 }

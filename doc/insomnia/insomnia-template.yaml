@@ -201,7 +201,7 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: "{{base_url}}/info"
+              - url: http://localhost:8080/api/jobs/1
                 name: delete job
                 meta:
                   id: req_287f6c4d23ab4ac89ed26243e211c541
@@ -236,7 +236,7 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: "{{base_url}}/info"
+              - url: http://localhost:8080/api/jobs/1
                 name: update job
                 meta:
                   id: req_b2ef52fe020545ec84d9b405f8644a7d
@@ -260,12 +260,10 @@ collection:
                   mimeType: application/json
                   text: |-
                     {
-                    	"name": "Add your name in the body"
+                      "title": "Senior Java Developer",
+                      "description": "Build and maintain backend services",
+                      "company": "Tech Corp"
                     }
-                parameters:
-                  - name: id
-                    value: "1"
-                    disabled: false
                 headers:
                   - name: Content-Type
                     value: application/json
@@ -374,7 +372,7 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: "{{base_url}}/info"
+              - url: http://aws-api.example.com:8080/api/jobs/1
                 name: update job
                 meta:
                   id: req_6e9e5bacd9fc41869e147ab444b511bb
@@ -398,12 +396,10 @@ collection:
                   mimeType: application/json
                   text: |-
                     {
-                    	"name": "Add your name in the body"
+                      "title": "Senior Java Developer",
+                      "description": "Build and maintain backend services",
+                      "company": "Tech Corp"
                     }
-                parameters:
-                  - name: id
-                    value: "1"
-                    disabled: false
                 headers:
                   - name: Content-Type
                     value: application/json
@@ -457,7 +453,7 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: "{{base_url}}/info"
+              - url: http://aws-api.example.com:8080/api/jobs/1
                 name: delete job
                 meta:
                   id: req_a0772e7d4015439daf607667eaddfa73
@@ -630,7 +626,7 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: "{{base_url}}/info"
+              - url: http://localhost:8080/api/users/1
                 name: update user
                 meta:
                   id: req_ab432e5ca2704288965db73746f78c8a
@@ -654,12 +650,12 @@ collection:
                   mimeType: application/json
                   text: |-
                     {
-                    	"name": "Add your name in the body"
+                      "name": "Updated User",
+                      "email": "updated.user@test.com",
+                      "password": "updated123",
+                      "authProvider": "LOCAL",
+                      "role": "APPLICANT"
                     }
-                parameters:
-                  - name: id
-                    value: "1"
-                    disabled: false
                 headers:
                   - name: Content-Type
                     value: application/json
@@ -676,7 +672,7 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: "{{base_url}}/info"
+              - url: http://localhost:8080/api/users/1
                 name: delete user
                 meta:
                   id: req_f2c017ee1b0943c59d02aec09b04cf64
@@ -719,7 +715,7 @@ collection:
               sortKey: -1771006067304.5
               description: ""
             children:
-              - url: "{{base_url}}/info"
+              - url: http://aws-api.example.com:8080/api/users/1
                 name: update user
                 meta:
                   id: req_474a20ea704945feb2f81cc317ec8f4b
@@ -743,12 +739,12 @@ collection:
                   mimeType: application/json
                   text: |-
                     {
-                    	"name": "Add your name in the body"
+                      "name": "Updated User",
+                      "email": "updated.user@test.com",
+                      "password": "updated123",
+                      "authProvider": "LOCAL",
+                      "role": "APPLICANT"
                     }
-                parameters:
-                  - name: id
-                    value: "1"
-                    disabled: false
                 headers:
                   - name: Content-Type
                     value: application/json
@@ -839,7 +835,7 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: "{{base_url}}/info"
+              - url: http://aws-api.example.com:8080/api/users/1
                 name: delete user
                 meta:
                   id: req_a37596be775f458fb21b418d7bf34227
@@ -938,7 +934,7 @@ collection:
               sortKey: -1771006674477
               description: ""
             children:
-              - url: http://localhost:8080/api/applications/apply/1
+              - url: http://localhost:8080/api/applications/1
                 name: add application
                 meta:
                   id: req_609a0d590a5443df934994560c5a121d
@@ -966,11 +962,108 @@ collection:
                 headers:
                   - name: Content-Type
                     value: application/json
+                authentication:
+                  type: basic
+                  username: user
+                  password: user123
+                  disabled: false
                 scripts:
                   afterResponse: >
                     insomnia.test("Successful POST request", function () {
                         insomnia.expect(insomnia.response.code).to.be.oneOf([200, 201]);
                     });
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+              - url: http://localhost:8080/api/applications
+                name: get all applications
+                meta:
+                  id: req_eadbcf3ce1764cc080d68e40cb5d2abb
+                  created: 1772000000001
+                  modified: 1772000000001
+                  isPrivate: false
+                  description: ""
+                  sortKey: -1771006684600
+                method: GET
+                authentication:
+                  type: basic
+                  username: admin
+                  password: admin123
+                  disabled: false
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+              - url: http://localhost:8080/api/applications/1
+                name: get application by id
+                meta:
+                  id: req_79e3fd68f1e9440f9b2ec9f0285ec6d4
+                  created: 1772000000002
+                  modified: 1772000000002
+                  isPrivate: false
+                  description: ""
+                  sortKey: -1771006684500
+                method: GET
+                authentication:
+                  type: basic
+                  username: admin
+                  password: admin123
+                  disabled: false
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+              - url: http://localhost:8080/api/applications/1?status=WITHDRAWN
+                name: update application
+                meta:
+                  id: req_13c2a99c95d643afad1b26f857c503cb
+                  created: 1772000000003
+                  modified: 1772000000003
+                  isPrivate: false
+                  description: ""
+                  sortKey: -1771006684400
+                method: PUT
+                authentication:
+                  type: basic
+                  username: user
+                  password: user123
+                  disabled: false
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+              - url: http://localhost:8080/api/applications/1
+                name: delete application
+                meta:
+                  id: req_2e819eaa3f6d42a5a4e27fbb88fcb4ea
+                  created: 1772000000004
+                  modified: 1772000000004
+                  isPrivate: false
+                  description: ""
+                  sortKey: -1771006684300
+                method: DELETE
+                authentication:
+                  type: basic
+                  username: user
+                  password: user123
+                  disabled: false
                 settings:
                   renderRequestBody: true
                   encodeUrl: true
@@ -987,7 +1080,7 @@ collection:
               sortKey: -1771006472732
               description: ""
             children:
-              - url: http://aws-api.example.com:8080/api/applications/apply/1
+              - url: http://aws-api.example.com:8080/api/applications/1
                 name: add application
                 meta:
                   id: req_69aa8e641df8495a9fbd353e67660887
@@ -1015,11 +1108,108 @@ collection:
                 headers:
                   - name: Content-Type
                     value: application/json
+                authentication:
+                  type: basic
+                  username: user
+                  password: user123
+                  disabled: false
                 scripts:
                   afterResponse: >
                     insomnia.test("Successful POST request", function () {
                         insomnia.expect(insomnia.response.code).to.be.oneOf([200, 201]);
                     });
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+              - url: http://aws-api.example.com:8080/api/applications
+                name: get all applications
+                meta:
+                  id: req_7876fbb2a2984f11bc1524ef8fe96f8f
+                  created: 1772000000011
+                  modified: 1772000000011
+                  isPrivate: false
+                  description: ""
+                  sortKey: -1771006684600
+                method: GET
+                authentication:
+                  type: basic
+                  username: admin
+                  password: admin123
+                  disabled: false
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+              - url: http://aws-api.example.com:8080/api/applications/1
+                name: get application by id
+                meta:
+                  id: req_0ea401ffcf2f4caf8f713edfe14335fa
+                  created: 1772000000012
+                  modified: 1772000000012
+                  isPrivate: false
+                  description: ""
+                  sortKey: -1771006684500
+                method: GET
+                authentication:
+                  type: basic
+                  username: admin
+                  password: admin123
+                  disabled: false
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+              - url: http://aws-api.example.com:8080/api/applications/1?status=WITHDRAWN
+                name: update application
+                meta:
+                  id: req_0ac673861eff4583baa8e49fa1ac5e90
+                  created: 1772000000013
+                  modified: 1772000000013
+                  isPrivate: false
+                  description: ""
+                  sortKey: -1771006684400
+                method: PUT
+                authentication:
+                  type: basic
+                  username: user
+                  password: user123
+                  disabled: false
+                settings:
+                  renderRequestBody: true
+                  encodeUrl: true
+                  followRedirects: global
+                  cookies:
+                    send: true
+                    store: true
+                  rebuildPath: true
+              - url: http://aws-api.example.com:8080/api/applications/1
+                name: delete application
+                meta:
+                  id: req_98879a4869ad4f87bde4df6d98f7269d
+                  created: 1772000000014
+                  modified: 1772000000014
+                  isPrivate: false
+                  description: ""
+                  sortKey: -1771006684300
+                method: DELETE
+                authentication:
+                  type: basic
+                  username: user
+                  password: user123
+                  disabled: false
                 settings:
                   renderRequestBody: true
                   encodeUrl: true

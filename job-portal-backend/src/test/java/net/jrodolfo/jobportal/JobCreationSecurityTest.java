@@ -53,6 +53,6 @@ public class JobCreationSecurityTest {
                 .with(httpBasic("admin", "admin123"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jobJson))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
     }
 }

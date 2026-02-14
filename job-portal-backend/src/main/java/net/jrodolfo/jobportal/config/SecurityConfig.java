@@ -51,8 +51,15 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/api/jobs").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/jobs/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/jobs/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/jobs").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/jobs/**").permitAll()
+                        .requestMatchers("/api/users/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/applications/**").hasRole("APPLICANT")
+                        .requestMatchers(HttpMethod.GET, "/api/applications/**").hasAnyRole("APPLICANT", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/applications/**").hasAnyRole("APPLICANT", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/applications/**").hasAnyRole("APPLICANT", "ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").authenticated()
                         .requestMatchers("/oauth/**", "/login/**", "/oauth2/**", "/api/oauth/**").permitAll() //Allow OAuth endpoints
                         .requestMatchers(HttpMethod.GET, "/api/auth/details").permitAll()

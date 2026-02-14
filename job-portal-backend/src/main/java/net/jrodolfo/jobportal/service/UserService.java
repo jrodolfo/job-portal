@@ -4,6 +4,7 @@ import net.jrodolfo.jobportal.model.User;
 import net.jrodolfo.jobportal.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -25,8 +26,26 @@ public class UserService {
 
     // Get a user by id
     public User getUserById(Long id) {
-        System.out.println("User id: " + id);
-        User user = userRepository.getReferenceById(id);
-        return user;
+        return userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+    @Transactional
+    public User updateUser(Long id, User incomingUser) {
+        User existingUser = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+
+        existingUser.setName(incomingUser.getName());
+        existingUser.setEmail(incomingUser.getEmail());
+        existingUser.setPassword(incomingUser.getPassword());
+        existingUser.setAuthProvider(incomingUser.getAuthProvider());
+        existingUser.setRole(incomingUser.getRole());
+
+        return userRepository.save(existingUser);
+    }
+
+    public void deleteUser(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new RuntimeException("User not found");
+        }
+        userRepository.deleteById(id);
     }
 }

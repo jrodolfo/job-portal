@@ -14,6 +14,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -67,5 +68,41 @@ class JobServiceTest {
         RuntimeException exception = assertThrows(RuntimeException.class, () -> jobService.getJobById(99L));
 
         assertEquals("Job not found", exception.getMessage());
+    }
+
+    @Test
+    void updateJobShouldPersistNewValues() {
+        Job existing = new Job("Old", "Old desc", "OldCo");
+        existing.setId(10L);
+        Job incoming = new Job("New", "New desc", "NewCo");
+
+        when(jobRepository.findById(10L)).thenReturn(Optional.of(existing));
+        when(jobRepository.save(existing)).thenReturn(existing);
+
+        Job updated = jobService.updateJob(10L, incoming);
+
+        assertEquals("New", updated.getTitle());
+        assertEquals("New desc", updated.getDescription());
+        assertEquals("NewCo", updated.getCompany());
+        verify(jobRepository).save(existing);
+    }
+
+    @Test
+    void deleteJobShouldDeleteWhenExists() {
+        when(jobRepository.existsById(11L)).thenReturn(true);
+
+        jobService.deleteJob(11L);
+
+        verify(jobRepository).deleteById(11L);
+    }
+
+    @Test
+    void deleteJobShouldThrowWhenMissing() {
+        when(jobRepository.existsById(12L)).thenReturn(false);
+
+        RuntimeException ex = assertThrows(RuntimeException.class, () -> jobService.deleteJob(12L));
+
+        assertEquals("Job not found", ex.getMessage());
+        verify(jobRepository, never()).deleteById(12L);
     }
 }

@@ -27,7 +27,7 @@ public class JobController {
         } catch (Exception e) {
             throw new ResourceException("Not able to create the job " + job.getTitle());
         }
-        return ResponseEntity.ok(job);
+        return ResponseEntity.status(HttpStatus.CREATED).body(job);
     }
     
     // Get all jobs
@@ -47,5 +47,24 @@ public class JobController {
             throw new ResourceException("Job with id " + id + " was not found");
         }
         return ResponseEntity.ok(job);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Job> updateJob(@PathVariable @Min(value = 1) long id, @RequestBody Job job) {
+        try {
+            return ResponseEntity.ok(jobService.updateJob(id, job));
+        } catch (Exception e) {
+            throw new ResourceException("Job with id " + id + " was not found");
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteJob(@PathVariable @Min(value = 1) long id) {
+        try {
+            jobService.deleteJob(id);
+        } catch (Exception e) {
+            throw new ResourceException("Job with id " + id + " was not found");
+        }
+        return ResponseEntity.noContent().build();
     }
 }

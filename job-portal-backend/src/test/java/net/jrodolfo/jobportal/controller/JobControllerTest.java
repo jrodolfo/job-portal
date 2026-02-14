@@ -18,8 +18,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -49,7 +51,7 @@ class JobControllerTest {
     }
 
     @Test
-    void createJobShouldReturnOkForAdminAndCallServiceOnce() throws Exception {
+    void createJobShouldReturnCreatedForAdminAndCallServiceOnce() throws Exception {
         Job request = new Job("Java Developer", "Build APIs", "ACME");
         Job response = new Job("Java Developer", "Build APIs", "ACME");
         response.setId(1L);
@@ -60,7 +62,7 @@ class JobControllerTest {
                         .with(httpBasic("admin", "admin123"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.title").value("Java Developer"));
 
@@ -76,5 +78,36 @@ class JobControllerTest {
 
         mockMvc.perform(get("/api/jobs"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void updateJobShouldRequireAdmin() throws Exception {
+        Job request = new Job("Updated Title", "Updated Desc", "Updated Co");
+        Job response = new Job("Updated Title", "Updated Desc", "Updated Co");
+        response.setId(1L);
+        when(jobService.updateJob(org.mockito.ArgumentMatchers.eq(1L), org.mockito.ArgumentMatchers.any(Job.class))).thenReturn(response);
+
+        mockMvc.perform(put("/api/jobs/1")
+                        .with(httpBasic("admin", "admin123"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(put("/api/jobs/1")
+                        .with(httpBasic("user", "user123"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void deleteJobShouldRequireAdmin() throws Exception {
+        mockMvc.perform(delete("/api/jobs/1")
+                        .with(httpBasic("admin", "admin123")))
+                .andExpect(status().isNoContent());
+
+        mockMvc.perform(delete("/api/jobs/1")
+                        .with(httpBasic("user", "user123")))
+                .andExpect(status().isForbidden());
     }
 }

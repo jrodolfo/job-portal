@@ -22,7 +22,7 @@ public class UserController {
     // Create a new user, Allowed user: ADMIN
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody User user) {
-        return ResponseEntity.ok(userService.createUser(user));
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(user));
     }
 
     // Get all users
@@ -42,5 +42,24 @@ public class UserController {
             throw new ResourceException("User with id " + id + " was not found");
         }
         return ResponseEntity.ok(user);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<User> updateUser(@PathVariable @Min(value = 1) long id, @RequestBody User user) {
+        try {
+            return ResponseEntity.ok(userService.updateUser(id, user));
+        } catch (Exception e) {
+            throw new ResourceException("User with id " + id + " was not found");
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable @Min(value = 1) long id) {
+        try {
+            userService.deleteUser(id);
+        } catch (Exception e) {
+            throw new ResourceException("User with id " + id + " was not found");
+        }
+        return ResponseEntity.noContent().build();
     }
 }
