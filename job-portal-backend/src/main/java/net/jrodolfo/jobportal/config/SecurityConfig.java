@@ -12,12 +12,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,6 +33,9 @@ public class SecurityConfig {
 
     @Value("${ALLOWED_ORIGINS:http://localhost:5173}")
     private String allowedOrigins;
+
+    @Value("${FRONTEND_BASE_URL:http://localhost:5173}")
+    private String frontendBaseUrl;
 
     @Bean
     UserDetailsService userDetailsService() {
@@ -83,6 +89,18 @@ public class SecurityConfig {
                                     );
                                 })
                         )
+                        .successHandler((request, response, authentication) -> {
+                            String redirectBase = frontendBaseUrl + "/oauthlogon";
+                            if (authentication.getPrincipal() instanceof OidcUser oidcUser) {
+                                String idToken = oidcUser.getIdToken().getTokenValue();
+                                String encodedToken = URLEncoder.encode(idToken, StandardCharsets.UTF_8);
+                                response.sendRedirect(redirectBase + "?token=" + encodedToken);
+                                return;
+                            }
+                            response.sendRedirect(redirectBase);
+                        })
+                        .failureHandler((request, response, exception) ->
+                                response.sendRedirect(frontendBaseUrl + "/?oauth_error=true"))
                 )
                 .build();
     }

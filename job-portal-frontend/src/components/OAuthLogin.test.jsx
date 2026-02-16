@@ -19,6 +19,11 @@ describe('OAuthLogin', () => {
         vi.clearAllMocks();
         localStorage.clear();
         window.history.pushState({}, '', '/oauthlogon');
+        vi.stubGlobal('alert', vi.fn());
+    });
+
+    afterEach(() => {
+        vi.unstubAllGlobals();
     });
 
     it('should exchange code, fetch user details, update store and navigate', async () => {
@@ -62,5 +67,6 @@ describe('OAuthLogin', () => {
         renderWithProviders(<OAuthLogin />);
 
         await waitFor(() => expect(axios.post).not.toHaveBeenCalled());
+        expect(mockNavigate).toHaveBeenCalledWith('/');
     });
 });
