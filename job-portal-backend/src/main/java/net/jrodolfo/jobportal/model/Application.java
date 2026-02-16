@@ -40,11 +40,11 @@ public class Application {
     @Schema(description = "Current application status.", example = "APPLIED")
     private ApplicationStatus status = ApplicationStatus.APPLIED;
 
-    @Column(nullable = false)
+    @Column(name = "created_at", nullable = false)
     @Schema(description = "Date-time when the application was created.", example = "2026-02-14T12:30:00")
-    private LocalDateTime appliedAt;
+    private LocalDateTime createdAt;
 
-    @Column(nullable = false)
+    @Column(name = "updated_at", nullable = false)
     @Schema(description = "Date-time when the application was last updated.", example = "2026-02-14T12:45:00")
     private LocalDateTime updatedAt;
 
@@ -57,8 +57,8 @@ public class Application {
     @PrePersist
     void onCreate() {
         LocalDateTime now = LocalDateTime.now();
-        if (appliedAt == null) {
-            appliedAt = now;
+        if (createdAt == null) {
+            createdAt = now;
         }
         updatedAt = now;
     }

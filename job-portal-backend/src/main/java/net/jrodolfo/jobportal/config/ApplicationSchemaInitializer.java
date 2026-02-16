@@ -36,19 +36,50 @@ public class ApplicationSchemaInitializer implements ApplicationRunner {
 
             String product = connection.getMetaData().getDatabaseProductName().toLowerCase(Locale.ROOT);
             boolean mysql = product.contains("mysql");
-            reconcileColumn(connection, "applied_at", "appliedAt", mysql);
+            reconcileCreatedAtColumn(connection, mysql);
             reconcileColumn(connection, "updated_at", "updatedAt", mysql);
 
             String nowExpression = mysql ? "NOW(6)" : "CURRENT_TIMESTAMP";
-            jdbcTemplate.execute("UPDATE applications SET applied_at = COALESCE(applied_at, " + nowExpression + ")");
+            jdbcTemplate.execute("UPDATE applications SET created_at = COALESCE(created_at, " + nowExpression + ")");
             jdbcTemplate.execute("UPDATE applications SET updated_at = COALESCE(updated_at, " + nowExpression + ")");
 
             if (mysql) {
-                jdbcTemplate.execute("ALTER TABLE applications MODIFY COLUMN applied_at DATETIME(6) NOT NULL");
+                jdbcTemplate.execute("ALTER TABLE applications MODIFY COLUMN created_at DATETIME(6) NOT NULL");
                 jdbcTemplate.execute("ALTER TABLE applications MODIFY COLUMN updated_at DATETIME(6) NOT NULL");
             }
         } catch (Exception ex) {
             log.error("Failed to initialize applications schema compatibility columns", ex);
+        }
+    }
+
+    private void reconcileCreatedAtColumn(Connection connection, boolean mysql) throws SQLException {
+        boolean hasCreatedSnake = columnExists(connection, "applications", "created_at");
+        if (hasCreatedSnake) {
+            return;
+        }
+
+        boolean hasAppliedSnake = columnExists(connection, "applications", "applied_at");
+        boolean hasAppliedCamel = columnExists(connection, "applications", "appliedAt");
+
+        if (mysql && hasAppliedSnake) {
+            jdbcTemplate.execute("ALTER TABLE applications CHANGE COLUMN applied_at created_at DATETIME(6) NULL");
+            return;
+        }
+
+        if (mysql && hasAppliedCamel) {
+            jdbcTemplate.execute("ALTER TABLE applications CHANGE COLUMN appliedAt created_at DATETIME(6) NULL");
+            return;
+        }
+
+        String addCreatedColumn = mysql
+                ? "ALTER TABLE applications ADD COLUMN created_at DATETIME(6) NULL"
+                : "ALTER TABLE applications ADD COLUMN created_at TIMESTAMP NULL";
+        jdbcTemplate.execute(addCreatedColumn);
+
+        if (hasAppliedSnake) {
+            jdbcTemplate.execute("UPDATE applications SET created_at = COALESCE(created_at, applied_at)");
+        } else if (hasAppliedCamel) {
+            jdbcTemplate.execute("UPDATE applications SET created_at = COALESCE(created_at, appliedAt)");
         }
     }
 
