@@ -76,4 +76,40 @@ describe('ApplicantDashboard', () => {
         );
         expect(alertSpy).toHaveBeenCalledWith('Application Success!!!');
     });
+
+    it('should show popup when apply request fails', async () => {
+        const alertSpy = vi.fn();
+        vi.stubGlobal('alert', alertSpy);
+        localStorage.setItem('token', 'jwt-123');
+
+        axios.get.mockResolvedValueOnce({
+            data: [
+                {
+                    id: 1,
+                    title: 'Java Developer',
+                    description: 'Build APIs',
+                    company: 'ACME',
+                    postedDate: '2026-01-01'
+                }
+            ]
+        });
+        axios.post.mockRejectedValueOnce({
+            response: {
+                status: 500,
+                data: {
+                    message: 'A server error occurred while processing your request.'
+                }
+            }
+        });
+
+        renderWithProviders(<ApplicantDashboard />);
+        const user = userEvent.setup();
+
+        await waitFor(() => expect(screen.getByRole('button', { name: 'Apply' })).toBeInTheDocument());
+        await user.click(screen.getByRole('button', { name: 'Apply' }));
+
+        await waitFor(() =>
+            expect(alertSpy).toHaveBeenCalledWith('Error: A server error occurred while processing your request.')
+        );
+    });
 });

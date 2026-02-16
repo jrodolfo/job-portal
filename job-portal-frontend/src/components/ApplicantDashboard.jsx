@@ -7,6 +7,7 @@ import {BACKEND_API_URL} from '../config/backend'
 const ApplicantDashboard = () => {
 
     const [jobs, setJobs] = useState([]); // state to hold the list of jobs
+    const [applyingJobs, setApplyingJobs] = useState({});
 
     // fetch jobs when the component loads
     useEffect(() => {
@@ -24,8 +25,13 @@ const ApplicantDashboard = () => {
     }
 
     const apply = async (jobId) => {
+        if (applyingJobs[jobId]) {
+            return;
+        }
+
+        setApplyingJobs((prev) => ({...prev, [jobId]: true}));
         try {
-            const response = await axios.post(BACKEND_API_URL + "/api/applications/" + jobId,
+            await axios.post(BACKEND_API_URL + "/api/applications/" + jobId,
                 {}, {
                     headers: {
                         "Authorization": "Bearer " + localStorage.getItem("token")
@@ -34,7 +40,18 @@ const ApplicantDashboard = () => {
             )
             alert("Application Success!!!")
         } catch (error) {
-            console.log(error)
+            const backendMessage = error?.response?.data?.message;
+            const message = backendMessage
+                ? `Error: ${backendMessage}`
+                : "We couldn't submit your application right now. Please try again.";
+            alert(message);
+            console.log("Error applying for job:", error);
+        } finally {
+            setApplyingJobs((prev) => {
+                const next = {...prev};
+                delete next[jobId];
+                return next;
+            });
         }
     }
     return (
@@ -55,6 +72,7 @@ const ApplicantDashboard = () => {
                                         <p>Posted Date: {job.postedDate}</p>
                                         <div>
                                             <button className="btn btn-primary"
+                                                    disabled={!!applyingJobs[job.id]}
                                                     onClick={() => apply(job.id)}>Apply
                                             </button>
                                         </div>
