@@ -581,7 +581,7 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: http://18.220.131.117:8080/api/users
+              - url: "{{ local_api_base_url }}/api/users"
                 name: add user
                 meta:
                   id: req_fa9ae080aa6046168b71c082ad3751a2
