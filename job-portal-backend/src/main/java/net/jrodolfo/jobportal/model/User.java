@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "users") // Avoid using "user" as it's a reserved keyword in MySQL
 @Getter
@@ -43,6 +45,14 @@ public class User {
     @Schema(description = "Authorization role.", example = "APPLICANT")
     private Role role;
 
+    @Column(name = "created_at", nullable = false)
+    @Schema(description = "Date-time when the user record was created.", example = "2026-02-14T12:30:00")
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at", nullable = false)
+    @Schema(description = "Date-time when the user record was last updated.", example = "2026-02-14T12:45:00")
+    private LocalDateTime updatedAt;
+
     /* Constructor for Normal Users (Requires Password) */
     public User(String name, String email, String password, AuthProvider provider, Role role) {
         this.name = name;
@@ -59,5 +69,19 @@ public class User {
         this.password = null; // Google Users Don't Have Passwords
         this.authProvider = provider;
         this.role = role;
+    }
+
+    @PrePersist
+    void onCreate() {
+        LocalDateTime now = LocalDateTime.now();
+        if (createdAt == null) {
+            createdAt = now;
+        }
+        updatedAt = now;
+    }
+
+    @PreUpdate
+    void onUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 }

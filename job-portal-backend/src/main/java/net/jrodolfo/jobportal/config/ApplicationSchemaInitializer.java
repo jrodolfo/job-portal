@@ -30,25 +30,48 @@ public class ApplicationSchemaInitializer implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         try (Connection connection = dataSource.getConnection()) {
-            if (!tableExists(connection, "applications")) {
-                return;
-            }
-
             String product = connection.getMetaData().getDatabaseProductName().toLowerCase(Locale.ROOT);
             boolean mysql = product.contains("mysql");
-            reconcileCreatedAtColumn(connection, mysql);
-            reconcileColumn(connection, "updated_at", "updatedAt", mysql);
-
             String nowExpression = mysql ? "NOW(6)" : "CURRENT_TIMESTAMP";
-            jdbcTemplate.execute("UPDATE applications SET created_at = COALESCE(created_at, " + nowExpression + ")");
-            jdbcTemplate.execute("UPDATE applications SET updated_at = COALESCE(updated_at, " + nowExpression + ")");
 
-            if (mysql) {
-                jdbcTemplate.execute("ALTER TABLE applications MODIFY COLUMN created_at DATETIME(6) NOT NULL");
-                jdbcTemplate.execute("ALTER TABLE applications MODIFY COLUMN updated_at DATETIME(6) NOT NULL");
+            if (tableExists(connection, "applications")) {
+                reconcileCreatedAtColumn(connection, mysql);
+                reconcileColumn(connection, "applications", "updated_at", "updatedAt", mysql);
+                jdbcTemplate.execute("UPDATE applications SET created_at = COALESCE(created_at, " + nowExpression + ")");
+                jdbcTemplate.execute("UPDATE applications SET updated_at = COALESCE(updated_at, " + nowExpression + ")");
+                if (mysql) {
+                    jdbcTemplate.execute("ALTER TABLE applications MODIFY COLUMN created_at DATETIME(6) NOT NULL");
+                    jdbcTemplate.execute("ALTER TABLE applications MODIFY COLUMN updated_at DATETIME(6) NOT NULL");
+                }
+            }
+
+            if (tableExists(connection, "users")) {
+                reconcileColumn(connection, "users", "created_at", "createdAt", mysql);
+                reconcileColumn(connection, "users", "updated_at", "updatedAt", mysql);
+                jdbcTemplate.execute("UPDATE users SET created_at = COALESCE(created_at, " + nowExpression + ")");
+                jdbcTemplate.execute("UPDATE users SET updated_at = COALESCE(updated_at, " + nowExpression + ")");
+                if (mysql) {
+                    jdbcTemplate.execute("ALTER TABLE users MODIFY COLUMN created_at DATETIME(6) NOT NULL");
+                    jdbcTemplate.execute("ALTER TABLE users MODIFY COLUMN updated_at DATETIME(6) NOT NULL");
+                }
+            }
+
+            if (tableExists(connection, "jobs")) {
+                reconcileColumn(connection, "jobs", "created_at", "createdAt", mysql);
+                reconcileColumn(connection, "jobs", "updated_at", "updatedAt", mysql);
+
+                String jobCreatedFallback = mysql
+                        ? "COALESCE(CAST(posted_date AS DATETIME(6)), " + nowExpression + ")"
+                        : "COALESCE(CAST(posted_date AS TIMESTAMP), " + nowExpression + ")";
+                jdbcTemplate.execute("UPDATE jobs SET created_at = COALESCE(created_at, " + jobCreatedFallback + ")");
+                jdbcTemplate.execute("UPDATE jobs SET updated_at = COALESCE(updated_at, " + nowExpression + ")");
+                if (mysql) {
+                    jdbcTemplate.execute("ALTER TABLE jobs MODIFY COLUMN created_at DATETIME(6) NOT NULL");
+                    jdbcTemplate.execute("ALTER TABLE jobs MODIFY COLUMN updated_at DATETIME(6) NOT NULL");
+                }
             }
         } catch (Exception ex) {
-            log.error("Failed to initialize applications schema compatibility columns", ex);
+            log.error("Failed to initialize schema compatibility columns", ex);
         }
     }
 
@@ -83,23 +106,23 @@ public class ApplicationSchemaInitializer implements ApplicationRunner {
         }
     }
 
-    private void reconcileColumn(Connection connection, String snakeCaseColumn, String camelCaseColumn, boolean mysql) throws SQLException {
-        boolean hasSnake = columnExists(connection, "applications", snakeCaseColumn);
-        boolean hasCamel = columnExists(connection, "applications", camelCaseColumn);
+    private void reconcileColumn(Connection connection, String tableName, String snakeCaseColumn, String camelCaseColumn, boolean mysql) throws SQLException {
+        boolean hasSnake = columnExists(connection, tableName, snakeCaseColumn);
+        boolean hasCamel = columnExists(connection, tableName, camelCaseColumn);
 
         if (hasSnake) {
             return;
         }
 
         if (mysql && hasCamel) {
-            String sql = "ALTER TABLE applications CHANGE COLUMN " + camelCaseColumn + " " + snakeCaseColumn + " DATETIME(6) NULL";
+            String sql = "ALTER TABLE " + tableName + " CHANGE COLUMN " + camelCaseColumn + " " + snakeCaseColumn + " DATETIME(6) NULL";
             jdbcTemplate.execute(sql);
             return;
         }
 
         String sql = mysql
-                ? "ALTER TABLE applications ADD COLUMN " + snakeCaseColumn + " DATETIME(6) NULL"
-                : "ALTER TABLE applications ADD COLUMN " + snakeCaseColumn + " TIMESTAMP NULL";
+                ? "ALTER TABLE " + tableName + " ADD COLUMN " + snakeCaseColumn + " DATETIME(6) NULL"
+                : "ALTER TABLE " + tableName + " ADD COLUMN " + snakeCaseColumn + " TIMESTAMP NULL";
         jdbcTemplate.execute(sql);
     }
 

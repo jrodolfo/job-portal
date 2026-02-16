@@ -1,6 +1,7 @@
 package net.jrodolfo.jobportal.model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
@@ -8,6 +9,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -42,9 +45,31 @@ public class Job {
     @Schema(description = "Date the job was posted.", example = "2026-02-14")
     private LocalDate postedDate = LocalDate.now();
 
+    @Column(name = "created_at", nullable = false)
+    @Schema(description = "Date-time when the job record was created.", example = "2026-02-14T12:30:00")
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at", nullable = false)
+    @Schema(description = "Date-time when the job record was last updated.", example = "2026-02-14T12:45:00")
+    private LocalDateTime updatedAt;
+
     public Job(String title, String description, String company) {
         this.title = title;
         this.description = description;
         this.company = company;
+    }
+
+    @PrePersist
+    void onCreate() {
+        LocalDateTime now = LocalDateTime.now();
+        if (createdAt == null) {
+            createdAt = now;
+        }
+        updatedAt = now;
+    }
+
+    @PreUpdate
+    void onUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 }
