@@ -43,7 +43,10 @@ collection:
 
         #### **Step 4: Update the variable**
 
-        Variables enable you to store and reuse values in Postman. We have created a [variable](https://learning.postman.com/docs/sending-requests/variables/) called `base_url` with the sample request [https://postman-api-learner.glitch.me](https://postman-api-learner.glitch.me). Replace it with your API endpoint to customize this collection.
+        Variables enable you to store and reuse values in Insomnia. This collection uses two variables:
+        - `local_api_base_url` (default `http://localhost:8080`)
+        - `aws_api_base_url` (default `http://aws-api.example.com:8080`)
+        Update `aws_api_base_url` once with your EC2 hostname to use all AWS requests.
 
         #### **Step 5: Add tests in the "Scripts" tab**
 
@@ -80,7 +83,7 @@ collection:
               sortKey: -1771005863622
               description: ""
             children:
-              - url: http://localhost:8080/api/jobs
+              - url: "{{ local_api_base_url }}/api/jobs"
                 name: add job
                 meta:
                   id: req_e92c470a44094d208fabe489c1d11948
@@ -127,7 +130,7 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: http://localhost:8080/api/jobs/2
+              - url: "{{ local_api_base_url }}/api/jobs/2"
                 name: get job by id
                 meta:
                   id: req_975b766c858541ec81420814140832c2
@@ -164,7 +167,7 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: http://localhost:8080/api/jobs
+              - url: "{{ local_api_base_url }}/api/jobs"
                 name: get all jobs
                 meta:
                   id: req_fe885f693c04490bb8760e40808e6a1c
@@ -201,7 +204,7 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: http://localhost:8080/api/jobs/1
+              - url: "{{ local_api_base_url }}/api/jobs/1"
                 name: delete job
                 meta:
                   id: req_287f6c4d23ab4ac89ed26243e211c541
@@ -236,7 +239,7 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: http://localhost:8080/api/jobs/1
+              - url: "{{ local_api_base_url }}/api/jobs/1"
                 name: update job
                 meta:
                   id: req_b2ef52fe020545ec84d9b405f8644a7d
@@ -288,7 +291,7 @@ collection:
               sortKey: -1770490042120.5
               description: ""
             children:
-              - url: http://aws-api.example.com:8080/api/jobs
+              - url: "{{ aws_api_base_url }}/api/jobs"
                 name: add job
                 meta:
                   id: req_6b934f4c66984d6e817062cc1b02c8af
@@ -335,7 +338,7 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: http://aws-api.example.com:8080/api/jobs/1
+              - url: "{{ aws_api_base_url }}/api/jobs/1"
                 name: get job by id
                 meta:
                   id: req_a93a51e743f940f6a162c0037638c8f8
@@ -372,7 +375,7 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: http://aws-api.example.com:8080/api/jobs/1
+              - url: "{{ aws_api_base_url }}/api/jobs/1"
                 name: update job
                 meta:
                   id: req_6e9e5bacd9fc41869e147ab444b511bb
@@ -416,7 +419,7 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: http://aws-api.example.com:8080/api/jobs
+              - url: "{{ aws_api_base_url }}/api/jobs"
                 name: get all jobs
                 meta:
                   id: req_7a943c52cdc242829a88c6f6fe9d19c6
@@ -453,7 +456,7 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: http://aws-api.example.com:8080/api/jobs/1
+              - url: "{{ aws_api_base_url }}/api/jobs/1"
                 name: delete job
                 meta:
                   id: req_a0772e7d4015439daf607667eaddfa73
@@ -504,7 +507,7 @@ collection:
               sortKey: -1771006270987
               description: ""
             children:
-              - url: http://localhost:8080/api/users
+              - url: "{{ local_api_base_url }}/api/users"
                 name: get all users
                 meta:
                   id: req_146941cb5ad249d9acba6052c23562dd
@@ -541,7 +544,7 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: http://localhost:8080/api/users/1
+              - url: "{{ local_api_base_url }}/api/users/1"
                 name: get user by id
                 meta:
                   id: req_37a6bf3748264142bd50a8e24b998f81
@@ -626,7 +629,7 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: http://localhost:8080/api/users/1
+              - url: "{{ local_api_base_url }}/api/users/1"
                 name: update user
                 meta:
                   id: req_ab432e5ca2704288965db73746f78c8a
@@ -672,7 +675,7 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: http://localhost:8080/api/users/1
+              - url: "{{ local_api_base_url }}/api/users/1"
                 name: delete user
                 meta:
                   id: req_f2c017ee1b0943c59d02aec09b04cf64
@@ -715,7 +718,7 @@ collection:
               sortKey: -1771006067304.5
               description: ""
             children:
-              - url: http://aws-api.example.com:8080/api/users/1
+              - url: "{{ aws_api_base_url }}/api/users/1"
                 name: update user
                 meta:
                   id: req_474a20ea704945feb2f81cc317ec8f4b
@@ -761,7 +764,7 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: http://aws-api.example.com:8080/api/users
+              - url: "{{ aws_api_base_url }}/api/users"
                 name: get all users
                 meta:
                   id: req_8bc5de58983b40f2b642322779726d2b
@@ -798,7 +801,7 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: http://aws-api.example.com:8080/api/users/1
+              - url: "{{ aws_api_base_url }}/api/users/1"
                 name: get user by id
                 meta:
                   id: req_8c4bac3338a14089ab35600e579a8059
@@ -835,7 +838,7 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: http://aws-api.example.com:8080/api/users/1
+              - url: "{{ aws_api_base_url }}/api/users/1"
                 name: delete user
                 meta:
                   id: req_a37596be775f458fb21b418d7bf34227
@@ -870,7 +873,7 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: http://aws-api.example.com:8080/api/users
+              - url: "{{ aws_api_base_url }}/api/users"
                 name: add user
                 meta:
                   id: req_fd75232ea252423b98588599ad3719e9
@@ -934,7 +937,7 @@ collection:
               sortKey: -1771006674477
               description: ""
             children:
-              - url: http://localhost:8080/api/applications/1
+              - url: "{{ local_api_base_url }}/api/applications/1"
                 name: add application
                 meta:
                   id: req_609a0d590a5443df934994560c5a121d
@@ -980,7 +983,7 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: http://localhost:8080/api/applications
+              - url: "{{ local_api_base_url }}/api/applications"
                 name: get all applications
                 meta:
                   id: req_eadbcf3ce1764cc080d68e40cb5d2abb
@@ -1003,7 +1006,7 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: http://localhost:8080/api/applications/1
+              - url: "{{ local_api_base_url }}/api/applications/1"
                 name: get application by id
                 meta:
                   id: req_79e3fd68f1e9440f9b2ec9f0285ec6d4
@@ -1026,7 +1029,7 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: http://localhost:8080/api/applications/1?status=WITHDRAWN
+              - url: "{{ local_api_base_url }}/api/applications/1?status=WITHDRAWN"
                 name: update application
                 meta:
                   id: req_13c2a99c95d643afad1b26f857c503cb
@@ -1049,7 +1052,7 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: http://localhost:8080/api/applications/1
+              - url: "{{ local_api_base_url }}/api/applications/1"
                 name: delete application
                 meta:
                   id: req_2e819eaa3f6d42a5a4e27fbb88fcb4ea
@@ -1080,7 +1083,7 @@ collection:
               sortKey: -1771006472732
               description: ""
             children:
-              - url: http://aws-api.example.com:8080/api/applications/1
+              - url: "{{ aws_api_base_url }}/api/applications/1"
                 name: add application
                 meta:
                   id: req_69aa8e641df8495a9fbd353e67660887
@@ -1126,7 +1129,7 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: http://aws-api.example.com:8080/api/applications
+              - url: "{{ aws_api_base_url }}/api/applications"
                 name: get all applications
                 meta:
                   id: req_7876fbb2a2984f11bc1524ef8fe96f8f
@@ -1149,7 +1152,7 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: http://aws-api.example.com:8080/api/applications/1
+              - url: "{{ aws_api_base_url }}/api/applications/1"
                 name: get application by id
                 meta:
                   id: req_0ea401ffcf2f4caf8f713edfe14335fa
@@ -1172,7 +1175,7 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: http://aws-api.example.com:8080/api/applications/1?status=WITHDRAWN
+              - url: "{{ aws_api_base_url }}/api/applications/1?status=WITHDRAWN"
                 name: update application
                 meta:
                   id: req_0ac673861eff4583baa8e49fa1ac5e90
@@ -1195,7 +1198,7 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: http://aws-api.example.com:8080/api/applications/1
+              - url: "{{ aws_api_base_url }}/api/applications/1"
                 name: delete application
                 meta:
                   id: req_98879a4869ad4f87bde4df6d98f7269d
@@ -1234,7 +1237,7 @@ collection:
               sortKey: -1771006750649
               description: ""
             children:
-              - url: http://localhost:8080/api/auth/login
+              - url: "{{ local_api_base_url }}/api/auth/login"
                 name: user login
                 meta:
                   id: req_e68dbe82d8514685947f947559802202
@@ -1269,7 +1272,7 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: http://localhost:8080/api/auth/details
+              - url: "{{ local_api_base_url }}/api/auth/details"
                 name: user details
                 meta:
                   id: req_83e2f2627a7e49708e7f95ed94fdf28e
@@ -1312,7 +1315,7 @@ collection:
               sortKey: -1771006712563
               description: ""
             children:
-              - url: http://aws-api.example.com:8080/api/auth/login
+              - url: "{{ aws_api_base_url }}/api/auth/login"
                 name: user login
                 meta:
                   id: req_89484dbe1d3d4382a227189b36099db7
@@ -1347,7 +1350,7 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: http://aws-api.example.com:8080/api/auth/details
+              - url: "{{ aws_api_base_url }}/api/auth/details"
                 name: user details
                 meta:
                   id: req_62617d6c963a47a8bed7a566ba7053ba
@@ -1398,7 +1401,7 @@ collection:
               sortKey: -1771006867547
               description: ""
             children:
-              - url: http://localhost:8080/oauth2/authorization/google
+              - url: "{{ local_api_base_url }}/oauth2/authorization/google"
                 name: 1 - oauth google
                 meta:
                   id: req_86a3f8f3d48340a6af6fa0b18399717e
@@ -1421,7 +1424,7 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: http://localhost:8080/api/oauth/user
+              - url: "{{ local_api_base_url }}/api/oauth/user"
                 name: 2 - get google json
                 meta:
                   id: req_01580be6f7294e068eaab30b50b53005
@@ -1444,7 +1447,7 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: http://localhost:8080/api/oauth/token
+              - url: "{{ local_api_base_url }}/api/oauth/token"
                 name: 3 - get google token
                 meta:
                   id: req_57553253b92a48dab4f7363da886fd7f
@@ -1475,7 +1478,7 @@ collection:
               sortKey: -1771006809098
               description: ""
             children:
-              - url: http://aws-api.example.com:8080/oauth2/authorization/google
+              - url: "{{ aws_api_base_url }}/oauth2/authorization/google"
                 name: 1 - oauth google
                 meta:
                   id: req_170bab14cc294befa7a7d3a504846f92
@@ -1498,7 +1501,7 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: http://aws-api.example.com:8080/api/oauth/user
+              - url: "{{ aws_api_base_url }}/api/oauth/user"
                 name: 2 - get google json
                 meta:
                   id: req_47aa21b6d2ce4be7adcd7ce0ebbf45c2
@@ -1521,7 +1524,7 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: http://aws-api.example.com:8080/api/oauth/token
+              - url: "{{ aws_api_base_url }}/api/oauth/token"
                 name: 3 - get google token
                 meta:
                   id: req_60b0d6bea5c144549adf8341d800c088
@@ -1600,4 +1603,5 @@ environments:
     isPrivate: false
   data:
     id: "1"
-    base_url: https://template.postman-echo.com
+    local_api_base_url: http://localhost:8080
+    aws_api_base_url: http://aws-api.example.com:8080
