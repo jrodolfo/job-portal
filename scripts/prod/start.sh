@@ -6,7 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Load variables from .env when present.
 # Supports running the script from:
 # 1) project root (copied script), or
-# 2) doc/script/prod/start.sh inside the repository.
+# 2) scripts/prod/start.sh inside the repository.
 if [ -f ".env" ]; then
   set -a
   . ./.env

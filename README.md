@@ -299,24 +299,24 @@ OTEL_LOGS_EXPORTER=none
 
 Scripts are organized by environment:
 
-#### 1. Local scripts (`doc/script/local`)
+#### 1. Local scripts (`scripts/local`)
 
 - macOS/Linux:
-  - Start: `bash doc/script/local/start.sh`
-  - Stop: `bash doc/script/local/stop.sh`
+  - Start: `bash scripts/local/start.sh`
+  - Stop: `bash scripts/local/stop.sh`
 - Windows CMD:
   - Start: `doc\\script\\local\\start.bat`
   - Stop: `doc\\script\\local\\stop.bat`
 - Windows PowerShell:
-  - Start: `./doc/script/local/start.ps1`
-  - Stop: `./doc/script/local/stop.ps1`
+  - Start: `./scripts/local/start.ps1`
+  - Stop: `./scripts/local/stop.ps1`
 
-#### 2. Prod scripts (`doc/script/prod`) for EC2 Linux
+#### 2. Prod scripts (`scripts/prod`) for EC2 Linux
 
-- Start: `bash doc/script/prod/start.sh`
-- Stop: `bash doc/script/prod/stop.sh`
+- Start: `bash scripts/prod/start.sh`
+- Stop: `bash scripts/prod/stop.sh`
 
-`doc/script/prod/start.sh` uses both compose files and requires:
+`scripts/prod/start.sh` uses both compose files and requires:
 - `OTEL_UPSTREAM_OTLP_ENDPOINT` to be set
 - `OTEL_UPSTREAM_API_KEY` to be set
 
