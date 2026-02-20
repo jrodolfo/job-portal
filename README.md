@@ -106,13 +106,26 @@ Then verify in Jaeger (`http://localhost:16686`):
 4. Trace attributes include `deployment.environment=local`.
 
 #### 8. Build Multi-Platform Images (ARM64 & AMD64)
-If you are developing on a Mac (ARM64) but need to deploy to Windows/Linux (AMD64), use:
+If you are developing on a Mac (ARM64) but deploy on EC2 (Linux/AMD64), push multi-architecture images:
 
 ```bash
-docker buildx bake --push
+scripts/local/upload-docker-images.sh
 ```
 
-*Note: This command uses the settings in `docker-compose.yml` to build both backend and frontend for both architectures and push them to Docker Hub.*
+Or run directly from repo root:
+
+```bash
+docker buildx bake -f docker-bake.hcl --push
+```
+
+Verify both architectures are present before deploying to EC2:
+
+```bash
+docker buildx imagetools inspect jrodolfo/job-portal-backend:latest
+docker buildx imagetools inspect jrodolfo/job-portal-frontend:latest
+```
+
+Each image must include both `linux/amd64` and `linux/arm64`.
 
 ---
 
