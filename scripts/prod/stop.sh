@@ -33,6 +33,12 @@ fi
 
 if ! docker info >/dev/null 2>&1; then
   echo "ERROR: docker daemon is not reachable. Start docker and retry."
+  echo "Try:"
+  echo "  sudo systemctl start docker"
+  echo "  sudo systemctl enable docker"
+  echo "If docker is running but this user still cannot connect:"
+  echo "  sudo usermod -aG docker \$USER"
+  echo "  # then logout/login (or run: newgrp docker)"
   exit 1
 fi
 
