@@ -3,6 +3,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT=""
+COMPOSE_CMD=()
 
 # Supports running from:
 # 1) repository scripts/prod/start.sh, or
@@ -24,6 +25,26 @@ fi
 BASE_COMPOSE="$PROJECT_ROOT/docker-compose.yml"
 PROD_COMPOSE="$PROJECT_ROOT/docker-compose.prod.yml"
 ENV_FILE="$PROJECT_ROOT/.env"
+
+if ! command -v docker >/dev/null 2>&1; then
+  echo "ERROR: docker is not installed or not in PATH."
+  exit 1
+fi
+
+if ! docker info >/dev/null 2>&1; then
+  echo "ERROR: docker daemon is not reachable. Start docker and retry."
+  exit 1
+fi
+
+if docker compose version >/dev/null 2>&1; then
+  COMPOSE_CMD=(docker compose)
+elif command -v docker-compose >/dev/null 2>&1; then
+  COMPOSE_CMD=(docker-compose)
+else
+  echo "ERROR: Docker Compose is not available."
+  echo "Install Docker Compose v2 plugin ('docker compose') or docker-compose v1."
+  exit 1
+fi
 
 if [ ! -f "$BASE_COMPOSE" ]; then
   echo "ERROR: Missing compose file: $BASE_COMPOSE"
@@ -57,5 +78,6 @@ if [ -z "${OTEL_UPSTREAM_API_KEY}" ]; then
   exit 1
 fi
 
-docker compose "${COMPOSE_ARGS[@]}" pull
-docker compose "${COMPOSE_ARGS[@]}" up -d
+echo "Using compose command: ${COMPOSE_CMD[*]}"
+"${COMPOSE_CMD[@]}" "${COMPOSE_ARGS[@]}" pull
+"${COMPOSE_CMD[@]}" "${COMPOSE_ARGS[@]}" up -d

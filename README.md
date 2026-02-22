@@ -328,6 +328,7 @@ Scripts are organized by environment:
 
 - Start: `bash scripts/prod/start.sh`
 - Stop: `bash scripts/prod/stop.sh`
+- Compose compatibility: scripts auto-detect `docker compose` (v2) and fall back to `docker-compose` (v1).
 
 `scripts/prod/start.sh` uses both compose files and requires:
 - `OTEL_UPSTREAM_OTLP_ENDPOINT` to be set

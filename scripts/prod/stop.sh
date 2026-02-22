@@ -3,6 +3,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT=""
+COMPOSE_CMD=()
 
 # Supports running from:
 # 1) repository scripts/prod/stop.sh, or
@@ -25,6 +26,26 @@ BASE_COMPOSE="$PROJECT_ROOT/docker-compose.yml"
 PROD_COMPOSE="$PROJECT_ROOT/docker-compose.prod.yml"
 ENV_FILE="$PROJECT_ROOT/.env"
 
+if ! command -v docker >/dev/null 2>&1; then
+  echo "ERROR: docker is not installed or not in PATH."
+  exit 1
+fi
+
+if ! docker info >/dev/null 2>&1; then
+  echo "ERROR: docker daemon is not reachable. Start docker and retry."
+  exit 1
+fi
+
+if docker compose version >/dev/null 2>&1; then
+  COMPOSE_CMD=(docker compose)
+elif command -v docker-compose >/dev/null 2>&1; then
+  COMPOSE_CMD=(docker-compose)
+else
+  echo "ERROR: Docker Compose is not available."
+  echo "Install Docker Compose v2 plugin ('docker compose') or docker-compose v1."
+  exit 1
+fi
+
 if [ ! -f "$BASE_COMPOSE" ]; then
   echo "ERROR: Missing compose file: $BASE_COMPOSE"
   exit 1
@@ -42,4 +63,5 @@ if [ -f "$ENV_FILE" ]; then
   set +a
 fi
 
-docker compose -f "$BASE_COMPOSE" -f "$PROD_COMPOSE" down
+echo "Using compose command: ${COMPOSE_CMD[*]}"
+"${COMPOSE_CMD[@]}" -f "$BASE_COMPOSE" -f "$PROD_COMPOSE" down
