@@ -318,8 +318,8 @@ Scripts are organized by environment:
   - Start: `bash scripts/local/start.sh`
   - Stop: `bash scripts/local/stop.sh`
 - Windows CMD:
-  - Start: `doc\\script\\local\\start.bat`
-  - Stop: `doc\\script\\local\\stop.bat`
+  - Start: `scripts\\local\\start.bat`
+  - Stop: `scripts\\local\\stop.bat`
 - Windows PowerShell:
   - Start: `./scripts/local/start.ps1`
   - Stop: `./scripts/local/stop.ps1`
@@ -332,6 +332,16 @@ Scripts are organized by environment:
 `scripts/prod/start.sh` uses both compose files and requires:
 - `OTEL_UPSTREAM_OTLP_ENDPOINT` to be set
 - `OTEL_UPSTREAM_API_KEY` to be set
+
+#### 3. Script permissions policy
+
+- `*.sh` files should be executable.
+- `*.bat` and `*.ps1` files should remain non-executable on Unix systems.
+- Validate at any time with:
+
+```bash
+./scripts/check-script-modes.sh
+```
 
 ### H. Do you know Qodana?
 
