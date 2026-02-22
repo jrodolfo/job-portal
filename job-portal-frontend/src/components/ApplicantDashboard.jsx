@@ -58,20 +58,20 @@ const ApplicantDashboard = () => {
         <>
             {/** Navbar with welcome <username> and logout button */}
             <Navbar/>
-            <h1>Applicant Dashboard</h1>
-            <div className="container">
+            <div className="container dashboard-shell">
+                <h1 className="section-title">Applicant Dashboard</h1>
                 <div className="row">
                     {
                         jobs.map((job, index) => (
                             <div className="col-sm-4" key={index}>
-                                <div className="card mb-4">
+                                <div className={`card mb-4 job-card accent-${(index % 3) + 1}`}>
                                     <div className="card-body">
-                                        <h4>Title: {job.title}</h4>
-                                        <p>Details: {job.description}</p>
-                                        <p>Company: {job.company}</p>
-                                        <p>Posted Date: {job.postedDate}</p>
+                                        <h4 className="heading-text">Title: {job.title}</h4>
+                                        <p className="body-text">Details: {job.description}</p>
+                                        <p className="body-text">Company: {job.company}</p>
+                                        <p className="body-text muted-meta">Posted Date: {job.postedDate}</p>
                                         <div>
-                                            <button className="btn btn-primary"
+                                            <button className="btn btn-accent-secondary"
                                                     disabled={!!applyingJobs[job.id]}
                                                     onClick={() => apply(job.id)}>Apply
                                             </button>

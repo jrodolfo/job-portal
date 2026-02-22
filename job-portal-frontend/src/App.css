@@ -1,44 +1,155 @@
 #root {
-    max-width: 1280px;
-    margin: 0 auto;
+    min-height: 100vh;
+}
+
+.page-shell {
+    min-height: 100vh;
+    padding: 2.4rem 1rem;
+}
+
+.login-panel {
+    border: 1px solid rgba(20, 20, 19, 0.12);
+    border-radius: 1rem;
+    overflow: hidden;
+    background: var(--color-light);
+    box-shadow: 0 16px 38px rgba(20, 20, 19, 0.14);
+}
+
+.login-header,
+.login-footer {
+    background: linear-gradient(120deg, rgba(106, 155, 204, 0.16), rgba(232, 230, 220, 0.86));
+}
+
+.login-title {
+    margin: 0;
+}
+
+.btn-accent-primary {
+    background: var(--accent-orange);
+    border-color: var(--accent-orange);
+    color: var(--color-light);
+}
+
+.btn-accent-primary:hover,
+.btn-accent-primary:focus {
+    background: #c56547;
+    border-color: #c56547;
+    color: var(--color-light);
+}
+
+.btn-accent-secondary {
+    background: var(--accent-blue);
+    border-color: var(--accent-blue);
+    color: var(--color-light);
+}
+
+.btn-accent-secondary:hover,
+.btn-accent-secondary:focus {
+    background: #5b88b4;
+    border-color: #5b88b4;
+    color: var(--color-light);
+}
+
+.btn-accent-tertiary {
+    background: var(--accent-green);
+    border-color: var(--accent-green);
+    color: var(--color-light);
+}
+
+.btn-accent-tertiary:hover,
+.btn-accent-tertiary:focus {
+    background: #697c50;
+    border-color: #697c50;
+    color: var(--color-light);
+}
+
+.btn:focus-visible,
+.form-control:focus,
+.nav-link:focus-visible {
+    outline: 3px solid rgba(106, 155, 204, 0.45);
+    outline-offset: 2px;
+    box-shadow: none;
+}
+
+.app-navbar {
+    background: rgba(250, 249, 245, 0.94);
+    border-bottom: 1px solid rgba(20, 20, 19, 0.12);
+    backdrop-filter: blur(4px);
+}
+
+.brand-mark {
+    color: var(--color-dark);
+    font-family: var(--font-heading);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.welcome-text {
+    color: #474740;
+    font-style: italic;
+}
+
+.dashboard-shell {
+    padding: 1.2rem 0 2.2rem;
+}
+
+.section-title {
+    margin: 1rem 0 1.4rem;
+}
+
+.job-card {
+    height: 100%;
+    border: none;
+    border-top: 5px solid transparent;
+    border-radius: 0.8rem;
+    background: var(--color-light);
+    box-shadow: 0 12px 26px rgba(20, 20, 19, 0.08);
+    transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.job-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 30px rgba(20, 20, 19, 0.14);
+}
+
+.accent-1 {
+    border-top-color: var(--accent-orange);
+}
+
+.accent-2 {
+    border-top-color: var(--accent-blue);
+}
+
+.accent-3 {
+    border-top-color: var(--accent-green);
+}
+
+.muted-meta {
+    color: #565650;
+}
+
+.admin-panel {
+    max-width: 760px;
+    margin: 2.2rem auto 0;
     padding: 2rem;
-    text-align: center;
+    border-radius: 1rem;
+    background: var(--color-light);
+    border: 1px solid rgba(20, 20, 19, 0.1);
+    box-shadow: 0 14px 30px rgba(20, 20, 19, 0.09);
 }
 
-.logo {
-    height: 6em;
-    padding: 1.5em;
-    will-change: filter;
-    transition: filter 300ms;
+.oauth-loading {
+    min-height: 50vh;
+    display: grid;
+    place-items: center;
 }
 
-.logo:hover {
-    filter: drop-shadow(0 0 2em #646cffaa);
+.oauth-loading h2 {
+    margin: 0;
 }
 
-.logo.react:hover {
-    filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-    from {
-        transform: rotate(0deg);
+@media (max-width: 768px) {
+    .page-shell {
+        padding-top: 1.2rem;
     }
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-    a:nth-of-type(2) .logo {
-        animation: logo-spin infinite 20s linear;
-    }
-}
-
-.card {
-    padding: 2em;
-}
-
-.read-the-docs {
-    color: #888;
 }

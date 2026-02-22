@@ -66,7 +66,11 @@ const OAuthLogin = () => {
         }
     }, [dispatch, navigate]);
 
-    return <h2>Logging in...</h2>;
+    return (
+        <div className="oauth-loading">
+            <h2>Logging in...</h2>
+        </div>
+    );
 };
 
 export default OAuthLogin;

@@ -61,16 +61,16 @@ const Login = () => {
 
 
     return (
-        <div className="container" style={{marginTop: '8%'}}>
-            <div className="row">
-                <div className="col-sm-3"></div>
+        <div className="page-shell d-flex align-items-center">
+            <div className="container">
+                <div className="row justify-content-center">
                 {/* Empty space for centering */}
 
-                <div className="col-lg-6">
-                    <div className="card shadow p-4">
+                    <div className="col-lg-7 col-xl-6">
+                    <div className="card login-panel p-4">
                         {/* Header */}
-                        <div className="card-header bg-white text-center">
-                            <h3 className="mb-0" style={{fontFamily: "Arial, sans-serif"}}>Login to Job Portal</h3>
+                        <div className="card-header login-header text-center">
+                            <h3 className="mb-0 login-title">Login to Job Portal</h3>
                         </div>
 
                         {/* Form */}
@@ -90,15 +90,15 @@ const Login = () => {
                                            onChange={(e) => setPassword(e.target.value)}/>
                                 </div>
                                 <div className="text-center">
-                                    <button type="submit" className="btn btn-success w-75">Login</button>
+                                    <button type="submit" className="btn btn-accent-tertiary w-75">Login</button>
                                 </div>
                             </form>
                             <hr/>
-                            <h6 className="text-center">Or</h6>
+                            <h6 className="text-center body-text">Or</h6>
                             <div className="text-center mt-3">
                                 <button
                                     onClick={() => window.location.href = `${BACKEND_API_URL}/oauth2/authorization/google`}
-                                    className="btn btn-danger w-75">
+                                    className="btn btn-accent-primary w-75">
                                     Sign in with Google
                                 </button>
 
@@ -106,14 +106,12 @@ const Login = () => {
                         </div>
 
                         {/* Footer */}
-                        <div className="card-footer bg-white text-center">
+                        <div className="card-footer login-footer text-center">
                             <small>Don't have an account? Sign up here </small>
                         </div>
                     </div>
                 </div>
-
-                <div className="col-sm-3"></div>
-                {/* Empty space for centering */}
+                </div>
             </div>
         </div>
     );
