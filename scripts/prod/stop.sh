@@ -48,7 +48,12 @@ elif command -v docker-compose >/dev/null 2>&1; then
   COMPOSE_CMD=(docker-compose)
 else
   echo "ERROR: Docker Compose is not available."
-  echo "Install Docker Compose v2 plugin ('docker compose') or docker-compose v1."
+  echo "Try on Amazon Linux:"
+  echo "  sudo dnf install -y docker-compose-plugin"
+  echo "  # or, if unavailable:"
+  echo "  sudo dnf install -y docker-compose"
+  echo "You can also run:"
+  echo "  bash scripts/prod/bootstrap-ec2.sh"
   exit 1
 fi
 
