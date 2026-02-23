@@ -52,8 +52,6 @@ else
   echo "  sudo dnf install -y docker-compose-plugin"
   echo "  # or, if unavailable:"
   echo "  sudo dnf install -y docker-compose"
-  echo "You can also run:"
-  echo "  bash scripts/prod/bootstrap-ec2.sh"
   exit 1
 fi
 

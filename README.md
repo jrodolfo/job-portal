@@ -193,7 +193,74 @@ OTEL_LOGS_EXPORTER=none
 
 ---
 
-### D. Steps to smoke test the Google Cloud OAuth feature:
+### D. How to run this code on an AWS EC2 Amazon Linux instance
+
+Use an EC2 instance such as `t3.small` and prepare it with the helper scripts from:
+
+- https://github.com/jrodolfo/aws-ec2
+
+SSH setup notes:
+
+- https://github.com/jrodolfo/aws-ec2/blob/main/doc/ssh/NOTES.md
+
+After SSH into your instance:
+
+```bash
+git clone https://github.com/jrodolfo/job-portal.git
+cd job-portal
+```
+
+Create a `.env` file in the repo root and copy the template from **Section C. Environment Configuration**.
+
+Required values for EC2 deployment:
+
+- Google OAuth credentials (`GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`)
+- Your EC2 public IP (get it on EC2 with `curl https://checkip.amazonaws.com`)
+- `OTEL_UPSTREAM_OTLP_ENDPOINT` and `OTEL_UPSTREAM_API_KEY` (OpenTelemetry upstream export)
+- `AWS_EC2_IP4` and `AWS_EC2_NAME`
+
+Start containers:
+
+```bash
+./scripts/prod/start.sh
+```
+
+Verify containers:
+
+```bash
+docker ps
+```
+
+Expected services:
+
+- `job-portal-frontend`
+- `job-portal-backend`
+- `mysql-db`
+- `otel-collector`
+
+Security Group inbound rules (recommended locked to your local machine IP):
+
+- Type: `Custom TCP`, Protocol: `TCP`, Port: `8080`, Source: `1.2.3.4/32`
+- Type: `Custom TCP`, Protocol: `TCP`, Port: `5173`, Source: `1.2.3.4/32`
+
+Find your local public IP:
+
+```bash
+curl https://checkip.amazonaws.com
+```
+
+If EC2 public IP is `5.6.7.8`, access:
+
+- Frontend: `http://5.6.7.8:5173/`
+- Backend: `http://5.6.7.8:8080/`
+
+Google OAuth note:
+
+- Update your Google Cloud OAuth Web Application settings to include your EC2 public IP URLs (origins/redirects) used by this app.
+
+---
+
+### E. Steps to smoke test the Google Cloud OAuth feature:
 
 1. **Go to Google Cloud** and get the secrets for your Web Application (not Desktop, not Mobile application):
    - **Client ID**: `xxxx`
@@ -270,7 +337,7 @@ OTEL_LOGS_EXPORTER=none
 
 ---
 
-### D. Steps for smoke test the backend API:
+### F. Steps for smoke test the backend API:
 
 1. **Load the Insomnia collection** (inside the folder `doc/insomnia`).
 2. **Execute the "add user" POST request** to add a new user:
@@ -294,7 +361,7 @@ OTEL_LOGS_EXPORTER=none
    ```
 ---
 
-### E. Integration Test
+### G. Integration Test
 
 1. **Start the front end**:
    Go to the folder `job-portal-frontend` and type:
@@ -308,7 +375,7 @@ OTEL_LOGS_EXPORTER=none
 
 ---
 
-### G. Helper Scripts
+### H. Helper Scripts
 
 Scripts are organized by environment:
 
@@ -328,7 +395,6 @@ Scripts are organized by environment:
 
 - Start: `bash scripts/prod/start.sh`
 - Stop: `bash scripts/prod/stop.sh`
-- First-time EC2 bootstrap: `bash scripts/prod/bootstrap-ec2.sh`
 - Compose compatibility: scripts auto-detect `docker compose` (v2) and fall back to `docker-compose` (v1).
 
 `scripts/prod/start.sh` uses both compose files and requires:
@@ -345,7 +411,7 @@ Scripts are organized by environment:
 ./scripts/check-script-modes.sh
 ```
 
-### H. Do you know Qodana?
+### I. Do you know Qodana?
 
 Static code analysis by Qodana helps development teams follow agreed quality standards, and deliver readable, 
 maintainable, and secure code. Powered by JetBrains.
@@ -370,7 +436,7 @@ At the end of the process you will get something like:
 ✓ Report is successfully uploaded to https://qodana.cloud/projects/40Edn/reports/xyz
 ```
 
-### I. API Documentation (Swagger/OpenAPI)
+### J. API Documentation (Swagger/OpenAPI)
 
 After the backend is running:
 
