@@ -385,8 +385,8 @@ Scripts are organized by environment:
   - Start: `bash scripts/local/start.sh`
   - Stop: `bash scripts/local/stop.sh`
 - Windows CMD:
-  - Start: `scripts\\local\\start.bat`
-  - Stop: `scripts\\local\\stop.bat`
+  - Start: `scripts\local\start.bat`
+  - Stop: `scripts\local\stop.bat`
 - Windows PowerShell:
   - Start: `./scripts/local/start.ps1`
   - Stop: `./scripts/local/stop.ps1`
