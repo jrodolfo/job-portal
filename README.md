@@ -1,4 +1,7 @@
-# Job Portal - Backend and Frontend
+# Job Portal
+
+[![CI Workflow](https://github.com/jrodolfo/job-portal/actions/workflows/job-portal-backend/.github/workflows/docker-build.yml/badge.svg)](https://github.com/jrodolfo/job-portal/actions/workflows/job-portal-backend/.github/workflows/docker-build.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 A good portion of this code came from the Pluralsight online course:
 
@@ -448,3 +451,15 @@ Authentication in Swagger UI:
 1. Use **Authorize** and provide Basic credentials for endpoints protected with `basicAuth`.
 2. For bearer-protected endpoints, first call `/api/auth/login`, copy the returned token, and authorize with:
    - `Bearer <token>`
+
+## Contact
+
+- Software Developer: Rod Oliveira
+- GitHub: https://github.com/jrodolfo
+- Webpage: https://jrodolfo.net
+
+## License
+
+- MIT License
+- Copyright (c) 2026 Rod Oliveira
+- See [LICENSE](./LICENSE)
