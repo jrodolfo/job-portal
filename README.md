@@ -1,6 +1,6 @@
 # Job Portal
 
-[![CI Workflow](https://img.shields.io/badge/CI-Docker%20Build-2088FF?logo=githubactions&logoColor=white)](https://github.com/jrodolfo/job-portal/blob/main/.github/workflows/backend-docker-build.yml)
+[![CI Workflow](https://github.com/jrodolfo/job-portal/actions/workflows/backend-docker-build.yml/badge.svg)](https://github.com/jrodolfo/job-portal/actions/workflows/backend-docker-build.yml)
 [![Java 21](https://img.shields.io/badge/Java-21-ED8B00?logo=openjdk&logoColor=white)](https://github.com/jrodolfo/job-portal/blob/main/job-portal-backend/pom.xml)
 [![Spring Boot 3.4.4](https://img.shields.io/badge/Spring%20Boot-3.4.4-6DB33F?logo=springboot&logoColor=white)](https://github.com/jrodolfo/job-portal/blob/main/job-portal-backend/pom.xml)
 [![React 19](https://img.shields.io/badge/React-19-20232A?logo=react&logoColor=61DAFB)](https://github.com/jrodolfo/job-portal/blob/main/job-portal-frontend/package.json)
