@@ -1,6 +1,16 @@
 # Job Portal
 
-[![CI Workflow](https://github.com/jrodolfo/job-portal/actions/workflows/job-portal-backend/.github/workflows/docker-build.yml/badge.svg)](https://github.com/jrodolfo/job-portal/actions/workflows/job-portal-backend/.github/workflows/docker-build.yml)
+[![CI Workflow](https://img.shields.io/badge/CI-Docker%20Build-2088FF?logo=githubactions&logoColor=white)](https://github.com/jrodolfo/job-portal/blob/main/job-portal-backend/.github/workflows/docker-build.yml)
+[![Code Quality](https://img.shields.io/badge/Code%20Quality-Qodana-000000?logo=jetbrains&logoColor=white)](https://github.com/jrodolfo/job-portal/blob/main/job-portal-backend/.github/workflows/qodana_code_quality.yml)
+[![Java 21](https://img.shields.io/badge/Java-21-ED8B00?logo=openjdk&logoColor=white)](https://github.com/jrodolfo/job-portal/blob/main/job-portal-backend/pom.xml)
+[![Spring Boot 3.4.4](https://img.shields.io/badge/Spring%20Boot-3.4.4-6DB33F?logo=springboot&logoColor=white)](https://github.com/jrodolfo/job-portal/blob/main/job-portal-backend/pom.xml)
+[![React 19](https://img.shields.io/badge/React-19-20232A?logo=react&logoColor=61DAFB)](https://github.com/jrodolfo/job-portal/blob/main/job-portal-frontend/package.json)
+[![Vite 6](https://img.shields.io/badge/Vite-6-646CFF?logo=vite&logoColor=white)](https://github.com/jrodolfo/job-portal/blob/main/job-portal-frontend/package.json)
+[![MySQL 8](https://img.shields.io/badge/MySQL-8-4479A1?logo=mysql&logoColor=white)](https://github.com/jrodolfo/job-portal/blob/main/docker-compose.yml)
+[![Docker Compose](https://img.shields.io/badge/Docker%20Compose-Stack-2496ED?logo=docker&logoColor=white)](https://github.com/jrodolfo/job-portal/blob/main/docker-compose.yml)
+[![OpenAPI](https://img.shields.io/badge/OpenAPI-Swagger-85EA2D?logo=swagger&logoColor=black)](https://github.com/jrodolfo/job-portal/blob/main/job-portal-backend/src/main/resources/application.yml)
+[![OAuth2 + JWT](https://img.shields.io/badge/Auth-OAuth2%20%2B%20JWT-4285F4?logo=google&logoColor=white)](https://github.com/jrodolfo/job-portal/blob/main/job-portal-backend/src/main/resources/application.yml)
+[![OpenTelemetry](https://img.shields.io/badge/Observability-OpenTelemetry-000000?logo=opentelemetry&logoColor=white)](https://github.com/jrodolfo/job-portal/blob/main/docker-compose.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 A good portion of this code came from the Pluralsight online course:
