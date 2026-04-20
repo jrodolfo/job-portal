@@ -1,7 +1,6 @@
 # Job Portal
 
 [![CI Workflow](https://img.shields.io/badge/CI-Docker%20Build-2088FF?logo=githubactions&logoColor=white)](https://github.com/jrodolfo/job-portal/blob/main/.github/workflows/backend-docker-build.yml)
-[![Code Quality](https://img.shields.io/badge/Code%20Quality-Qodana-000000?logo=jetbrains&logoColor=white)](https://github.com/jrodolfo/job-portal/blob/main/job-portal-backend/.github/workflows/qodana_code_quality.yml)
 [![Java 21](https://img.shields.io/badge/Java-21-ED8B00?logo=openjdk&logoColor=white)](https://github.com/jrodolfo/job-portal/blob/main/job-portal-backend/pom.xml)
 [![Spring Boot 3.4.4](https://img.shields.io/badge/Spring%20Boot-3.4.4-6DB33F?logo=springboot&logoColor=white)](https://github.com/jrodolfo/job-portal/blob/main/job-portal-backend/pom.xml)
 [![React 19](https://img.shields.io/badge/React-19-20232A?logo=react&logoColor=61DAFB)](https://github.com/jrodolfo/job-portal/blob/main/job-portal-frontend/package.json)
@@ -424,32 +423,7 @@ Scripts are organized by environment:
 ./scripts/check-script-modes.sh
 ```
 
-### I. Do you know Qodana?
-
-Static code analysis by Qodana helps development teams follow agreed quality standards, and deliver readable, 
-maintainable, and secure code. Powered by JetBrains.
-
-[https://www.jetbrains.com/qodana/](https://www.jetbrains.com/qodana/)
-
-Configure the tool using this file:
-
-`.github/workflows/qodana_code_quality.yml`
-
-and then 
-
-```bash
-job-portal-backend % QODANA_TOKEN="eyJhbGciOiJI.....get.the.token.from.JetBrains.....aNgCIgbs_d5GVlX1srJNqDrzDtYA" \
-qodana scan
-```
-
-At the end of the process you will get something like:
-
-```text
-? Do you want to open the latest report [Y/n]Yes
-✓ Report is successfully uploaded to https://qodana.cloud/projects/40Edn/reports/xyz
-```
-
-### J. API Documentation (Swagger/OpenAPI)
+### I. API Documentation (Swagger/OpenAPI)
 
 After the backend is running:
 
