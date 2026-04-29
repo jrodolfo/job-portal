@@ -16,18 +16,12 @@ This project was initially developed from a [Pluralsight course](https://app.plu
 
 Key improvements I implemented:
 
-* AWS Deployment
-  Adapted the application for deployment on AWS, including environment configuration and cloud readiness considerations.
-* Containerization with Docker
-  Used Docker support to simplify local development and ensure consistent runtime environments.
-* Observability with OpenTelemetry
-  Integrated OpenTelemetry to enable tracing and monitoring, providing better visibility into application behavior.
-* Bug Fixes and Stability Improvements
-  Identified and resolved issues from the original implementation, improving reliability and robustness.
-* Documentation Enhancements
-  Expanded and clarified documentation to make the project easier to understand, run, and extend.
-* Production-Oriented Cleanup
-  Refactored parts of the codebase to improve structure, maintainability, and alignment with real-world backend practices.
+* **AWS Deployment:** Adapted the application for deployment on AWS, including environment configuration and cloud readiness considerations.
+* **Containerization with Docker:** Used Docker support to simplify local development and ensure consistent runtime environments.
+* **Observability with OpenTelemetry:** Integrated OpenTelemetry to enable tracing and monitoring, providing better visibility into application behavior.
+* **Bug Fixes and Stability Improvements:** Identified and resolved issues from the original implementation, improving reliability and robustness.
+* **Documentation Enhancements:** Expanded and clarified documentation to make the project easier to understand, run, and extend.
+* **Production-Oriented Cleanup:** Refactored parts of the codebase to improve structure, maintainability, and alignment with real-world backend practices.
 
 Backend namespace reference:
 - Maven coordinates: `net.jrodolfo:jobportal`
