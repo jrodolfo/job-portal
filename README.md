@@ -12,15 +12,22 @@
 [![OpenTelemetry](https://img.shields.io/badge/Observability-OpenTelemetry-000000?logo=opentelemetry&logoColor=white)](https://github.com/jrodolfo/job-portal/blob/main/docker-compose.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
-A good portion of this code came from the Pluralsight online course:
+This project was initially developed from a ([Pluralsight course](https://app.pluralsight.com/ilx/video-courses/full-stack-java-development-spring-boot-3-react)) as a foundation. I extended it significantly to move beyond a learning exercise and shape it into a more production-ready application.
 
-**Full-stack Java Development with Spring Boot 3 and React**
-by Imtiyaz Hirani
+Key improvements I implemented:
 
-[Course Link](https://app.pluralsight.com/ilx/video-courses/full-stack-java-development-spring-boot-3-react)
-
-I made several changes, fixed bugs, added new files, documentation etc. to help me to
-run a clean code and deploy it at my localhost and at AWS.
+* AWS Deployment
+  Adapted the application for deployment on AWS, including environment configuration and cloud readiness considerations.
+* Containerization with Docker
+  Used Docker support to simplify local development and ensure consistent runtime environments.
+* Observability with OpenTelemetry
+  Integrated OpenTelemetry to enable tracing and monitoring, providing better visibility into application behavior.
+* Bug Fixes and Stability Improvements
+  Identified and resolved issues from the original implementation, improving reliability and robustness.
+* Documentation Enhancements
+  Expanded and clarified documentation to make the project easier to understand, run, and extend.
+* Production-Oriented Cleanup
+  Refactored parts of the codebase to improve structure, maintainability, and alignment with real-world backend practices.
 
 Backend namespace reference:
 - Maven coordinates: `net.jrodolfo:jobportal`
