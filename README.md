@@ -12,7 +12,7 @@
 [![OpenTelemetry](https://img.shields.io/badge/Observability-OpenTelemetry-000000?logo=opentelemetry&logoColor=white)](https://github.com/jrodolfo/job-portal/blob/main/docker-compose.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
-This project was initially developed from a ([Pluralsight course](https://app.pluralsight.com/ilx/video-courses/full-stack-java-development-spring-boot-3-react)) as a foundation. I extended it significantly to move beyond a learning exercise and shape it into a more production-ready application.
+This project was initially developed from a [Pluralsight course](https://app.pluralsight.com/ilx/video-courses/full-stack-java-development-spring-boot-3-react) as a foundation. I extended it significantly to move beyond a learning exercise and shape it into a more production-ready application.
 
 Key improvements I implemented:
 
