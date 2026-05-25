@@ -276,6 +276,40 @@ If the system needs to evolve, likely next steps would be:
 - decide whether auth should converge on one primary model
 - deepen observability beyond tracing-only emphasis if operational needs expand
 
+## Interview Framing
+
+If I needed to present this project in an interview, I would emphasize four
+things:
+
+- it is a real full-stack system, not just isolated frontend or backend code
+- the backend is the primary architectural boundary for persistence, security,
+  and API contracts
+- the project includes operational concerns such as Docker Compose,
+  multi-architecture images, EC2-oriented deployment, and tracing
+- the documentation now captures both the current design and the reasoning
+  behind the main long-lived decisions
+
+### What makes it technically interesting
+
+- hybrid authentication with local auth, Google OAuth2, and JWT
+- OpenTelemetry collector-based observability instead of only app-local logging
+- a repo structure that supports both local full-stack work and EC2-oriented deployment
+- a backend that remains reusable through REST/OpenAPI, not only through the bundled UI
+
+### What tradeoffs were made
+
+- `ddl-auto=update` keeps setup simple now, but is weaker than formal migrations
+- Docker Compose improves reproducibility, but adds operational moving parts
+- keeping frontend and backend separate improves clarity, but requires cross-app coordination
+- multi-architecture publishing improves portability, but complicates the build path
+
+### What I would improve next
+
+- introduce formal schema migrations when the database lifecycle grows more complex
+- expand CI to verify both frontend and backend behavior more deeply
+- add richer architecture references to specific backend packages and frontend flows
+- formalize deployment further if the project grows beyond the current EC2-oriented model
+
 ## Where To Read More
 
 - Project overview and runtime instructions: [`../README.md`](../README.md)
