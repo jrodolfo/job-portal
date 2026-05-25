@@ -35,11 +35,7 @@ public class JobController {
             @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     public ResponseEntity<Job> createJob(@RequestBody Job job) {
-        try {
-            job = jobService.createJob(job);
-        } catch (Exception e) {
-            throw new ResourceException("Not able to create the job " + job.getTitle());
-        }
+        job = jobService.createJob(job);
         return ResponseEntity.status(HttpStatus.CREATED).body(job);
     }
     

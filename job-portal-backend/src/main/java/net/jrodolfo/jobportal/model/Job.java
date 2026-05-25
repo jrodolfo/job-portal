@@ -33,7 +33,7 @@ public class Job {
     @Schema(description = "Job title.", example = "Java Developer")
     private String title;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 2000)
     @Schema(description = "Job description.", example = "Develop Java applications and services")
     private String description;
 
