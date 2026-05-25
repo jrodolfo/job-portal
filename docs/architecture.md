@@ -99,6 +99,28 @@ sequenceDiagram
   User->>Jaeger: Inspect traces during debugging
 ```
 
+## Authentication Flow
+
+This diagram focuses on the Google OAuth2 and JWT-oriented authentication path.
+
+```mermaid
+sequenceDiagram
+  participant User
+  participant UI as React UI
+  participant API as Spring Boot Backend
+  participant Google as Google OAuth2
+
+  User->>UI: Click login
+  UI->>API: Start auth flow / call secured backend path
+  API->>Google: Redirect to Google OAuth2
+  Google-->>User: Google login and consent
+  Google-->>API: OAuth2 callback with authenticated identity
+  API->>API: Resolve user and build app auth response
+  API-->>UI: Return JWT / authenticated user state
+  UI->>API: Call secured APIs with bearer token
+  API-->>UI: Authorized application response
+```
+
 ## Runtime Components
 
 ### Frontend
