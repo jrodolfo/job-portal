@@ -27,6 +27,11 @@ Backend namespace reference:
 - Maven coordinates: `net.jrodolfo:jobportal`
 - Java base package: `net.jrodolfo.jobportal`
 
+## Architecture
+
+- Walkthrough: [docs/architecture-walkthrough.md](./docs/architecture-walkthrough.md)
+- Architecture Decision Records: [docs/adr/README.md](./docs/adr/README.md)
+
 **Rod Oliveira** | Software Developer | [jrodolfo.net](https://jrodolfo.net) | Halifax, Canada 🍁
 
 ---
