@@ -10,10 +10,10 @@ To avoid leaking private infrastructure details (for example EC2 hostnames), use
 Suggested flow:
 
 ```bash
-cp doc/insomnia/insomnia-template.yaml doc/insomnia/insomnia-local.yaml
+cp docs/insomnia/insomnia-template.yaml docs/insomnia/insomnia-local.yaml
 ```
 
-Then update `doc/insomnia/insomnia-local.yaml` with your real tokens as needed.
+Then update `docs/insomnia/insomnia-local.yaml` with your real tokens as needed.
 
 URL host configuration is variable-based in the template:
 

@@ -87,7 +87,7 @@ docker compose up --build
 
 #### 6. OpenTelemetry (EC2 / Prod)
 Use the prod override file, which:
-- switches collector config to `doc/otel/collector-prod.yaml`
+- switches collector config to `docs/otel/collector-prod.yaml`
 - keeps backend tracing enabled
 - sets a lower default trace sampling (`OTEL_TRACES_SAMPLER_ARG=0.1`)
 - disables local Jaeger by default
@@ -352,7 +352,7 @@ Google OAuth note:
 
 ### F. Steps for smoke test the backend API:
 
-1. **Load the Insomnia collection** (inside the folder `doc/insomnia`).
+1. **Load the Insomnia collection** (inside the folder `docs/insomnia`).
 2. **Execute the "add user" POST request** to add a new user:
    ```json
    {
@@ -384,7 +384,7 @@ Google OAuth note:
    ```
 2. **Go to the URL of the Web Application**: [http://localhost:5173](http://localhost:5173)
 3. **Login with credentials**: `user`, `user123` and run tests.
-4. **Try to apply for a job**. Check the database running the queries on `doc/queries.sql`.
+4. **Try to apply for a job**. Check the database running the queries on `docs/database/queries.sql`.
 
 ---
 

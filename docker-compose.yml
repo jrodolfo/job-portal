@@ -53,7 +53,7 @@ services:
     restart: always
     command: ["--config=/etc/otelcol-contrib/config.yaml"]
     volumes:
-      - ./doc/otel/collector-local.yaml:/etc/otelcol-contrib/config.yaml:ro
+      - ./docs/otel/collector-local.yaml:/etc/otelcol-contrib/config.yaml:ro
     ports:
       - "4317:4317"
       - "4318:4318"

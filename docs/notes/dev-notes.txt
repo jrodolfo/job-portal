@@ -1,0 +1,57 @@
+============= Dev Local =============
+
+1) Start the Docker app
+
+2) cd job-portal
+
+3) run the commands:
+
+ ./scripts/local/stop.sh
+ ./scripts/local/start.sh
+ ./scripts/local/upload-docker-images.sh
+
+4) Start Codex by OpenAI
+
+- cd job-portal
+- Start: run the command "codex"
+- Stop current Codex interaction: press Ctrl + C in the terminal
+
+Token usage: total=6,574,370 input=6,458,142 (+ 32,469,760 cached) output=116,228 (reasoning 32,564)
+To continue this session, run codex resume 019c56d7-f23b-7430-92d9-7f895c1766be
+jrodolfo@Mac-mini job-portal (main)  [2026-02-16 13:55:02] %
+
+5) Open IntelliJ
+
+6) Open DataGrip
+
+7) Open Google Chrome
+
+============= AWS EC2 instance =============
+
+1) make sure the instance is up and running on AWS
+
+2) ssh my-ec2
+
+3) run the commands:
+
+cd job-portal
+./stop.sh
+./start.sh
+
+============= Useful Links ==============
+
+GitHub
+https://github.com/jrodolfo/job-portal
+
+AWS EC2
+https://us-east-2.console.aws.amazon.com
+
+Docker Hub
+https://hub.docker.com/repositories/jrodolfo
+https://www.jetbrains.com/help/idea/docker.html
+
+Google Cloud
+https://console.cloud.google.com/welcome?project=job-portal-oauth-485523
+
+New Relic (for OpenTelemetry)
+https://one.newrelic.com/

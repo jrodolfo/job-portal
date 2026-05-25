@@ -21,7 +21,7 @@ services:
     restart: always
     command: ["--config=/etc/otelcol-contrib/config.yaml"]
     volumes:
-      - ./doc/otel/collector-prod.yaml:/etc/otelcol-contrib/config.yaml:ro
+      - ./docs/otel/collector-prod.yaml:/etc/otelcol-contrib/config.yaml:ro
     environment:
       OTEL_UPSTREAM_OTLP_ENDPOINT: ${OTEL_UPSTREAM_OTLP_ENDPOINT}
       OTEL_UPSTREAM_API_KEY: ${OTEL_UPSTREAM_API_KEY}
