@@ -14,6 +14,7 @@ import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserServ
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -51,7 +52,10 @@ public class SecurityConfig {
     }
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthFilter jwtAuthFilter) throws Exception {
+    SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                            JwtAuthFilter jwtAuthFilter,
+                                            ApiAuthenticationEntryPoint apiAuthenticationEntryPoint,
+                                            ApiAccessDeniedHandler apiAccessDeniedHandler) throws Exception {
         return http
                 .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
@@ -71,6 +75,16 @@ public class SecurityConfig {
                         .requestMatchers("/oauth/**", "/login/**", "/oauth2/**", "/api/oauth/**").permitAll() //Allow OAuth endpoints
                         .requestMatchers(HttpMethod.GET, "/api/auth/details").permitAll()
                         .anyRequest().authenticated()
+                )
+                .exceptionHandling(exceptions -> exceptions
+                        .defaultAuthenticationEntryPointFor(
+                                apiAuthenticationEntryPoint,
+                                new AntPathRequestMatcher("/api/**")
+                        )
+                        .defaultAccessDeniedHandlerFor(
+                                apiAccessDeniedHandler,
+                                new AntPathRequestMatcher("/api/**")
+                        )
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .httpBasic(Customizer.withDefaults())

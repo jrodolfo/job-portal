@@ -3,6 +3,7 @@ import Login from "./components/Login"
 import ApplicantDashboard from "./components/ApplicantDashboard"
 import AdminDashboard from "./components/AdminDashboard"
 import OAuthLogin from "./components/OAuthLogin"
+import ProtectedRoute from "./components/ProtectedRoute"
 
 function App() {
 
@@ -11,8 +12,16 @@ function App() {
             <BrowserRouter>
                 <Routes>
                     <Route path="/" element={<Login/>}/>
-                    <Route path="applicant-dashboard" element={<ApplicantDashboard/>}/>
-                    <Route path="admin-dashboard" element={<AdminDashboard/>}/>
+                    <Route path="applicant-dashboard" element={
+                        <ProtectedRoute>
+                            <ApplicantDashboard/>
+                        </ProtectedRoute>
+                    }/>
+                    <Route path="admin-dashboard" element={
+                        <ProtectedRoute requiredRole="ROLE_ADMIN">
+                            <AdminDashboard/>
+                        </ProtectedRoute>
+                    }/>
                     <Route path="/oauthlogon" element={<OAuthLogin/>}/>
                 </Routes>
             </BrowserRouter>

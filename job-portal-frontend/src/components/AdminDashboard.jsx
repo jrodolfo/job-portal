@@ -60,7 +60,13 @@ const AdminDashboard = () => {
             setStatusMessage("Job created successfully.");
         } catch (error) {
             const backendMessage = error?.response?.data?.message;
-            setErrorMessage(backendMessage || "We couldn't create the job right now. Please try again.");
+            if (error?.response?.status === 401) {
+                setErrorMessage("Your session is missing or expired. Please log in again.");
+            } else if (error?.response?.status === 403) {
+                setErrorMessage("Only admin users can create jobs.");
+            } else {
+                setErrorMessage(backendMessage || "We couldn't create the job right now. Please try again.");
+            }
         } finally {
             setIsSubmitting(false);
         }
