@@ -131,6 +131,30 @@ Related ADRs:
 - [ADR 0007](./adr/0007-keep-local-and-prod-operations-in-separate-script-paths.md)
 - [ADR 0008](./adr/0008-keep-api-exploration-and-ops-assets-alongside-the-codebase.md)
 
+### 8. Keep schema evolution lightweight for now
+
+Why:
+
+- the repo still prioritizes quick full-stack startup and iterative change
+- current schema evolution is handled through application startup configuration
+- formal migration tooling would add discipline, but also operational overhead
+
+Related ADR:
+
+- [ADR 0009](./adr/0009-use-runtime-ddl-auto-update-for-now.md)
+
+### 9. Publish multi-architecture images from the repository
+
+Why:
+
+- local development hardware and deployment hardware may differ
+- the repo already includes `buildx` and bake-based image publishing
+- EC2-style deployment is part of the documented operating model
+
+Related ADR:
+
+- [ADR 0010](./adr/0010-publish-multi-architecture-docker-images-from-the-repo.md)
+
 ## Key Design Points
 
 ### Clear separation of responsibilities
@@ -163,6 +187,18 @@ variables.
 The repo deliberately distinguishes local and prod operations. Local prioritizes
 developer convenience; prod adds stricter validation and upstream telemetry
 configuration.
+
+### Schema management is pragmatic, not fully formalized yet
+
+The backend currently favors `ddl-auto=update` to keep setup friction low.
+That is a practical choice for this repo right now, but it is also an explicit
+future evolution point rather than a hidden assumption.
+
+### Deployment portability matters
+
+The repository already bakes in the idea that developer hardware and deployment
+hardware may differ. That is why multi-architecture image publishing is part
+of the documented workflow rather than a one-off release trick.
 
 ## Common Design Questions
 

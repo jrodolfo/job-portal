@@ -72,3 +72,5 @@ Start new records from [template.md](template.md).
 - [0006-use-opentelemetry-collector-based-observability-for-local-and-ec2.md](0006-use-opentelemetry-collector-based-observability-for-local-and-ec2.md)
 - [0007-keep-local-and-prod-operations-in-separate-script-paths.md](0007-keep-local-and-prod-operations-in-separate-script-paths.md)
 - [0008-keep-api-exploration-and-ops-assets-alongside-the-codebase.md](0008-keep-api-exploration-and-ops-assets-alongside-the-codebase.md)
+- [0009-use-runtime-ddl-auto-update-for-now.md](0009-use-runtime-ddl-auto-update-for-now.md)
+- [0010-publish-multi-architecture-docker-images-from-the-repo.md](0010-publish-multi-architecture-docker-images-from-the-repo.md)
