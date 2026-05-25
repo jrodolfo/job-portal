@@ -37,6 +37,64 @@ Backend namespace reference:
 
 ---
 
+## Quick Start
+
+If you just want to start the full application locally and open it in a browser,
+use the local helper script from the repository root:
+
+```bash
+bash scripts/local/start.sh
+```
+
+What this starts:
+
+- frontend
+- backend
+- MySQL
+- OpenTelemetry collector
+- Jaeger
+
+Default local URLs:
+
+- Frontend: [http://localhost:5173](http://localhost:5173)
+- Backend API: [http://localhost:8080](http://localhost:8080)
+- Swagger UI: [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+- OpenAPI JSON: [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs)
+- Jaeger UI: [http://localhost:16686](http://localhost:16686)
+- MySQL: `localhost:3307`
+
+How to stop everything:
+
+```bash
+bash scripts/local/stop.sh
+```
+
+If you prefer to run Docker Compose directly instead of using the helper script:
+
+```bash
+docker compose up -d --build
+```
+
+First-run expectations:
+
+- a first build can take several minutes because Docker may need to pull base images and build both application images
+- the backend now runs Flyway on startup to apply the baseline schema migration
+- the stack is ready when `docker compose ps` shows the containers running and the frontend URL loads in the browser
+
+If you run the script from inside `scripts/local`, use:
+
+```bash
+./start.sh
+```
+
+If you run commands from the repository root, use:
+
+```bash
+bash scripts/local/start.sh
+```
+
+## Local Stack
+
 ### A. Running the Application with Docker Compose
 
 This is the easiest way to run the entire stack (Database, Backend, and Frontend) with a single command.
@@ -45,10 +103,16 @@ This is the easiest way to run the entire stack (Database, Backend, and Frontend
 Ensure you have a `.env` file in the root directory (see **Section C** below) with the necessary credentials, especially for Google OAuth2 if you plan to use it.
 
 #### 2. Start the entire stack
-To build and start all services (Database, Backend, and Frontend):
+Recommended from the repository root:
 
 ```bash
-docker compose up --build
+bash scripts/local/start.sh
+```
+
+Equivalent direct Docker Compose command:
+
+```bash
+docker compose up -d --build
 ```
 
 - **Frontend**: Accessible at [http://localhost:5173](http://localhost:5173)
@@ -73,6 +137,12 @@ If you only want to run part of the stack:
 To stop and remove the containers:
 
 ```bash
+bash scripts/local/stop.sh
+```
+
+Equivalent direct Docker Compose command:
+
+```bash
 docker compose down
 ```
 
@@ -88,7 +158,7 @@ The Docker setup includes OpenTelemetry Java auto-instrumentation for the backen
 Use this command (same as standard local stack):
 
 ```bash
-docker compose up --build
+bash scripts/local/start.sh
 ```
 
 #### 6. OpenTelemetry (EC2 / Prod)
@@ -107,7 +177,7 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 ```
 
 #### 7. OpenTelemetry Smoke Test (Local)
-After starting with `docker compose up --build`, run:
+After starting with `bash scripts/local/start.sh`, run:
 
 ```bash
 curl -i http://localhost:8080/api/jobs
@@ -166,6 +236,16 @@ If you prefer to run the backend or frontend locally (not in Docker) while still
   - **Backend (IDE)**: Run `JobportalApplication` main class.
   - **Backend (Maven)**: `mvn spring-boot:run` inside `job-portal-backend`.
   - **Frontend (npm)**: `npm install` and `npm run dev` inside `job-portal-frontend`.
+
+### B.1 Local Frontend and Backend URLs
+
+If you run the applications outside Docker:
+
+- Frontend dev server: `http://localhost:5173`
+- Backend API: `http://localhost:8080`
+- Swagger UI: `http://localhost:8080/swagger-ui.html`
+
+The frontend talks to the backend on port `8080`, so the backend must be running before login and job flows will work.
 
 ---
 
@@ -400,6 +480,16 @@ Scripts are organized by environment:
 
 #### 1. Local scripts (`scripts/local`)
 
+Recommended usage from the repository root:
+
+- Start: `bash scripts/local/start.sh`
+- Stop: `bash scripts/local/stop.sh`
+
+If you first change directory into `scripts/local`, then use:
+
+- Start: `./start.sh`
+- Stop: `./stop.sh`
+
 - macOS/Linux:
   - Start: `bash scripts/local/start.sh`
   - Stop: `bash scripts/local/stop.sh`
@@ -442,6 +532,55 @@ Authentication in Swagger UI:
 1. Use **Authorize** and provide Basic credentials for endpoints protected with `basicAuth`.
 2. For bearer-protected endpoints, first call `/api/auth/login`, copy the returned token, and authorize with:
    - `<token>`
+
+## Troubleshooting
+
+### The script finished, but I do not know what to open
+
+Use these local URLs:
+
+- Frontend: `http://localhost:5173`
+- Backend: `http://localhost:8080`
+- Swagger UI: `http://localhost:8080/swagger-ui.html`
+- Jaeger: `http://localhost:16686`
+
+### Startup took a long time
+
+That is normal on a first run. Docker may need to pull images, build the frontend and backend images, and initialize the MySQL schema through Flyway.
+
+### I want to know whether the containers are healthy
+
+Run:
+
+```bash
+docker compose ps
+```
+
+You can also inspect backend logs with:
+
+```bash
+docker compose logs -f backend
+```
+
+### The frontend does not load
+
+Check whether the frontend container is running:
+
+```bash
+docker compose ps frontend
+```
+
+Then open `http://localhost:5173` again.
+
+### The backend does not respond yet
+
+Inspect backend logs:
+
+```bash
+docker compose logs -f backend
+```
+
+The backend may still be waiting for MySQL or applying Flyway migrations.
 
 ## Contact
 
