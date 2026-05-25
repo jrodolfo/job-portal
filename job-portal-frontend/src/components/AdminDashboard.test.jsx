@@ -1,0 +1,78 @@
+import {screen, waitFor} from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import axios from "axios";
+import AdminDashboard from "./AdminDashboard";
+import {renderWithProviders} from "../test/test-utils";
+
+vi.mock("axios");
+vi.mock("./Navbar", () => ({
+    default: () => <div data-testid="navbar-mock">Navbar</div>
+}));
+
+describe("AdminDashboard", () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+        localStorage.clear();
+    });
+
+    it("should fetch and render jobs on mount", async () => {
+        axios.get.mockResolvedValueOnce({
+            data: [
+                {
+                    id: 1,
+                    title: "Java Developer",
+                    description: "Build APIs",
+                    company: "ACME",
+                    postedDate: "2026-01-01"
+                }
+            ]
+        });
+
+        renderWithProviders(<AdminDashboard />);
+
+        await waitFor(() => expect(axios.get).toHaveBeenCalledWith("http://localhost:8080/api/jobs"));
+        expect(screen.getByText("Add New Job")).toBeInTheDocument();
+        expect(screen.getByText("Title: Java Developer")).toBeInTheDocument();
+    });
+
+    it("should send create job request with bearer token and prepend the new job", async () => {
+        localStorage.setItem("token", "jwt-admin");
+        axios.get.mockResolvedValueOnce({data: []});
+        axios.post.mockResolvedValueOnce({
+            data: {
+                id: 10,
+                title: "Platform Engineer",
+                description: "Own internal services",
+                company: "ACME",
+                postedDate: "2026-05-25"
+            }
+        });
+
+        renderWithProviders(<AdminDashboard />);
+        const user = userEvent.setup();
+
+        await user.type(screen.getByLabelText("Title"), "Platform Engineer");
+        await user.type(screen.getByLabelText("Company"), "ACME");
+        await user.type(screen.getByLabelText("Description"), "Own internal services");
+        await user.click(screen.getByRole("button", {name: "Create Job"}));
+
+        await waitFor(() =>
+            expect(axios.post).toHaveBeenCalledWith(
+                "http://localhost:8080/api/jobs",
+                {
+                    title: "Platform Engineer",
+                    description: "Own internal services",
+                    company: "ACME"
+                },
+                {
+                    headers: {
+                        Authorization: "Bearer jwt-admin"
+                    }
+                }
+            )
+        );
+
+        expect(await screen.findByText("Job created successfully.")).toBeInTheDocument();
+        expect(screen.getByText("Title: Platform Engineer")).toBeInTheDocument();
+    });
+});
