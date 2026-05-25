@@ -134,17 +134,17 @@ Related ADRs:
 - [ADR 0007](./adr/0007-keep-local-and-prod-operations-in-separate-script-paths.md)
 - [ADR 0008](./adr/0008-keep-api-exploration-and-ops-assets-alongside-the-codebase.md)
 
-### 8. Keep schema evolution lightweight for now
+### 8. Manage schema evolution with versioned migrations
 
 Why:
 
 - the repo still prioritizes quick full-stack startup and iterative change
-- current schema evolution is handled through application startup configuration
-- formal migration tooling would add discipline, but also operational overhead
+- versioned migrations make schema changes explicit and reviewable
+- Hibernate validation still protects startup from drifting away from the expected model
 
 Related ADR:
 
-- [ADR 0009](./adr/0009-use-runtime-ddl-auto-update-for-now.md)
+- [ADR 0012](./adr/0012-use-flyway-with-hibernate-validation-for-schema-management.md)
 
 ### 9. Publish multi-architecture images from the repository
 
@@ -191,11 +191,12 @@ The repo deliberately distinguishes local and prod operations. Local prioritizes
 developer convenience; prod adds stricter validation and upstream telemetry
 configuration.
 
-### Schema management is pragmatic, not fully formalized yet
+### Schema management is explicit, but still pragmatic
 
-The backend currently favors `ddl-auto=update` to keep setup friction low.
-That is a practical choice for this repo right now, but it is also an explicit
-future evolution point rather than a hidden assumption.
+The backend now uses Flyway to apply a baseline schema migration and Hibernate
+validation to verify that the runtime model still matches the database shape.
+That gives the repo explicit schema history without giving up the fast startup
+story it still needs for local work.
 
 ### Deployment portability matters
 
@@ -270,7 +271,7 @@ Related ADR:
 
 If the system needs to evolve, likely next steps would be:
 
-- introduce a stronger schema migration strategy than runtime `ddl-auto=update`
+- break the current schema baseline into a longer-lived incremental migration history as the data model grows
 - formalize deployment beyond the current Linux host deployment scripts if infrastructure grows
 - add richer CI coverage for frontend and backend verification
 - decide whether auth should converge on one primary model
@@ -298,14 +299,14 @@ emphasize four things:
 
 ### What tradeoffs were made
 
-- `ddl-auto=update` keeps setup simple now, but is weaker than formal migrations
+- Flyway plus Hibernate validation gives clearer schema control, but it introduces migration maintenance overhead
 - Docker Compose improves reproducibility, but adds operational moving parts
 - keeping frontend and backend separate improves clarity, but requires cross-app coordination
 - multi-architecture publishing improves portability, but complicates the build path
 
 ### What I would improve next
 
-- **Introduce formal schema migrations when the database lifecycle grows more complex:** Right now `ddl-auto=update` keeps local setup simple, which is useful for a project that still values fast iteration. The limitation is that it does not provide a clear, versioned history of schema changes. If the data model grows, if multiple environments need tighter rollout control, or if deployments become less manual, I would move to a tool such as Flyway or Liquibase so schema evolution becomes explicit, reviewable, and safer to promote across environments.
+- **Evolve the migration strategy beyond the initial baseline:** The project now has explicit schema management through Flyway, which is a meaningful improvement over runtime schema mutation. The next step would be to keep future database changes in smaller, incremental migrations and to separate structural changes from any optional bootstrap data concerns. That would make the schema history easier to review, safer to promote across environments, and simpler to reason about when production data changes become more common.
 - **Expand CI to verify both frontend and backend behavior more deeply:** The repository already has a useful baseline CI story, but a stronger pipeline would give more confidence that architectural boundaries are still working as expected. I would extend CI to run backend tests, frontend tests, and a small integration-level verification path so changes in authentication, API contracts, or container orchestration are caught earlier. The reason is simple: once a project spans UI, API, persistence, and deployment assets, shallow CI stops being enough.
 - **Add richer architecture references to specific backend packages and frontend flows:** The current architecture docs describe the system well at the component level, but they could become even more actionable by mapping major concepts to exact implementation areas. For example, I would tie the security discussion to the Spring Security configuration classes, the persistence discussion to the JPA/domain packages, and the frontend discussion to the main route, store, and auth-related components. That would make the docs more useful not only during technical reviews, but also during future maintenance when someone needs to jump from an architectural concept straight into the code.
 - **Formalize deployment further if the project grows beyond the current Linux host model:** The current deployment story is pragmatic and works well for the repo’s scope: Docker Compose, multi-architecture images, and prod scripts are enough to support the current host-based deployment flow. If the project starts needing repeatable team-operated releases, stronger environment parity, or more automated rollback and promotion behavior, I would move toward a more formal deployment pipeline. That could mean codifying more infrastructure assumptions, shifting more release behavior into CI/CD, and reducing the amount of manual operational knowledge currently carried in scripts and docs.

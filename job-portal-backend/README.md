@@ -12,6 +12,12 @@ OpenTelemetry runtime:
 - The backend Docker image includes the OpenTelemetry Java Agent.
 - OTLP export is configured via environment variables (see root `.env` and `docker-compose*.yml`).
 
+Schema management:
+
+- Flyway owns schema changes through versioned migrations.
+- Hibernate runs in validation mode so startup still checks entity/schema alignment.
+- The initial baseline migration lives at `src/main/java/db/migration/V1__baseline_job_portal_schema.java`.
+
 Related repository docs:
 
 - Root project overview: [../README.md](../README.md)

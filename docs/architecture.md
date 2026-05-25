@@ -193,9 +193,14 @@ The system uses MySQL as the primary runtime database.
 Local default configuration points to MySQL on port `3307`, and the Docker
 stack supplies the database container used by the backend.
 
-The backend currently uses Hibernate schema updates through
-`spring.jpa.hibernate.ddl-auto=update`, which is documented as an explicit
-architectural choice in ADR 0009.
+The backend uses Flyway to apply versioned schema changes and Hibernate
+validation to ensure the runtime entity model still matches the expected
+database shape. The initial migration is a compatibility-oriented baseline so
+existing local databases can transition away from runtime schema mutation
+without forcing a destructive reset.
+
+This schema-management approach is documented in ADR 0012 and supersedes the
+earlier `ddl-auto=update` decision recorded in ADR 0009.
 
 Representative persistence files:
 
@@ -205,6 +210,7 @@ Representative persistence files:
 - `job-portal-backend/src/main/java/net/jrodolfo/jobportal/repository/UserRepository.java`
 - `job-portal-backend/src/main/java/net/jrodolfo/jobportal/repository/JobRepository.java`
 - `job-portal-backend/src/main/java/net/jrodolfo/jobportal/repository/ApplicationRepository.java`
+- `job-portal-backend/src/main/java/db/migration/V1__baseline_job_portal_schema.java`
 - `docs/database/queries.sql`
 
 ### Authentication Model

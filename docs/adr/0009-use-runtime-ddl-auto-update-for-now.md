@@ -1,6 +1,6 @@
 # ADR 0009: Use Runtime ddl-auto Update for Now
 
-- Status: `accepted`
+- Status: `superseded`
 - Date: `2026-05-25`
 
 ## Context
@@ -19,6 +19,10 @@ Keep `spring.jpa.hibernate.ddl-auto=update` as the active schema-management
 strategy for now.
 
 Do not introduce Flyway or Liquibase yet.
+
+## Superseded By
+
+- [ADR 0012](./0012-use-flyway-with-hibernate-validation-for-schema-management.md)
 
 ## Rationale
 

@@ -20,6 +20,7 @@ reasoning is written down explicitly, for example:
 - why Google OAuth2 is combined with local auth and JWT issuance
 - why OpenTelemetry uses a collector-centered setup for local and EC2 runs
 - why deployment and API exploration assets stay alongside the repository
+- why schema management now uses Flyway migrations plus Hibernate validation
 
 These records are intentionally short enough to scan quickly during onboarding,
 maintenance, or interview preparation.
@@ -76,3 +77,4 @@ Start new records from [template.md](template.md).
 - [0009-use-runtime-ddl-auto-update-for-now.md](0009-use-runtime-ddl-auto-update-for-now.md)
 - [0010-publish-multi-architecture-docker-images-from-the-repo.md](0010-publish-multi-architecture-docker-images-from-the-repo.md)
 - [0011-keep-the-backend-rest-openapi-first-and-reusable.md](0011-keep-the-backend-rest-openapi-first-and-reusable.md)
+- [0012-use-flyway-with-hibernate-validation-for-schema-management.md](0012-use-flyway-with-hibernate-validation-for-schema-management.md)
