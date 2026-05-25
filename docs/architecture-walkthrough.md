@@ -305,10 +305,10 @@ things:
 
 ### What I would improve next
 
-- introduce formal schema migrations when the database lifecycle grows more complex
-- expand CI to verify both frontend and backend behavior more deeply
-- add richer architecture references to specific backend packages and frontend flows
-- formalize deployment further if the project grows beyond the current EC2-oriented model
+- **Introduce formal schema migrations when the database lifecycle grows more complex:** Right now `ddl-auto=update` keeps local setup simple, which is useful for a project that still values fast iteration. The limitation is that it does not provide a clear, versioned history of schema changes. If the data model grows, if multiple environments need tighter rollout control, or if deployments become less manual, I would move to a tool such as Flyway or Liquibase so schema evolution becomes explicit, reviewable, and safer to promote across environments.
+- **Expand CI to verify both frontend and backend behavior more deeply:** The repository already has a useful baseline CI story, but a stronger pipeline would give more confidence that architectural boundaries are still working as expected. I would extend CI to run backend tests, frontend tests, and a small integration-level verification path so changes in authentication, API contracts, or container orchestration are caught earlier. The reason is simple: once a project spans UI, API, persistence, and deployment assets, shallow CI stops being enough.
+- **Add richer architecture references to specific backend packages and frontend flows:** The current architecture docs describe the system well at the component level, but they could become even more actionable by mapping major concepts to exact implementation areas. For example, I would tie the security discussion to the Spring Security configuration classes, the persistence discussion to the JPA/domain packages, and the frontend discussion to the main route, store, and auth-related components. That would make the docs more useful not only in interviews, but also during future maintenance when someone needs to jump from an architectural concept straight into the code.
+- **Formalize deployment further if the project grows beyond the current EC2-oriented model:** The current deployment story is pragmatic and works well for the repo’s scope: Docker Compose, multi-architecture images, and prod scripts are enough to support an EC2-style flow. If the project starts needing repeatable team-operated releases, stronger environment parity, or more automated rollback and promotion behavior, I would move toward a more formal deployment pipeline. That could mean codifying more infrastructure assumptions, shifting more release behavior into CI/CD, and reducing the amount of manual operational knowledge currently carried in scripts and docs.
 
 ## Where To Read More
 
