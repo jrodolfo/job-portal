@@ -3,13 +3,15 @@
 This document is a concise walkthrough of `Job Portal`.
 
 It is intentionally shorter and more conversational than the root
-[`README.md`](../README.md) and the ADR set in [`adr/`](./adr/).
+[`README.md`](../README.md), the structured
+[`architecture.md`](./architecture.md), and the ADR set in [`adr/`](./adr/).
 
 Suggested reading path:
 
 1. start with [`../README.md`](../README.md)
-2. use this file as a practical walkthrough of the system
-3. follow specific decisions into [`adr/README.md`](./adr/README.md)
+2. then read [`architecture.md`](./architecture.md)
+3. use this file as a practical walkthrough of the system
+4. follow specific decisions into [`adr/README.md`](./adr/README.md)
 
 ## One-Minute System Summary
 
@@ -275,6 +277,7 @@ If the system needs to evolve, likely next steps would be:
 ## Where To Read More
 
 - Project overview and runtime instructions: [`../README.md`](../README.md)
+- Structured architecture reference: [`architecture.md`](./architecture.md)
 - ADR index: [`adr/README.md`](./adr/README.md)
 - Backend-specific notes: [`../job-portal-backend/README.md`](../job-portal-backend/README.md)
 - API exploration assets: [`insomnia/README.md`](./insomnia/README.md)

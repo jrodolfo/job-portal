@@ -4,9 +4,10 @@ This folder stores Architecture Decision Records (ADRs) for `Job Portal`.
 
 ADRs capture the architectural decisions that shaped the repository, why those
 decisions were made, and what tradeoffs they introduced. They complement
+[`docs/architecture.md`](../architecture.md) and
 [`docs/architecture-walkthrough.md`](../architecture-walkthrough.md), which
-describes the current system design in a concise, interview-friendly format, by
-preserving the decision history behind that design.
+describe the current system design in structured and interview-friendly forms,
+by preserving the decision history behind that design.
 
 ## Why This Repo Uses ADRs
 

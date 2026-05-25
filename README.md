@@ -29,6 +29,7 @@ Backend namespace reference:
 
 ## Architecture
 
+- Reference: [docs/architecture.md](./docs/architecture.md)
 - Walkthrough: [docs/architecture-walkthrough.md](./docs/architecture-walkthrough.md)
 - Architecture Decision Records: [docs/adr/README.md](./docs/adr/README.md)
 
