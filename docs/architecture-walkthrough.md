@@ -53,7 +53,7 @@ Why:
 
 - the backend and frontend have different runtimes and toolchains
 - the root of the repo still needs to coordinate them as one application stack
-- the resulting layout is easier to explain during maintenance and interviews
+- the resulting layout is easier to explain during maintenance and technical reviews
 
 Related ADRs:
 
@@ -172,7 +172,7 @@ Related ADR:
 
 This project is intentionally set up so it can be run as an integrated stack,
 not just as isolated code folders. That matters for maintainability and for
-showing the project credibly in an interview.
+explaining the project credibly to other engineers and reviewers.
 
 ### Backend-centric security model
 
@@ -260,7 +260,7 @@ Short answer:
 
 - they are part of how the project is validated and operated
 - they make the repository more self-contained and explainable
-- they help future maintenance and interview walkthroughs
+- they help future maintenance and technical walkthroughs
 
 Related ADR:
 
@@ -276,10 +276,10 @@ If the system needs to evolve, likely next steps would be:
 - decide whether auth should converge on one primary model
 - deepen observability beyond tracing-only emphasis if operational needs expand
 
-## Interview Framing
+## Presentation Framing
 
-If I needed to present this project in an interview, I would emphasize four
-things:
+If I needed to present this project to another engineer or reviewer, I would
+emphasize four things:
 
 - it is a real full-stack system, not just isolated frontend or backend code
 - the backend is the primary architectural boundary for persistence, security,
@@ -307,7 +307,7 @@ things:
 
 - **Introduce formal schema migrations when the database lifecycle grows more complex:** Right now `ddl-auto=update` keeps local setup simple, which is useful for a project that still values fast iteration. The limitation is that it does not provide a clear, versioned history of schema changes. If the data model grows, if multiple environments need tighter rollout control, or if deployments become less manual, I would move to a tool such as Flyway or Liquibase so schema evolution becomes explicit, reviewable, and safer to promote across environments.
 - **Expand CI to verify both frontend and backend behavior more deeply:** The repository already has a useful baseline CI story, but a stronger pipeline would give more confidence that architectural boundaries are still working as expected. I would extend CI to run backend tests, frontend tests, and a small integration-level verification path so changes in authentication, API contracts, or container orchestration are caught earlier. The reason is simple: once a project spans UI, API, persistence, and deployment assets, shallow CI stops being enough.
-- **Add richer architecture references to specific backend packages and frontend flows:** The current architecture docs describe the system well at the component level, but they could become even more actionable by mapping major concepts to exact implementation areas. For example, I would tie the security discussion to the Spring Security configuration classes, the persistence discussion to the JPA/domain packages, and the frontend discussion to the main route, store, and auth-related components. That would make the docs more useful not only in interviews, but also during future maintenance when someone needs to jump from an architectural concept straight into the code.
+- **Add richer architecture references to specific backend packages and frontend flows:** The current architecture docs describe the system well at the component level, but they could become even more actionable by mapping major concepts to exact implementation areas. For example, I would tie the security discussion to the Spring Security configuration classes, the persistence discussion to the JPA/domain packages, and the frontend discussion to the main route, store, and auth-related components. That would make the docs more useful not only during technical reviews, but also during future maintenance when someone needs to jump from an architectural concept straight into the code.
 - **Formalize deployment further if the project grows beyond the current EC2-oriented model:** The current deployment story is pragmatic and works well for the repo’s scope: Docker Compose, multi-architecture images, and prod scripts are enough to support an EC2-style flow. If the project starts needing repeatable team-operated releases, stronger environment parity, or more automated rollback and promotion behavior, I would move toward a more formal deployment pipeline. That could mean codifying more infrastructure assumptions, shifting more release behavior into CI/CD, and reducing the amount of manual operational knowledge currently carried in scripts and docs.
 
 ## Where To Read More
