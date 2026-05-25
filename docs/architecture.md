@@ -71,6 +71,34 @@ flowchart LR
   Scripts --> Images
 ```
 
+## Key Runtime Flow
+
+This second diagram focuses on how a typical local full-stack interaction moves
+through the system, including authentication and tracing.
+
+```mermaid
+sequenceDiagram
+  participant User
+  participant UI as React UI
+  participant API as Spring Boot Backend
+  participant Auth as Local Auth / Google OAuth2
+  participant DB as MySQL
+  participant OTel as OTel Collector
+  participant Jaeger
+
+  User->>UI: Open app and submit action
+  UI->>API: HTTP request
+  API->>Auth: Validate local credentials or OAuth session
+  Auth-->>API: Authenticated identity
+  API->>DB: Read or write application data
+  DB-->>API: Persisted state
+  API-->>UI: JSON response / JWT / business result
+
+  API-->>OTel: Emit trace spans
+  OTel-->>Jaeger: Forward local trace data
+  User->>Jaeger: Inspect traces during debugging
+```
+
 ## Runtime Components
 
 ### Frontend
