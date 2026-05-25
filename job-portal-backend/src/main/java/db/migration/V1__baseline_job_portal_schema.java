@@ -119,9 +119,9 @@ public class V1__baseline_job_portal_schema extends BaseJavaMigration {
                 """);
         execute(connection, """
                 UPDATE jobs
-                SET created_at = COALESCE(created_at, CAST(posted_date AS TIMESTAMP), %s)
+                SET created_at = COALESCE(created_at, %s, %s)
                 WHERE created_at IS NULL
-                """.formatted(currentTimestamp()));
+                """.formatted(postedDateTimestampExpression(mysql), currentTimestamp()));
         updateNullTimestamps(connection, "jobs", "updated_at", currentTimestamp());
 
         enforceDateNotNull(connection, "jobs", "posted_date", mysql);
@@ -292,6 +292,10 @@ public class V1__baseline_job_portal_schema extends BaseJavaMigration {
 
     private String currentTimestamp() {
         return "CURRENT_TIMESTAMP(6)";
+    }
+
+    private String postedDateTimestampExpression(boolean mysql) {
+        return mysql ? "CAST(posted_date AS DATETIME(6))" : "CAST(posted_date AS TIMESTAMP)";
     }
 
     private String currentSchema(Connection connection) throws SQLException {
