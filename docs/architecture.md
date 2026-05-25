@@ -143,6 +143,15 @@ Relevant files:
 - `job-portal-frontend/src/store/store.js`
 - `job-portal-frontend/src/config/backend.js`
 
+Representative UI and state files:
+
+- `job-portal-frontend/src/components/Login.jsx`
+- `job-portal-frontend/src/components/OAuthLogin.jsx`
+- `job-portal-frontend/src/components/AdminDashboard.jsx`
+- `job-portal-frontend/src/components/ApplicantDashboard.jsx`
+- `job-portal-frontend/src/store/userActions.js`
+- `job-portal-frontend/src/store/userReducer.js`
+
 ### Backend
 
 The backend lives in `job-portal-backend` and uses Spring Boot 3 with Java 21.
@@ -161,6 +170,17 @@ Relevant files:
 - `job-portal-backend/pom.xml`
 - `job-portal-backend/src/main/resources/application.yml`
 
+Representative backend implementation files:
+
+- `job-portal-backend/src/main/java/net/jrodolfo/jobportal/JobportalApplication.java`
+- `job-portal-backend/src/main/java/net/jrodolfo/jobportal/controller/JobController.java`
+- `job-portal-backend/src/main/java/net/jrodolfo/jobportal/controller/ApplicationController.java`
+- `job-portal-backend/src/main/java/net/jrodolfo/jobportal/controller/LoginController.java`
+- `job-portal-backend/src/main/java/net/jrodolfo/jobportal/controller/OAuthController.java`
+- `job-portal-backend/src/main/java/net/jrodolfo/jobportal/service/JobService.java`
+- `job-portal-backend/src/main/java/net/jrodolfo/jobportal/service/ApplicationService.java`
+- `job-portal-backend/src/main/java/net/jrodolfo/jobportal/service/UserService.java`
+
 The backend is intentionally treated as a reusable REST/OpenAPI surface rather
 than a private transport layer only for the bundled frontend. That is reflected
 in the Swagger exposure, the Insomnia assets under `docs/insomnia`, and the
@@ -177,6 +197,16 @@ The backend currently uses Hibernate schema updates through
 `spring.jpa.hibernate.ddl-auto=update`, which is documented as an explicit
 architectural choice in ADR 0009.
 
+Representative persistence files:
+
+- `job-portal-backend/src/main/java/net/jrodolfo/jobportal/model/User.java`
+- `job-portal-backend/src/main/java/net/jrodolfo/jobportal/model/Job.java`
+- `job-portal-backend/src/main/java/net/jrodolfo/jobportal/model/Application.java`
+- `job-portal-backend/src/main/java/net/jrodolfo/jobportal/repository/UserRepository.java`
+- `job-portal-backend/src/main/java/net/jrodolfo/jobportal/repository/JobRepository.java`
+- `job-portal-backend/src/main/java/net/jrodolfo/jobportal/repository/ApplicationRepository.java`
+- `docs/database/queries.sql`
+
 ### Authentication Model
 
 The project uses a hybrid authentication model:
@@ -187,6 +217,16 @@ The project uses a hybrid authentication model:
 
 This keeps the project useful both as a runnable application and as an example
 of more realistic auth integration.
+
+Representative authentication files:
+
+- `job-portal-backend/src/main/java/net/jrodolfo/jobportal/config/SecurityConfig.java`
+- `job-portal-backend/src/main/java/net/jrodolfo/jobportal/config/JwtAuthFilter.java`
+- `job-portal-backend/src/main/java/net/jrodolfo/jobportal/util/JwtUtil.java`
+- `job-portal-backend/src/main/java/net/jrodolfo/jobportal/controller/LoginController.java`
+- `job-portal-backend/src/main/java/net/jrodolfo/jobportal/controller/OAuthController.java`
+- `job-portal-frontend/src/components/Login.jsx`
+- `job-portal-frontend/src/components/OAuthLogin.jsx`
 
 ## Local Runtime Topology
 
@@ -206,6 +246,12 @@ Relevant files:
 - `docker-compose.prod.yml`
 - `scripts/local/start.sh`
 - `scripts/local/stop.sh`
+
+Supporting files:
+
+- `job-portal-frontend/Dockerfile`
+- `job-portal-backend/Dockerfile`
+- `docs/insomnia/README.md`
 
 This arrangement is important because it makes the repo runnable as a complete
 system instead of a loose set of code folders.
@@ -227,6 +273,11 @@ Relevant files:
 - `docker-bake.hcl`
 - `scripts/local/upload-docker-images.sh`
 
+Supporting files:
+
+- `docker-compose.prod.yml`
+- `docs/otel/collector-prod.yaml`
+
 ## Observability Model
 
 Observability is built around OpenTelemetry with a collector-centered design.
@@ -243,6 +294,11 @@ Relevant files:
 - `docker-compose.prod.yml`
 - `job-portal-backend/Dockerfile`
 
+Supporting backend files:
+
+- `job-portal-backend/src/main/resources/application.yml`
+- `job-portal-backend/README.md`
+
 ## Security Boundary
 
 The backend is the main security boundary of the system.
@@ -255,6 +311,14 @@ The frontend does not directly own auth policy. Instead:
 
 This is one of the most important architectural choices in the repo because it
 keeps security behavior centralized and easier to reason about.
+
+Code areas that reinforce this boundary:
+
+- `job-portal-backend/src/main/java/net/jrodolfo/jobportal/config/SecurityConfig.java`
+- `job-portal-backend/src/main/java/net/jrodolfo/jobportal/config/JwtAuthFilter.java`
+- `job-portal-backend/src/main/java/net/jrodolfo/jobportal/controller/LoginController.java`
+- `job-portal-backend/src/main/java/net/jrodolfo/jobportal/controller/OAuthController.java`
+- `job-portal-frontend/src/config/backend.js`
 
 ## Documentation and Operational Assets
 
