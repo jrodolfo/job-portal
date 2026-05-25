@@ -69,6 +69,11 @@ How to stop everything:
 bash scripts/local/stop.sh
 ```
 
+Default local login credentials:
+
+- Applicant user: `user` / `user123`
+- Admin user: `admin` / `admin123`
+
 If you prefer to run Docker Compose directly instead of using the helper script:
 
 ```bash
@@ -80,6 +85,7 @@ First-run expectations:
 - a first build can take several minutes because Docker may need to pull base images and build both application images
 - the backend now runs Flyway on startup to apply the baseline schema migration
 - the stack is ready when `docker compose ps` shows the containers running and the frontend URL loads in the browser
+- the frontend can load before the backend is healthy, so if login fails, check `http://localhost:8080` and the backend container status too
 
 If you run the script from inside `scripts/local`, use:
 
@@ -581,6 +587,28 @@ docker compose logs -f backend
 ```
 
 The backend may still be waiting for MySQL or applying Flyway migrations.
+
+### The backend keeps restarting after a failed local Flyway migration
+
+This usually means MySQL still has a failed migration record in the local Docker volume. For a local development reset, remove the containers and the MySQL volume, then start again:
+
+```bash
+docker compose down -v
+bash scripts/local/start.sh
+```
+
+This is the fastest recovery path when you do not need to preserve local database contents.
+
+### The login page says `Invalid credentials`, but the backend URL is down
+
+In that case the message is misleading. The frontend login form can still load while the backend container is unavailable. Check:
+
+```bash
+docker compose ps
+docker compose logs -f backend
+```
+
+If `job-portal-backend` is restarting, fix the backend startup problem first, then try logging in again with `user` / `user123`.
 
 ## Contact
 
