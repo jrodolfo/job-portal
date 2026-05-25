@@ -166,7 +166,7 @@ Related ADR:
 - backend owns persistence, auth, API contracts, and business logic
 - MySQL owns runtime data persistence
 - root-level compose and scripts own operational orchestration
-- docs own API exploration, observability config, and support assets
+- docs own API exploration, observability config, and operational assets
 
 ### Practical full-stack developer experience
 
@@ -271,7 +271,7 @@ Related ADR:
 If the system needs to evolve, likely next steps would be:
 
 - introduce a stronger schema migration strategy than runtime `ddl-auto=update`
-- formalize deployment beyond EC2-oriented scripts if infrastructure grows
+- formalize deployment beyond the current Linux host deployment scripts if infrastructure grows
 - add richer CI coverage for frontend and backend verification
 - decide whether auth should converge on one primary model
 - deepen observability beyond tracing-only emphasis if operational needs expand
@@ -285,7 +285,7 @@ emphasize four things:
 - the backend is the primary architectural boundary for persistence, security,
   and API contracts
 - the project includes operational concerns such as Docker Compose,
-  multi-architecture images, EC2-oriented deployment, and tracing
+  multi-architecture images, Linux host deployment, and tracing
 - the documentation now captures both the current design and the reasoning
   behind the main long-lived decisions
 
@@ -293,7 +293,7 @@ emphasize four things:
 
 - hybrid authentication with local auth, Google OAuth2, and JWT
 - OpenTelemetry collector-based observability instead of only app-local logging
-- a repo structure that supports both local full-stack work and EC2-oriented deployment
+- a repo structure that supports both local full-stack work and Linux host deployment
 - a backend that remains reusable through REST/OpenAPI, not only through the bundled UI
 
 ### What tradeoffs were made
@@ -308,7 +308,7 @@ emphasize four things:
 - **Introduce formal schema migrations when the database lifecycle grows more complex:** Right now `ddl-auto=update` keeps local setup simple, which is useful for a project that still values fast iteration. The limitation is that it does not provide a clear, versioned history of schema changes. If the data model grows, if multiple environments need tighter rollout control, or if deployments become less manual, I would move to a tool such as Flyway or Liquibase so schema evolution becomes explicit, reviewable, and safer to promote across environments.
 - **Expand CI to verify both frontend and backend behavior more deeply:** The repository already has a useful baseline CI story, but a stronger pipeline would give more confidence that architectural boundaries are still working as expected. I would extend CI to run backend tests, frontend tests, and a small integration-level verification path so changes in authentication, API contracts, or container orchestration are caught earlier. The reason is simple: once a project spans UI, API, persistence, and deployment assets, shallow CI stops being enough.
 - **Add richer architecture references to specific backend packages and frontend flows:** The current architecture docs describe the system well at the component level, but they could become even more actionable by mapping major concepts to exact implementation areas. For example, I would tie the security discussion to the Spring Security configuration classes, the persistence discussion to the JPA/domain packages, and the frontend discussion to the main route, store, and auth-related components. That would make the docs more useful not only during technical reviews, but also during future maintenance when someone needs to jump from an architectural concept straight into the code.
-- **Formalize deployment further if the project grows beyond the current EC2-oriented model:** The current deployment story is pragmatic and works well for the repo’s scope: Docker Compose, multi-architecture images, and prod scripts are enough to support an EC2-style flow. If the project starts needing repeatable team-operated releases, stronger environment parity, or more automated rollback and promotion behavior, I would move toward a more formal deployment pipeline. That could mean codifying more infrastructure assumptions, shifting more release behavior into CI/CD, and reducing the amount of manual operational knowledge currently carried in scripts and docs.
+- **Formalize deployment further if the project grows beyond the current Linux host model:** The current deployment story is pragmatic and works well for the repo’s scope: Docker Compose, multi-architecture images, and prod scripts are enough to support the current host-based deployment flow. If the project starts needing repeatable team-operated releases, stronger environment parity, or more automated rollback and promotion behavior, I would move toward a more formal deployment pipeline. That could mean codifying more infrastructure assumptions, shifting more release behavior into CI/CD, and reducing the amount of manual operational knowledge currently carried in scripts and docs.
 
 ## Where To Read More
 

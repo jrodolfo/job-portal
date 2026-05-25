@@ -1,12 +1,65 @@
-# React + Vite
+# Job Portal Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This module is the React frontend for the `Job Portal` repository.
 
-Currently, two official plugins are available:
+It provides the browser UI for:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- login and OAuth-related flows
+- applicant and admin interactions
+- navigation and page composition
+- client-side state management
+- HTTP calls to the Spring Boot backend
 
-## Expanding the ESLint configuration
+## Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- React 19
+- Vite 6
+- Redux Toolkit
+- React Router
+- Axios
+- Bootstrap 5
+- Vitest + Testing Library
+
+## Run the Frontend Independently
+
+From the repository root:
+
+```bash
+cd job-portal-frontend
+npm install
+npm run dev
+```
+
+The dev server runs on:
+
+- `http://localhost:5173`
+
+By default, the frontend expects the backend to be available at the URL defined
+in:
+
+- `src/config/backend.js`
+
+In the normal full-stack workflow, the frontend is usually run together with
+the backend, MySQL, and observability services through the root
+`docker-compose.yml`.
+
+## Tests
+
+Run the frontend test suite with:
+
+```bash
+npm test
+```
+
+Or run coverage with:
+
+```bash
+npm run test:coverage
+```
+
+## Related Repository Docs
+
+- Root project overview: [../README.md](../README.md)
+- Architecture reference: [../docs/architecture.md](../docs/architecture.md)
+- Architecture walkthrough: [../docs/architecture-walkthrough.md](../docs/architecture-walkthrough.md)
+- Architecture Decision Records: [../docs/adr/README.md](../docs/adr/README.md)

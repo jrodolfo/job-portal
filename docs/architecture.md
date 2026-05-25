@@ -258,8 +258,9 @@ system instead of a loose set of code folders.
 
 ## Deployment Shape
 
-The repository is designed to support EC2-oriented deployment workflows even
-though it remains easy to run locally.
+The repository is designed to support host-based deployment workflows on Linux
+machines, including EC2-style environments, even though it remains easy to run
+locally.
 
 Two deployment-related ideas are especially important:
 

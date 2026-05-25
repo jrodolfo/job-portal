@@ -441,7 +441,7 @@ Authentication in Swagger UI:
 
 1. Use **Authorize** and provide Basic credentials for endpoints protected with `basicAuth`.
 2. For bearer-protected endpoints, first call `/api/auth/login`, copy the returned token, and authorize with:
-   - `Bearer <token>`
+   - `<token>`
 
 ## Contact
 
