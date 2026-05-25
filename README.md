@@ -69,7 +69,7 @@ How to stop everything:
 bash scripts/local/stop.sh
 ```
 
-Default local login credentials:
+Default local frontend login credentials:
 
 - Applicant user: `user` / `user123`
 - Admin user: `admin` / `admin123`
