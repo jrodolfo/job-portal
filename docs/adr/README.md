@@ -75,3 +75,4 @@ Start new records from [template.md](template.md).
 - [0008-keep-api-exploration-and-ops-assets-alongside-the-codebase.md](0008-keep-api-exploration-and-ops-assets-alongside-the-codebase.md)
 - [0009-use-runtime-ddl-auto-update-for-now.md](0009-use-runtime-ddl-auto-update-for-now.md)
 - [0010-publish-multi-architecture-docker-images-from-the-repo.md](0010-publish-multi-architecture-docker-images-from-the-repo.md)
+- [0011-keep-the-backend-rest-openapi-first-and-reusable.md](0011-keep-the-backend-rest-openapi-first-and-reusable.md)

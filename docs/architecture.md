@@ -161,6 +161,11 @@ Relevant files:
 - `job-portal-backend/pom.xml`
 - `job-portal-backend/src/main/resources/application.yml`
 
+The backend is intentionally treated as a reusable REST/OpenAPI surface rather
+than a private transport layer only for the bundled frontend. That is reflected
+in the Swagger exposure, the Insomnia assets under `docs/insomnia`, and the
+curl-oriented examples in the root README.
+
 ### Persistence
 
 The system uses MySQL as the primary runtime database.

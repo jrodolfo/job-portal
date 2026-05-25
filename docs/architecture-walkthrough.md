@@ -68,9 +68,10 @@ Why:
 - the frontend stays focused on UI concerns instead of absorbing backend policy
 - tools like Swagger, Insomnia, and curl can use the same backend contracts
 
-Related ADR:
+Related ADRs:
 
 - [ADR 0002](./adr/0002-keep-react-frontend-separate-from-spring-boot-backend.md)
+- [ADR 0011](./adr/0011-keep-the-backend-rest-openapi-first-and-reusable.md)
 
 ### 3. Use MySQL as the real application database
 
@@ -215,6 +216,7 @@ Short answer:
 Related ADR:
 
 - [ADR 0002](./adr/0002-keep-react-frontend-separate-from-spring-boot-backend.md)
+- [ADR 0011](./adr/0011-keep-the-backend-rest-openapi-first-and-reusable.md)
 
 ### Why use Docker Compose if the backend and frontend can run separately?
 
