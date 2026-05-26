@@ -53,6 +53,9 @@ const formatStatus = (status) => {
 const AdminDashboard = () => {
     const [jobs, setJobs] = useState([]);
     const [applications, setApplications] = useState([]);
+    const [jobSearchTerm, setJobSearchTerm] = useState("");
+    const [jobFilterStatus, setJobFilterStatus] = useState("ALL");
+    const [jobSortOrder, setJobSortOrder] = useState("newest");
     const [applicationSearchTerm, setApplicationSearchTerm] = useState("");
     const [applicationFilterStatus, setApplicationFilterStatus] = useState("ALL");
     const [applicationSortOrder, setApplicationSortOrder] = useState("newest");
@@ -97,6 +100,30 @@ const AdminDashboard = () => {
     };
 
     const getApplicationCount = (jobId) => applications.filter((application) => application?.job?.id === jobId).length;
+
+    const visibleJobs = jobs
+        .filter((job) => {
+            const matchesStatus = jobFilterStatus === "ALL" || job.status === jobFilterStatus;
+            const normalizedSearchTerm = jobSearchTerm.trim().toLowerCase();
+
+            if (!normalizedSearchTerm) {
+                return matchesStatus;
+            }
+
+            const title = job.title?.toLowerCase() || "";
+            const company = job.company?.toLowerCase() || "";
+            return matchesStatus && (title.includes(normalizedSearchTerm) || company.includes(normalizedSearchTerm));
+        })
+        .sort((left, right) => {
+            const leftTimestamp = new Date(left.createdAt || left.postedDate || 0).getTime();
+            const rightTimestamp = new Date(right.createdAt || right.postedDate || 0).getTime();
+
+            if (jobSortOrder === "oldest") {
+                return leftTimestamp - rightTimestamp;
+            }
+
+            return rightTimestamp - leftTimestamp;
+        });
 
     const visibleApplications = applications
         .filter((application) => {
@@ -329,8 +356,48 @@ const AdminDashboard = () => {
 
                     <div className="col-lg-7">
                         <h2 className="section-title">Jobs</h2>
+                        <div className="row g-2 mb-3">
+                            <div className="col-md-5">
+                                <label className="form-label body-text" htmlFor="job-search">Search Jobs</label>
+                                <input
+                                    id="job-search"
+                                    className="form-control"
+                                    placeholder="Search by title or company"
+                                    value={jobSearchTerm}
+                                    onChange={(event) => setJobSearchTerm(event.target.value)}
+                                />
+                            </div>
+                            <div className="col-md-4">
+                                <label className="form-label body-text" htmlFor="job-filter-status">Job Status</label>
+                                <select
+                                    id="job-filter-status"
+                                    className="form-select"
+                                    value={jobFilterStatus}
+                                    onChange={(event) => setJobFilterStatus(event.target.value)}
+                                >
+                                    <option value="ALL">All statuses</option>
+                                    {jobStatuses.map((status) => (
+                                        <option key={status} value={status}>
+                                            {formatStatus(status)}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="col-md-3">
+                                <label className="form-label body-text" htmlFor="job-sort-order">Job Sort</label>
+                                <select
+                                    id="job-sort-order"
+                                    className="form-select"
+                                    value={jobSortOrder}
+                                    onChange={(event) => setJobSortOrder(event.target.value)}
+                                >
+                                    <option value="newest">Newest first</option>
+                                    <option value="oldest">Oldest first</option>
+                                </select>
+                            </div>
+                        </div>
                         <AdminJobList
-                            jobs={jobs}
+                            jobs={visibleJobs}
                             deletingJobId={deletingJobId}
                             formatStatus={formatStatus}
                             getApplicationCount={getApplicationCount}

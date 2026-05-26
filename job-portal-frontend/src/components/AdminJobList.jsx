@@ -8,6 +8,10 @@ const AdminJobList = ({
     onUpdateJobStatus,
     updatingJobStatusId
 }) => {
+    if (jobs.length === 0) {
+        return <p className="body-text">No jobs match the current filters.</p>;
+    }
+
     return (
         <div className="row">
             {jobs.map((job, index) => (

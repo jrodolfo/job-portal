@@ -390,6 +390,139 @@ describe("AdminDashboard", () => {
         expect(screen.getByRole("button", {name: "Close"})).toBeInTheDocument();
     });
 
+    it("should filter jobs by status", async () => {
+        localStorage.setItem("token", "jwt-admin");
+        axios.get
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 1,
+                        title: "Java Developer",
+                        description: "Build APIs",
+                        company: "ACME",
+                        postedDate: "2026-05-25",
+                        status: "OPEN"
+                    },
+                    {
+                        id: 2,
+                        title: "QA Engineer",
+                        description: "Test releases",
+                        company: "Globex",
+                        postedDate: "2026-05-26",
+                        status: "CLOSED"
+                    }
+                ]
+            })
+            .mockResolvedValueOnce({data: []});
+
+        renderWithProviders(<AdminDashboard />);
+        const user = userEvent.setup();
+
+        await waitFor(() => expect(screen.getByLabelText("Job Status")).toBeInTheDocument());
+        await user.selectOptions(screen.getByLabelText("Job Status"), "CLOSED");
+
+        expect(screen.getByText("Title: QA Engineer")).toBeInTheDocument();
+        expect(screen.queryByText("Title: Java Developer")).not.toBeInTheDocument();
+    });
+
+    it("should filter jobs by search term", async () => {
+        localStorage.setItem("token", "jwt-admin");
+        axios.get
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 1,
+                        title: "Java Developer",
+                        description: "Build APIs",
+                        company: "ACME",
+                        postedDate: "2026-05-25",
+                        status: "OPEN"
+                    },
+                    {
+                        id: 2,
+                        title: "QA Engineer",
+                        description: "Test releases",
+                        company: "Globex",
+                        postedDate: "2026-05-26",
+                        status: "CLOSED"
+                    }
+                ]
+            })
+            .mockResolvedValueOnce({data: []});
+
+        renderWithProviders(<AdminDashboard />);
+        const user = userEvent.setup();
+
+        await waitFor(() => expect(screen.getByLabelText("Search Jobs")).toBeInTheDocument());
+        await user.type(screen.getByLabelText("Search Jobs"), "glob");
+
+        expect(screen.getByText("Title: QA Engineer")).toBeInTheDocument();
+        expect(screen.queryByText("Title: Java Developer")).not.toBeInTheDocument();
+    });
+
+    it("should sort jobs by oldest first", async () => {
+        localStorage.setItem("token", "jwt-admin");
+        axios.get
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 1,
+                        title: "Newer Job",
+                        description: "Build APIs",
+                        company: "ACME",
+                        postedDate: "2026-05-26",
+                        status: "OPEN"
+                    },
+                    {
+                        id: 2,
+                        title: "Older Job",
+                        description: "Test releases",
+                        company: "Globex",
+                        postedDate: "2026-05-25",
+                        status: "OPEN"
+                    }
+                ]
+            })
+            .mockResolvedValueOnce({data: []});
+
+        renderWithProviders(<AdminDashboard />);
+        const user = userEvent.setup();
+
+        await waitFor(() => expect(screen.getByLabelText("Job Sort")).toBeInTheDocument());
+        await user.selectOptions(screen.getByLabelText("Job Sort"), "oldest");
+
+        const headings = screen.getAllByText(/^Title:/).map((element) => element.textContent);
+        expect(headings[0]).toBe("Title: Older Job");
+        expect(headings[1]).toBe("Title: Newer Job");
+    });
+
+    it("should show an empty state when no jobs match the current filters", async () => {
+        localStorage.setItem("token", "jwt-admin");
+        axios.get
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 1,
+                        title: "Java Developer",
+                        description: "Build APIs",
+                        company: "ACME",
+                        postedDate: "2026-05-25",
+                        status: "OPEN"
+                    }
+                ]
+            })
+            .mockResolvedValueOnce({data: []});
+
+        renderWithProviders(<AdminDashboard />);
+        const user = userEvent.setup();
+
+        await waitFor(() => expect(screen.getByLabelText("Search Jobs")).toBeInTheDocument());
+        await user.type(screen.getByLabelText("Search Jobs"), "does-not-match");
+
+        expect(screen.getByText("No jobs match the current filters.")).toBeInTheDocument();
+        expect(screen.queryByText("Title: Java Developer")).not.toBeInTheDocument();
+    });
+
     it("should update an application status and refresh the admin list", async () => {
         localStorage.setItem("token", "jwt-admin");
         axios.get
