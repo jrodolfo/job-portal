@@ -14,7 +14,10 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
@@ -56,7 +59,7 @@ class JobControllerTest {
         Job response = new Job("Java Developer", "Build APIs", "ACME");
         response.setId(1L);
 
-        when(jobService.createJob(org.mockito.ArgumentMatchers.any(Job.class))).thenReturn(response);
+        when(jobService.createJob(any(Job.class))).thenReturn(response);
 
         mockMvc.perform(post("/api/jobs")
                         .with(httpBasic("admin", "admin123"))
@@ -66,7 +69,7 @@ class JobControllerTest {
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.title").value("Java Developer"));
 
-        verify(jobService, times(1)).createJob(org.mockito.ArgumentMatchers.any(Job.class));
+        verify(jobService, times(1)).createJob(any(Job.class));
     }
 
     @Test
@@ -85,7 +88,7 @@ class JobControllerTest {
         Job request = new Job("Updated Title", "Updated Desc", "Updated Co");
         Job response = new Job("Updated Title", "Updated Desc", "Updated Co");
         response.setId(1L);
-        when(jobService.updateJob(org.mockito.ArgumentMatchers.eq(1L), org.mockito.ArgumentMatchers.any(Job.class))).thenReturn(response);
+        when(jobService.updateJob(eq(1L), any(Job.class))).thenReturn(response);
 
         mockMvc.perform(put("/api/jobs/1")
                         .with(httpBasic("admin", "admin123"))
@@ -98,6 +101,62 @@ class JobControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void createJobShouldReturnBadRequestWhenTitleIsBlank() throws Exception {
+        Job request = new Job("  ", "Build APIs", "ACME");
+
+        mockMvc.perform(post("/api/jobs")
+                        .with(httpBasic("admin", "admin123"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Title is required"));
+
+        verifyNoInteractions(jobService);
+    }
+
+    @Test
+    void createJobShouldReturnBadRequestWhenCompanyIsBlank() throws Exception {
+        Job request = new Job("Java Developer", "Build APIs", " ");
+
+        mockMvc.perform(post("/api/jobs")
+                        .with(httpBasic("admin", "admin123"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Company is required"));
+
+        verifyNoInteractions(jobService);
+    }
+
+    @Test
+    void createJobShouldReturnBadRequestWhenDescriptionIsBlank() throws Exception {
+        Job request = new Job("Java Developer", "   ", "ACME");
+
+        mockMvc.perform(post("/api/jobs")
+                        .with(httpBasic("admin", "admin123"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Description is required"));
+
+        verifyNoInteractions(jobService);
+    }
+
+    @Test
+    void createJobShouldReturnBadRequestWhenDescriptionIsTooLong() throws Exception {
+        Job request = new Job("Java Developer", "x".repeat(2001), "ACME");
+
+        mockMvc.perform(post("/api/jobs")
+                        .with(httpBasic("admin", "admin123"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Description must be at most 2000 characters"));
+
+        verifyNoInteractions(jobService);
     }
 
     @Test

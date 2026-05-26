@@ -4,6 +4,7 @@ import java.util.List;
 
 import net.jrodolfo.jobportal.exception.ResourceException;
 import net.jrodolfo.jobportal.exception.ErrorResponse;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,7 +35,7 @@ public class JobController {
             @ApiResponse(responseCode = "201", description = "Job created"),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    public ResponseEntity<Job> createJob(@RequestBody Job job) {
+    public ResponseEntity<Job> createJob(@Valid @RequestBody Job job) {
         job = jobService.createJob(job);
         return ResponseEntity.status(HttpStatus.CREATED).body(job);
     }
@@ -70,7 +71,7 @@ public class JobController {
             @ApiResponse(responseCode = "200", description = "Job updated"),
             @ApiResponse(responseCode = "404", description = "Job not found", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    public ResponseEntity<Job> updateJob(@PathVariable @Min(value = 1) long id, @RequestBody Job job) {
+    public ResponseEntity<Job> updateJob(@PathVariable @Min(value = 1) long id, @Valid @RequestBody Job job) {
         try {
             return ResponseEntity.ok(jobService.updateJob(id, job));
         } catch (Exception e) {

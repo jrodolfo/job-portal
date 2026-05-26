@@ -12,6 +12,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -31,14 +33,20 @@ public class Job {
 
     @Column(nullable = false)
     @Schema(description = "Job title.", example = "Java Developer")
+    @NotBlank(message = "Title is required")
+    @Size(max = 255, message = "Title must be at most 255 characters")
     private String title;
 
     @Column(nullable = false, length = 2000)
     @Schema(description = "Job description.", example = "Develop Java applications and services")
+    @NotBlank(message = "Description is required")
+    @Size(max = 2000, message = "Description must be at most 2000 characters")
     private String description;
 
     @Column(nullable = false)
     @Schema(description = "Company name.", example = "ACME")
+    @NotBlank(message = "Company is required")
+    @Size(max = 255, message = "Company must be at most 255 characters")
     private String company;
 
     @Column(nullable = false)
