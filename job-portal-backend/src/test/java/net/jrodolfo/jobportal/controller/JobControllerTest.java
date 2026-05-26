@@ -96,15 +96,19 @@ class JobControllerTest {
     @Test
     void getAllJobsForAdminShouldRequireAdmin() throws Exception {
         Job openJob = new Job("Java Developer", "Build APIs", "ACME");
+        openJob.setId(1L);
         openJob.setStatus(JobStatus.OPEN);
         Job closedJob = new Job("QA Engineer", "Test releases", "ACME");
+        closedJob.setId(2L);
         closedJob.setStatus(JobStatus.CLOSED);
 
         when(jobService.getAllJobs()).thenReturn(List.of(openJob, closedJob));
 
         mockMvc.perform(get("/api/jobs/admin")
                         .with(httpBasic("admin", "admin123")))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].status").value("OPEN"))
+                .andExpect(jsonPath("$[1].status").value("CLOSED"));
 
         mockMvc.perform(get("/api/jobs/admin")
                         .with(httpBasic("user", "user123")))
@@ -274,5 +278,41 @@ class JobControllerTest {
                         .with(httpBasic("user", "user123"))
                         .param("status", "CLOSED"))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void updateJobStatusShouldAllowReopenForAdmin() throws Exception {
+        Job response = new Job("Java Developer", "Build APIs", "ACME");
+        response.setId(1L);
+        response.setStatus(JobStatus.OPEN);
+        when(jobService.updateJobStatus(1L, JobStatus.OPEN)).thenReturn(response);
+
+        mockMvc.perform(put("/api/jobs/1/status")
+                        .with(httpBasic("admin", "admin123"))
+                        .param("status", "OPEN"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.status").value("OPEN"));
+    }
+
+    @Test
+    void updateJobStatusShouldReturnNotFoundWhenJobDoesNotExist() throws Exception {
+        when(jobService.updateJobStatus(99L, JobStatus.CLOSED))
+                .thenThrow(new ResourceException("Job with id 99 was not found"));
+
+        mockMvc.perform(put("/api/jobs/99/status")
+                        .with(httpBasic("admin", "admin123"))
+                        .param("status", "CLOSED"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Job with id 99 was not found"));
+    }
+
+    @Test
+    void updateJobStatusShouldReturnBadRequestForInvalidStatus() throws Exception {
+        mockMvc.perform(put("/api/jobs/1/status")
+                        .with(httpBasic("admin", "admin123"))
+                        .param("status", "NOT_A_REAL_STATUS"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Invalid request"));
     }
 }
