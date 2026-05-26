@@ -93,6 +93,10 @@ describe("AdminDashboard", () => {
         expect(screen.getByText(byTextContent("Java Developer"))).toBeInTheDocument();
         expect(screen.getByText(byTextContent("Status: Open"))).toBeInTheDocument();
         expect(screen.getByText(byTextContent("Applications: 1"))).toBeInTheDocument();
+        expect(within(screen.getByText("Total Jobs").closest(".admin-overview-card")).getByText("1")).toBeInTheDocument();
+        expect(within(screen.getByText("Open Jobs").closest(".admin-overview-card")).getByText("1")).toBeInTheDocument();
+        expect(within(screen.getByText("Closed Jobs").closest(".admin-overview-card")).getByText("0")).toBeInTheDocument();
+        expect(within(screen.getAllByText("Applications")[0].closest(".admin-overview-card")).getByText("1")).toBeInTheDocument();
         expect(screen.getByText("Open: 1 | Closed: 0")).toBeInTheDocument();
         expect(screen.getByText("Applied: 1 | Reviewing: 0 | Accepted: 0 | Rejected: 0 | Withdrawn: 0")).toBeInTheDocument();
     });

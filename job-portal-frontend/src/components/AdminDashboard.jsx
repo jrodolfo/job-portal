@@ -374,6 +374,41 @@ const AdminDashboard = () => {
                     <p className="body-text mb-0">Manage jobs and applications.</p>
                 </div>
 
+                <div className="row g-3 admin-overview-grid mb-4">
+                    <div className="col-sm-6 col-xl-3">
+                        <div className="card admin-overview-card admin-overview-card-neutral">
+                            <div className="card-body">
+                                <p className="admin-overview-label mb-1">Total Jobs</p>
+                                <p className="admin-overview-value mb-0">{jobs.length}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col-sm-6 col-xl-3">
+                        <div className="card admin-overview-card admin-overview-card-open">
+                            <div className="card-body">
+                                <p className="admin-overview-label mb-1">Open Jobs</p>
+                                <p className="admin-overview-value mb-0">{openJobsCount}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col-sm-6 col-xl-3">
+                        <div className="card admin-overview-card admin-overview-card-closed">
+                            <div className="card-body">
+                                <p className="admin-overview-label mb-1">Closed Jobs</p>
+                                <p className="admin-overview-value mb-0">{closedJobsCount}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col-sm-6 col-xl-3">
+                        <div className="card admin-overview-card admin-overview-card-applications">
+                            <div className="card-body">
+                                <p className="admin-overview-label mb-1">Applications</p>
+                                <p className="admin-overview-value mb-0">{applications.length}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 {statusMessage ? (
                     <div className="alert alert-success" role="status">
                         {statusMessage}
