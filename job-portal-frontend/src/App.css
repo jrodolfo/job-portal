@@ -113,12 +113,12 @@
 }
 
 .job-card-open {
-    border-top-color: var(--accent-blue);
+    border-top-color: var(--accent-green);
 }
 
 .job-card-closed {
-    border-top-color: #8f8e88;
-    background: #f4f3ee;
+    border-top-color: #c6473d;
+    background: #f7ece9;
 }
 
 .accent-1 {
