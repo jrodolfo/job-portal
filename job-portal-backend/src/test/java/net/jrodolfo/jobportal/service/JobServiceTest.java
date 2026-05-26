@@ -67,7 +67,7 @@ class JobServiceTest {
 
         RuntimeException exception = assertThrows(RuntimeException.class, () -> jobService.getJobById(99L));
 
-        assertEquals("Job not found", exception.getMessage());
+        assertEquals("Job with id 99 was not found", exception.getMessage());
     }
 
     @Test
@@ -102,7 +102,7 @@ class JobServiceTest {
 
         RuntimeException ex = assertThrows(RuntimeException.class, () -> jobService.deleteJob(12L));
 
-        assertEquals("Job not found", ex.getMessage());
+        assertEquals("Job with id 12 was not found", ex.getMessage());
         verify(jobRepository, never()).deleteById(12L);
     }
 }

@@ -56,13 +56,7 @@ public class JobController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{id}")
     public ResponseEntity<Job> getJobById(@io.swagger.v3.oas.annotations.Parameter(description = "id of the job to retrieve") @PathVariable @Min(value = 1) long id) {
-        Job job;
-        try {
-            job = jobService.getJobById(id);
-        } catch (Exception e) {
-            throw new ResourceException("Job with id " + id + " was not found");
-        }
-        return ResponseEntity.ok(job);
+        return ResponseEntity.ok(jobService.getJobById(id));
     }
 
     @PutMapping("/{id}")
@@ -72,11 +66,7 @@ public class JobController {
             @ApiResponse(responseCode = "404", description = "Job not found", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     public ResponseEntity<Job> updateJob(@PathVariable @Min(value = 1) long id, @Valid @RequestBody Job job) {
-        try {
-            return ResponseEntity.ok(jobService.updateJob(id, job));
-        } catch (Exception e) {
-            throw new ResourceException("Job with id " + id + " was not found");
-        }
+        return ResponseEntity.ok(jobService.updateJob(id, job));
     }
 
     @DeleteMapping("/{id}")
@@ -86,11 +76,7 @@ public class JobController {
             @ApiResponse(responseCode = "404", description = "Job not found", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     public ResponseEntity<Void> deleteJob(@PathVariable @Min(value = 1) long id) {
-        try {
-            jobService.deleteJob(id);
-        } catch (Exception e) {
-            throw new ResourceException("Job with id " + id + " was not found");
-        }
+        jobService.deleteJob(id);
         return ResponseEntity.noContent().build();
     }
 }

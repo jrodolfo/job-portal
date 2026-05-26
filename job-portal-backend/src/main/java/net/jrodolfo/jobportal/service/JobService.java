@@ -2,6 +2,7 @@ package net.jrodolfo.jobportal.service;
 
 import java.util.List;
 
+import net.jrodolfo.jobportal.exception.ResourceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,12 +28,14 @@ public class JobService {
 
     // Get a job by id
     public Job getJobById(Long id) {
-        return jobRepository.findById(id).orElseThrow(() -> new RuntimeException("Job not found")); // findById(id) method from JPA Repository
+        return jobRepository.findById(id)
+                .orElseThrow(() -> new ResourceException("Job with id " + id + " was not found"));
     }
 
     @Transactional
     public Job updateJob(Long id, Job incomingJob) {
-        Job existingJob = jobRepository.findById(id).orElseThrow(() -> new RuntimeException("Job not found"));
+        Job existingJob = jobRepository.findById(id)
+                .orElseThrow(() -> new ResourceException("Job with id " + id + " was not found"));
 
         existingJob.setTitle(incomingJob.getTitle());
         existingJob.setDescription(incomingJob.getDescription());
@@ -46,7 +49,7 @@ public class JobService {
 
     public void deleteJob(Long id) {
         if (!jobRepository.existsById(id)) {
-            throw new RuntimeException("Job not found");
+            throw new ResourceException("Job with id " + id + " was not found");
         }
         jobRepository.deleteById(id);
     }
