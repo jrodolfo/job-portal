@@ -75,4 +75,100 @@ describe("AdminDashboard", () => {
         expect(await screen.findByText("Job created successfully.")).toBeInTheDocument();
         expect(screen.getByText("Title: Platform Engineer")).toBeInTheDocument();
     });
+
+    it("should enter edit mode and send update request with bearer token", async () => {
+        localStorage.setItem("token", "jwt-admin");
+        axios.get.mockResolvedValueOnce({
+            data: [
+                {
+                    id: 1,
+                    title: "Java Developer",
+                    description: "Build APIs",
+                    company: "ACME",
+                    postedDate: "2026-05-25"
+                }
+            ]
+        });
+        axios.put.mockResolvedValueOnce({
+            data: {
+                id: 1,
+                title: "Senior Java Developer",
+                description: "Build platform APIs",
+                company: "ACME",
+                postedDate: "2026-05-25"
+            }
+        });
+
+        renderWithProviders(<AdminDashboard />);
+        const user = userEvent.setup();
+
+        await waitFor(() => expect(screen.getByRole("button", {name: "Edit"})).toBeInTheDocument());
+        await user.click(screen.getByRole("button", {name: "Edit"}));
+
+        const titleInput = screen.getByLabelText("Title");
+        await user.clear(titleInput);
+        await user.type(titleInput, "Senior Java Developer");
+
+        const descriptionInput = screen.getByLabelText("Description");
+        await user.clear(descriptionInput);
+        await user.type(descriptionInput, "Build platform APIs");
+
+        await user.click(screen.getByRole("button", {name: "Save Changes"}));
+
+        await waitFor(() =>
+            expect(axios.put).toHaveBeenCalledWith(
+                "http://localhost:8080/api/jobs/1",
+                {
+                    title: "Senior Java Developer",
+                    description: "Build platform APIs",
+                    company: "ACME"
+                },
+                {
+                    headers: {
+                        Authorization: "Bearer jwt-admin"
+                    }
+                }
+            )
+        );
+
+        expect(await screen.findByText("Job updated successfully.")).toBeInTheDocument();
+        expect(screen.getByText("Title: Senior Java Developer")).toBeInTheDocument();
+    });
+
+    it("should delete a job after confirmation", async () => {
+        localStorage.setItem("token", "jwt-admin");
+        vi.stubGlobal("confirm", vi.fn(() => true));
+        axios.get.mockResolvedValueOnce({
+            data: [
+                {
+                    id: 1,
+                    title: "Java Developer",
+                    description: "Build APIs",
+                    company: "ACME",
+                    postedDate: "2026-05-25"
+                }
+            ]
+        });
+        axios.delete.mockResolvedValueOnce({});
+
+        renderWithProviders(<AdminDashboard />);
+        const user = userEvent.setup();
+
+        await waitFor(() => expect(screen.getByRole("button", {name: "Delete"})).toBeInTheDocument());
+        await user.click(screen.getByRole("button", {name: "Delete"}));
+
+        await waitFor(() =>
+            expect(axios.delete).toHaveBeenCalledWith(
+                "http://localhost:8080/api/jobs/1",
+                {
+                    headers: {
+                        Authorization: "Bearer jwt-admin"
+                    }
+                }
+            )
+        );
+
+        expect(await screen.findByText("Job deleted successfully.")).toBeInTheDocument();
+        expect(screen.queryByText("Title: Java Developer")).not.toBeInTheDocument();
+    });
 });

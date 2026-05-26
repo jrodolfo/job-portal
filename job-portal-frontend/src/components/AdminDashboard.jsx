@@ -12,7 +12,9 @@ const emptyForm = {
 const AdminDashboard = () => {
     const [jobs, setJobs] = useState([]);
     const [form, setForm] = useState(emptyForm);
+    const [editingJobId, setEditingJobId] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [deletingJobId, setDeletingJobId] = useState(null);
     const [statusMessage, setStatusMessage] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
 
@@ -34,7 +36,23 @@ const AdminDashboard = () => {
         setForm((prev) => ({...prev, [name]: value}));
     };
 
-    const createJob = async (event) => {
+    const resetForm = () => {
+        setForm(emptyForm);
+        setEditingJobId(null);
+    };
+
+    const showRequestError = (error, fallbackMessage) => {
+        const backendMessage = error?.response?.data?.message;
+        if (error?.response?.status === 401) {
+            setErrorMessage("Your session is missing or expired. Please log in again.");
+        } else if (error?.response?.status === 403) {
+            setErrorMessage("Only admin users can manage jobs.");
+        } else {
+            setErrorMessage(backendMessage || fallbackMessage);
+        }
+    };
+
+    const saveJob = async (event) => {
         event.preventDefault();
         if (isSubmitting) {
             return;
@@ -45,30 +63,80 @@ const AdminDashboard = () => {
         setErrorMessage("");
 
         try {
-            const response = await axios.post(
-                BACKEND_API_URL + "/api/jobs",
-                form,
-                {
-                    headers: {
-                        Authorization: "Bearer " + localStorage.getItem("token")
-                    }
+            const requestConfig = {
+                headers: {
+                    Authorization: "Bearer " + localStorage.getItem("token")
                 }
-            );
+            };
 
-            setJobs((prev) => [response.data, ...prev]);
-            setForm(emptyForm);
-            setStatusMessage("Job created successfully.");
-        } catch (error) {
-            const backendMessage = error?.response?.data?.message;
-            if (error?.response?.status === 401) {
-                setErrorMessage("Your session is missing or expired. Please log in again.");
-            } else if (error?.response?.status === 403) {
-                setErrorMessage("Only admin users can create jobs.");
+            if (editingJobId) {
+                const response = await axios.put(
+                    `${BACKEND_API_URL}/api/jobs/${editingJobId}`,
+                    form,
+                    requestConfig
+                );
+                setJobs((prev) => prev.map((job) => job.id === editingJobId ? response.data : job));
+                setStatusMessage("Job updated successfully.");
             } else {
-                setErrorMessage(backendMessage || "We couldn't create the job right now. Please try again.");
+                const response = await axios.post(
+                    BACKEND_API_URL + "/api/jobs",
+                    form,
+                    requestConfig
+                );
+                setJobs((prev) => [response.data, ...prev]);
+                setStatusMessage("Job created successfully.");
             }
+
+            resetForm();
+        } catch (error) {
+            showRequestError(error, editingJobId
+                ? "We couldn't update the job right now. Please try again."
+                : "We couldn't create the job right now. Please try again.");
         } finally {
             setIsSubmitting(false);
+        }
+    };
+
+    const startEdit = (job) => {
+        setErrorMessage("");
+        setStatusMessage("");
+        setEditingJobId(job.id);
+        setForm({
+            title: job.title,
+            company: job.company,
+            description: job.description
+        });
+    };
+
+    const deleteJob = async (jobId) => {
+        if (deletingJobId) {
+            return;
+        }
+
+        const confirmed = window.confirm("Delete this job?");
+        if (!confirmed) {
+            return;
+        }
+
+        setDeletingJobId(jobId);
+        setErrorMessage("");
+        setStatusMessage("");
+
+        try {
+            await axios.delete(`${BACKEND_API_URL}/api/jobs/${jobId}`, {
+                headers: {
+                    Authorization: "Bearer " + localStorage.getItem("token")
+                }
+            });
+            setJobs((prev) => prev.filter((job) => job.id !== jobId));
+            if (editingJobId === jobId) {
+                resetForm();
+            }
+            setStatusMessage("Job deleted successfully.");
+        } catch (error) {
+            showRequestError(error, "We couldn't delete the job right now. Please try again.");
+        } finally {
+            setDeletingJobId(null);
         }
     };
 
@@ -85,10 +153,10 @@ const AdminDashboard = () => {
                     <div className="col-lg-5">
                         <div className="card login-panel p-4">
                             <div className="card-header login-header text-center">
-                                <h3 className="mb-0 login-title">Add New Job</h3>
+                                <h3 className="mb-0 login-title">{editingJobId ? "Edit Job" : "Add New Job"}</h3>
                             </div>
                             <div className="card-body">
-                                <form onSubmit={createJob}>
+                                <form onSubmit={saveJob}>
                                     <div className="mb-3">
                                         <label className="form-label body-text" htmlFor="job-title">Title</label>
                                         <input
@@ -125,13 +193,26 @@ const AdminDashboard = () => {
                                     </div>
                                     {statusMessage ? <p className="body-text text-success">{statusMessage}</p> : null}
                                     {errorMessage ? <p className="body-text text-danger">{errorMessage}</p> : null}
-                                    <button
-                                        type="submit"
-                                        className="btn btn-accent-primary w-100"
-                                        disabled={isSubmitting}
-                                    >
-                                        {isSubmitting ? "Creating..." : "Create Job"}
-                                    </button>
+                                    <div className="d-grid gap-2">
+                                        <button
+                                            type="submit"
+                                            className="btn btn-accent-primary w-100"
+                                            disabled={isSubmitting}
+                                        >
+                                            {isSubmitting
+                                                ? (editingJobId ? "Saving..." : "Creating...")
+                                                : (editingJobId ? "Save Changes" : "Create Job")}
+                                        </button>
+                                        {editingJobId ? (
+                                            <button
+                                                type="button"
+                                                className="btn btn-outline-secondary w-100"
+                                                onClick={resetForm}
+                                            >
+                                                Cancel Edit
+                                            </button>
+                                        ) : null}
+                                    </div>
                                 </form>
                             </div>
                         </div>
@@ -148,6 +229,23 @@ const AdminDashboard = () => {
                                             <p className="body-text">Details: {job.description}</p>
                                             <p className="body-text">Company: {job.company}</p>
                                             <p className="body-text muted-meta">Posted Date: {job.postedDate || "Created today"}</p>
+                                            <div className="d-flex gap-2">
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-accent-secondary"
+                                                    onClick={() => startEdit(job)}
+                                                >
+                                                    Edit
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-outline-danger"
+                                                    disabled={deletingJobId === job.id}
+                                                    onClick={() => deleteJob(job.id)}
+                                                >
+                                                    {deletingJobId === job.id ? "Deleting..." : "Delete"}
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
