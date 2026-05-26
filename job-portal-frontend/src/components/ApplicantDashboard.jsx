@@ -195,12 +195,20 @@ const ApplicantDashboard = () => {
                             <div className="col-sm-4" key={index}>
                                 <div className={`card mb-4 job-card accent-${(index % 3) + 1}`}>
                                     <div className="card-body">
-                                        <h4 className="heading-text">Title: {job.title}</h4>
-                                        <p className="body-text">Details: {job.description}</p>
-                                        <p className="body-text">Company: {job.company}</p>
-                                        <p className="body-text muted-meta">Posted Date: {job.postedDate}</p>
+                                        <h4 className="heading-text">
+                                            <span className="metadata-label">Title:</span> {job.title}
+                                        </h4>
                                         <p className="body-text">
-                                            Application Status: {formatStatus(applicationsByJobId[job.id]?.status)}
+                                            <span className="metadata-label">Details:</span> {job.description}
+                                        </p>
+                                        <p className="body-text">
+                                            <span className="metadata-label">Company:</span> {job.company}
+                                        </p>
+                                        <p className="body-text muted-meta">
+                                            <span className="metadata-label">Posted Date:</span> {job.postedDate}
+                                        </p>
+                                        <p className="body-text">
+                                            <span className="metadata-label">Application Status:</span> {formatStatus(applicationsByJobId[job.id]?.status)}
                                         </p>
                                         <p className="body-text muted-meta">
                                             {getStatusHelperText(application?.status)}

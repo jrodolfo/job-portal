@@ -30,6 +30,8 @@ const openApplicationsTab = async (user) => {
     await openAdminTab(user, "Applications");
 };
 
+const byTextContent = (text) => (_, element) => element?.textContent === text;
+
 describe("AdminDashboard", () => {
     beforeEach(() => {
         vi.clearAllMocks();
@@ -78,9 +80,9 @@ describe("AdminDashboard", () => {
         expect(screen.getByRole("tab", {name: "Jobs"})).toHaveAttribute("aria-selected", "true");
         expect(screen.getByRole("tab", {name: "Add Job"})).toBeInTheDocument();
         expect(screen.getByRole("tab", {name: "Applications"})).toBeInTheDocument();
-        expect(screen.getByText("Title: Java Developer")).toBeInTheDocument();
-        expect(screen.getByText("Status: Open")).toBeInTheDocument();
-        expect(screen.getByText("Applications: 1")).toBeInTheDocument();
+        expect(screen.getByText(byTextContent("Title: Java Developer"))).toBeInTheDocument();
+        expect(screen.getByText(byTextContent("Status: Open"))).toBeInTheDocument();
+        expect(screen.getByText(byTextContent("Applications: 1"))).toBeInTheDocument();
     });
 
     it("should switch between jobs, add job, and applications tabs", async () => {
@@ -112,7 +114,7 @@ describe("AdminDashboard", () => {
         renderWithProviders(<AdminDashboard />);
         const user = userEvent.setup();
 
-        await waitFor(() => expect(screen.getByText("Title: Java Developer")).toBeInTheDocument());
+        await waitFor(() => expect(screen.getByText(byTextContent("Title: Java Developer"))).toBeInTheDocument());
         expect(screen.getByRole("tab", {name: "Jobs"})).toHaveAttribute("aria-selected", "true");
 
         await openAddJobTab(user);
@@ -121,7 +123,7 @@ describe("AdminDashboard", () => {
 
         await openApplicationsTab(user);
         expect(screen.getByRole("heading", {name: "Applied (1)"})).toBeInTheDocument();
-        expect(screen.getByText("Applicant: user")).toBeInTheDocument();
+        expect(screen.getByText(byTextContent("Applicant: user"))).toBeInTheDocument();
     });
 
     it("should show the posted date with time when a timestamp is available", async () => {
@@ -146,7 +148,7 @@ describe("AdminDashboard", () => {
         renderWithProviders(<AdminDashboard />);
 
         const expectedDateTime = jobDateTimeFormatter.format(new Date(createdAt));
-        await waitFor(() => expect(screen.getByText(`Posted Date: ${expectedDateTime}`)).toBeInTheDocument());
+        await waitFor(() => expect(screen.getByText(byTextContent(`Posted Date: ${expectedDateTime}`))).toBeInTheDocument());
     });
 
     it("should send create job request with bearer token and prepend the new job", async () => {
@@ -191,7 +193,7 @@ describe("AdminDashboard", () => {
         );
 
         expect(await screen.findByText("Job created successfully.")).toBeInTheDocument();
-        expect(screen.getByText("Title: Platform Engineer")).toBeInTheDocument();
+        expect(screen.getByText(byTextContent("Title: Platform Engineer"))).toBeInTheDocument();
         expect(screen.getByRole("tab", {name: "Jobs"})).toHaveAttribute("aria-selected", "true");
     });
 
@@ -256,7 +258,7 @@ describe("AdminDashboard", () => {
         );
 
         expect(await screen.findByText("Job updated successfully.")).toBeInTheDocument();
-        expect(screen.getByText("Title: Senior Java Developer")).toBeInTheDocument();
+        expect(screen.getByText(byTextContent("Title: Senior Java Developer"))).toBeInTheDocument();
         expect(screen.getByRole("tab", {name: "Jobs"})).toHaveAttribute("aria-selected", "true");
     });
 
@@ -358,7 +360,7 @@ describe("AdminDashboard", () => {
         );
 
         expect(await screen.findByText("Job deleted successfully.")).toBeInTheDocument();
-        expect(screen.queryByText("Title: Java Developer")).not.toBeInTheDocument();
+        expect(screen.queryByText(byTextContent("Title: Java Developer"))).not.toBeInTheDocument();
     });
 
     it("should show the backend conflict message when deleting a job with applications", async () => {
@@ -394,7 +396,7 @@ describe("AdminDashboard", () => {
         await user.click(screen.getByRole("button", {name: "Delete"}));
 
         expect(await screen.findByText("Cannot delete job with existing applications")).toBeInTheDocument();
-        expect(screen.getByText("Title: Java Developer")).toBeInTheDocument();
+        expect(screen.getByText(byTextContent("Title: Java Developer"))).toBeInTheDocument();
     });
 
     it("should close and reopen a job with the admin status action", async () => {
@@ -457,10 +459,10 @@ describe("AdminDashboard", () => {
         );
 
         expect(await screen.findByText("Job closed successfully.")).toBeInTheDocument();
-        expect(screen.getByText("Status: Closed")).toBeInTheDocument();
+        expect(screen.getByText(byTextContent("Status: Closed"))).toBeInTheDocument();
         expect(screen.getByRole("button", {name: "Reopen"})).toBeInTheDocument();
 
-        const closedCard = screen.getByText("Title: Java Developer").closest(".job-card");
+        const closedCard = screen.getByText(byTextContent("Title: Java Developer")).closest(".job-card");
         expect(closedCard).toHaveClass("job-card-closed");
 
         await user.click(screen.getByRole("button", {name: "Reopen"}));
@@ -481,9 +483,9 @@ describe("AdminDashboard", () => {
         );
 
         expect(await screen.findByText("Job reopened successfully.")).toBeInTheDocument();
-        expect(screen.getByText("Status: Open")).toBeInTheDocument();
+        expect(screen.getByText(byTextContent("Status: Open"))).toBeInTheDocument();
         expect(screen.getByRole("button", {name: "Close"})).toBeInTheDocument();
-        const reopenedCard = screen.getByText("Title: Java Developer").closest(".job-card");
+        const reopenedCard = screen.getByText(byTextContent("Title: Java Developer")).closest(".job-card");
         expect(reopenedCard).toHaveClass("job-card-open");
     });
 
@@ -518,8 +520,8 @@ describe("AdminDashboard", () => {
         await waitFor(() => expect(screen.getByLabelText("Job Status")).toBeInTheDocument());
         await user.selectOptions(screen.getByLabelText("Job Status"), "CLOSED");
 
-        expect(screen.getByText("Title: QA Engineer")).toBeInTheDocument();
-        expect(screen.queryByText("Title: Java Developer")).not.toBeInTheDocument();
+        expect(screen.getByText(byTextContent("Title: QA Engineer"))).toBeInTheDocument();
+        expect(screen.queryByText(byTextContent("Title: Java Developer"))).not.toBeInTheDocument();
     });
 
     it("should filter jobs by search term", async () => {
@@ -553,8 +555,8 @@ describe("AdminDashboard", () => {
         await waitFor(() => expect(screen.getByLabelText("Search Jobs")).toBeInTheDocument());
         await user.type(screen.getByLabelText("Search Jobs"), "glob");
 
-        expect(screen.getByText("Title: QA Engineer")).toBeInTheDocument();
-        expect(screen.queryByText("Title: Java Developer")).not.toBeInTheDocument();
+        expect(screen.getByText(byTextContent("Title: QA Engineer"))).toBeInTheDocument();
+        expect(screen.queryByText(byTextContent("Title: Java Developer"))).not.toBeInTheDocument();
     });
 
     it("should sort jobs by oldest first", async () => {
@@ -588,7 +590,7 @@ describe("AdminDashboard", () => {
         await waitFor(() => expect(screen.getByLabelText("Job Sort")).toBeInTheDocument());
         await user.selectOptions(screen.getByLabelText("Job Sort"), "oldest");
 
-        const headings = screen.getAllByText(/^Title:/).map((element) => element.textContent);
+        const headings = screen.getAllByRole("heading", {level: 4}).map((element) => element.textContent);
         expect(headings[0]).toBe("Title: Older Job");
         expect(headings[1]).toBe("Title: Newer Job");
     });
@@ -617,7 +619,7 @@ describe("AdminDashboard", () => {
         await user.type(screen.getByLabelText("Search Jobs"), "does-not-match");
 
         expect(screen.getByText("No jobs match the current filters.")).toBeInTheDocument();
-        expect(screen.queryByText("Title: Java Developer")).not.toBeInTheDocument();
+        expect(screen.queryByText(byTextContent("Title: Java Developer"))).not.toBeInTheDocument();
     });
 
     it("should update an application status and refresh the admin list", async () => {
@@ -677,7 +679,7 @@ describe("AdminDashboard", () => {
         );
 
         expect(await screen.findByText("Application status updated successfully.")).toBeInTheDocument();
-        expect(screen.getByText("Current Status: Reviewing")).toBeInTheDocument();
+        expect(screen.getByText(byTextContent("Current Status: Reviewing"))).toBeInTheDocument();
     });
 
     it("should filter applications by status", async () => {
@@ -711,8 +713,8 @@ describe("AdminDashboard", () => {
         await user.selectOptions(screen.getByLabelText("Filter by Status"), "REVIEWING");
 
         expect(screen.getByRole("heading", {name: "Reviewing (1)"})).toBeInTheDocument();
-        expect(screen.getByText("Applicant: bob")).toBeInTheDocument();
-        expect(screen.queryByText("Applicant: alice")).not.toBeInTheDocument();
+        expect(screen.getByText(byTextContent("Applicant: bob"))).toBeInTheDocument();
+        expect(screen.queryByText(byTextContent("Applicant: alice"))).not.toBeInTheDocument();
     });
 
     it("should filter applications by search term", async () => {
@@ -746,8 +748,8 @@ describe("AdminDashboard", () => {
         await user.type(screen.getByLabelText("Search Applications"), "qa");
 
         expect(screen.getByRole("heading", {name: "Reviewing (1)"})).toBeInTheDocument();
-        expect(screen.getByText("Applicant: bob")).toBeInTheDocument();
-        expect(screen.queryByText("Applicant: alice")).not.toBeInTheDocument();
+        expect(screen.getByText(byTextContent("Applicant: bob"))).toBeInTheDocument();
+        expect(screen.queryByText(byTextContent("Applicant: alice"))).not.toBeInTheDocument();
     });
 
     it("should group applications by status with counts", async () => {
@@ -780,8 +782,8 @@ describe("AdminDashboard", () => {
         await waitFor(() => expect(screen.getByRole("heading", {name: "Reviewing (1)"})).toBeInTheDocument());
         expect(screen.getByRole("heading", {name: "Applied (1)"})).toBeInTheDocument();
         expect(screen.getByRole("heading", {name: "Reviewing (1)"})).toBeInTheDocument();
-        const appliedCard = screen.getByText("Applicant: alice").closest(".application-card");
-        const reviewingCard = screen.getByText("Applicant: bob").closest(".application-card");
+        const appliedCard = screen.getByText(byTextContent("Applicant: alice")).closest(".application-card");
+        const reviewingCard = screen.getByText(byTextContent("Applicant: bob")).closest(".application-card");
         expect(appliedCard).toHaveClass("application-card-applied");
         expect(reviewingCard).toHaveClass("application-card-reviewing");
     });
@@ -813,8 +815,8 @@ describe("AdminDashboard", () => {
         await openApplicationsTab(user);
         await waitFor(() => expect(screen.getByRole("button", {name: "Collapse Applied"})).toBeInTheDocument());
         expect(screen.getByRole("button", {name: "Expand Accepted"})).toBeInTheDocument();
-        expect(screen.getByText("Applicant: alice")).toBeInTheDocument();
-        expect(screen.queryByText("Applicant: bob")).not.toBeInTheDocument();
+        expect(screen.getByText(byTextContent("Applicant: alice"))).toBeInTheDocument();
+        expect(screen.queryByText(byTextContent("Applicant: bob"))).not.toBeInTheDocument();
     });
 
     it("should collapse and expand a status group", async () => {
@@ -838,9 +840,9 @@ describe("AdminDashboard", () => {
         await openApplicationsTab(user);
         await waitFor(() => expect(screen.getByRole("button", {name: "Collapse Applied"})).toBeInTheDocument());
         await user.click(screen.getByRole("button", {name: "Collapse Applied"}));
-        expect(screen.queryByText("Applicant: alice")).not.toBeInTheDocument();
+        expect(screen.queryByText(byTextContent("Applicant: alice"))).not.toBeInTheDocument();
         await user.click(screen.getByRole("button", {name: "Expand Applied"}));
-        expect(screen.getByText("Applicant: alice")).toBeInTheDocument();
+        expect(screen.getByText(byTextContent("Applicant: alice"))).toBeInTheDocument();
     });
 
     it("should move an updated application into the correct status group", async () => {
@@ -877,7 +879,7 @@ describe("AdminDashboard", () => {
         expect(await screen.findByText("Application status updated successfully.")).toBeInTheDocument();
         expect(screen.queryByRole("heading", {name: "Applied (1)"})).not.toBeInTheDocument();
         const reviewingGroup = screen.getByTestId("application-group-reviewing");
-        expect(within(reviewingGroup).getByText("Applicant: user")).toBeInTheDocument();
+        expect(within(reviewingGroup).getByText(byTextContent("Applicant: user"))).toBeInTheDocument();
     });
 
     it("should sort applications within groups by oldest first", async () => {

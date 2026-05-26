@@ -97,6 +97,11 @@
     margin: 1rem 0 1.4rem;
 }
 
+.metadata-label {
+    font-weight: 700;
+    color: var(--color-dark);
+}
+
 .job-card {
     height: 100%;
     border: none;

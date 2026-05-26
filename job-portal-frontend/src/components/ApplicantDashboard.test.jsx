@@ -9,6 +9,8 @@ vi.mock('./Navbar', () => ({
     default: () => <div data-testid="navbar-mock">Navbar</div>
 }));
 
+const byTextContent = (text) => (_, element) => element?.textContent === text;
+
 describe('ApplicantDashboard', () => {
     beforeEach(() => {
         vi.clearAllMocks();
@@ -43,9 +45,9 @@ describe('ApplicantDashboard', () => {
                 Authorization: 'Bearer jwt-123'
             }
         });
-        expect(screen.getByText('Title: Java Developer')).toBeInTheDocument();
-        expect(screen.getByText('Company: ACME')).toBeInTheDocument();
-        expect(screen.getByText('Application Status: Not applied')).toBeInTheDocument();
+        expect(screen.getByText(byTextContent('Title: Java Developer'))).toBeInTheDocument();
+        expect(screen.getByText(byTextContent('Company: ACME'))).toBeInTheDocument();
+        expect(screen.getByText(byTextContent('Application Status: Not applied'))).toBeInTheDocument();
     });
 
     it('should send apply request with bearer token', async () => {
@@ -90,7 +92,7 @@ describe('ApplicantDashboard', () => {
             )
         );
         expect(await screen.findByText('Application submitted successfully.')).toBeInTheDocument();
-        expect(screen.getByText('Application Status: Applied')).toBeInTheDocument();
+        expect(screen.getByText(byTextContent('Application Status: Applied'))).toBeInTheDocument();
         expect(screen.getByText('Your application has been submitted and is waiting for review.')).toBeInTheDocument();
         expect(screen.getByRole('button', { name: 'Withdraw' })).toBeInTheDocument();
     });
@@ -154,7 +156,7 @@ describe('ApplicantDashboard', () => {
 
         renderWithProviders(<ApplicantDashboard />);
 
-        expect(await screen.findByText('Application Status: Applied')).toBeInTheDocument();
+        expect(await screen.findByText(byTextContent('Application Status: Applied'))).toBeInTheDocument();
         expect(screen.getByText('Your application has been submitted and is waiting for review.')).toBeInTheDocument();
         expect(screen.getByRole('button', { name: 'Withdraw' })).toBeInTheDocument();
         expect(axios.post).not.toHaveBeenCalled();
@@ -216,7 +218,7 @@ describe('ApplicantDashboard', () => {
         );
 
         expect(await screen.findByText('Application withdrawn successfully.')).toBeInTheDocument();
-        expect(screen.getByText('Application Status: Withdrawn')).toBeInTheDocument();
+        expect(screen.getByText(byTextContent('Application Status: Withdrawn'))).toBeInTheDocument();
         expect(screen.getByText('You withdrew this application and can apply again.')).toBeInTheDocument();
         expect(screen.getByRole('button', { name: 'Apply Again' })).toBeInTheDocument();
     });
@@ -290,7 +292,7 @@ describe('ApplicantDashboard', () => {
 
         renderWithProviders(<ApplicantDashboard />);
 
-        expect(await screen.findByText('Application Status: Reviewing')).toBeInTheDocument();
+        expect(await screen.findByText(byTextContent('Application Status: Reviewing'))).toBeInTheDocument();
         expect(screen.getByText('Your application is currently under review.')).toBeInTheDocument();
     });
 
@@ -321,7 +323,7 @@ describe('ApplicantDashboard', () => {
 
         renderWithProviders(<ApplicantDashboard />);
 
-        expect(await screen.findByText('Application Status: Accepted')).toBeInTheDocument();
+        expect(await screen.findByText(byTextContent('Application Status: Accepted'))).toBeInTheDocument();
         expect(screen.getByText('Your application has been accepted.')).toBeInTheDocument();
     });
 
@@ -352,7 +354,7 @@ describe('ApplicantDashboard', () => {
 
         renderWithProviders(<ApplicantDashboard />);
 
-        expect(await screen.findByText('Application Status: Rejected')).toBeInTheDocument();
+        expect(await screen.findByText(byTextContent('Application Status: Rejected'))).toBeInTheDocument();
         expect(screen.getByText('Your application was not selected.')).toBeInTheDocument();
     });
 });

@@ -45,12 +45,24 @@ const AdminJobList = ({
                 <div className="col-md-6" key={job.id ?? `${job.title}-${index}`}>
                         <div className={`card job-card ${getJobCardStatusClass(job.status)}`}>
                         <div className="card-body">
-                            <h4 className="heading-text">Title: {job.title}</h4>
-                            <p className="body-text">Details: {job.description}</p>
-                            <p className="body-text">Company: {job.company}</p>
-                            <p className="body-text muted-meta">Posted Date: {formatJobPostedAt(job)}</p>
-                            <p className="body-text">Status: {formatStatus(job.status)}</p>
-                            <p className="body-text">Applications: {getApplicationCount(job.id)}</p>
+                            <h4 className="heading-text">
+                                <span className="metadata-label">Title:</span> {job.title}
+                            </h4>
+                            <p className="body-text">
+                                <span className="metadata-label">Details:</span> {job.description}
+                            </p>
+                            <p className="body-text">
+                                <span className="metadata-label">Company:</span> {job.company}
+                            </p>
+                            <p className="body-text muted-meta">
+                                <span className="metadata-label">Posted Date:</span> {formatJobPostedAt(job)}
+                            </p>
+                            <p className="body-text">
+                                <span className="metadata-label">Status:</span> {formatStatus(job.status)}
+                            </p>
+                            <p className="body-text">
+                                <span className="metadata-label">Applications:</span> {getApplicationCount(job.id)}
+                            </p>
                             <div className="d-flex gap-2">
                                 <button
                                     type="button"

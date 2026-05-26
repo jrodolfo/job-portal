@@ -128,11 +128,13 @@ const AdminApplicationsPanel = ({
                                     <div className={`card application-card ${getApplicationCardStatusClass(application.status)}`}>
                                         <div className="card-body">
                                             <h4 className="heading-text">
-                                                Applicant: {application.user?.name || "Unknown user"}
+                                                <span className="metadata-label">Applicant:</span> {application.user?.name || "Unknown user"}
                                             </h4>
-                                            <p className="body-text">Job: {application.job?.title || "Unknown job"}</p>
                                             <p className="body-text">
-                                                Current Status: {formatStatus(application.status)}
+                                                <span className="metadata-label">Job:</span> {application.job?.title || "Unknown job"}
+                                            </p>
+                                            <p className="body-text">
+                                                <span className="metadata-label">Current Status:</span> {formatStatus(application.status)}
                                             </p>
                                             <div className="d-flex flex-column flex-md-row gap-2 align-items-md-center">
                                                 <label className="body-text mb-0" htmlFor={`application-status-${application.id}`}>
