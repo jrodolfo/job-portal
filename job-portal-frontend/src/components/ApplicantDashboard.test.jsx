@@ -91,7 +91,7 @@ describe('ApplicantDashboard', () => {
         );
         expect(await screen.findByText('Application submitted successfully.')).toBeInTheDocument();
         expect(screen.getByText('Application Status: Applied')).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: 'Applied' })).toBeDisabled();
+        expect(screen.getByRole('button', { name: 'Withdraw' })).toBeInTheDocument();
     });
 
     it('should show inline message when apply request fails', async () => {
@@ -154,7 +154,109 @@ describe('ApplicantDashboard', () => {
         renderWithProviders(<ApplicantDashboard />);
 
         expect(await screen.findByText('Application Status: Applied')).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: 'Applied' })).toBeDisabled();
+        expect(screen.getByRole('button', { name: 'Withdraw' })).toBeInTheDocument();
         expect(axios.post).not.toHaveBeenCalled();
+    });
+
+    it('should withdraw an applied application and allow reapply after reload state changes', async () => {
+        axios.get
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 1,
+                        title: 'Java Developer',
+                        description: 'Build APIs',
+                        company: 'ACME',
+                        postedDate: '2026-01-01'
+                    }
+                ]
+            })
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 50,
+                        status: 'APPLIED',
+                        job: {
+                            id: 1
+                        }
+                    }
+                ]
+            });
+        axios.put.mockResolvedValueOnce({
+            data: {
+                id: 50,
+                status: 'WITHDRAWN',
+                job: {
+                    id: 1
+                }
+            }
+        });
+
+        renderWithProviders(<ApplicantDashboard />);
+        const user = userEvent.setup();
+
+        await waitFor(() => expect(screen.getByRole('button', { name: 'Withdraw' })).toBeInTheDocument());
+        await user.click(screen.getByRole('button', { name: 'Withdraw' }));
+
+        await waitFor(() =>
+            expect(axios.put).toHaveBeenCalledWith(
+                'http://localhost:8080/api/applications/50',
+                null,
+                {
+                    params: {
+                        status: 'WITHDRAWN'
+                    },
+                    headers: {
+                        Authorization: 'Bearer jwt-123'
+                    }
+                }
+            )
+        );
+
+        expect(await screen.findByText('Application withdrawn successfully.')).toBeInTheDocument();
+        expect(screen.getByText('Application Status: Withdrawn')).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Apply Again' })).toBeInTheDocument();
+    });
+
+    it('should show backend message when withdraw request fails', async () => {
+        axios.get
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 1,
+                        title: 'Java Developer',
+                        description: 'Build APIs',
+                        company: 'ACME',
+                        postedDate: '2026-01-01'
+                    }
+                ]
+            })
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 50,
+                        status: 'APPLIED',
+                        job: {
+                            id: 1
+                        }
+                    }
+                ]
+            });
+        axios.put.mockRejectedValueOnce({
+            response: {
+                status: 403,
+                data: {
+                    message: 'Applicants can only set application status to WITHDRAWN'
+                }
+            }
+        });
+
+        renderWithProviders(<ApplicantDashboard />);
+        const user = userEvent.setup();
+
+        await waitFor(() => expect(screen.getByRole('button', { name: 'Withdraw' })).toBeInTheDocument());
+        await user.click(screen.getByRole('button', { name: 'Withdraw' }));
+
+        expect(await screen.findByText('Applicants can only set application status to WITHDRAWN')).toBeInTheDocument();
     });
 });

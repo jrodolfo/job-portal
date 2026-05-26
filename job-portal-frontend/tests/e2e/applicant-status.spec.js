@@ -8,7 +8,7 @@ async function login(page, username, password, expectedPath) {
     await expect(page).toHaveURL(new RegExp(`${expectedPath.replace('/', '\\/')}$`));
 }
 
-test('applicant sees status and cannot reapply after submitting an application', async ({ browser }) => {
+test('applicant can withdraw and reapply after submitting an application', async ({ browser }) => {
     const uniqueId = Date.now();
     const title = `e2e applicant status ${uniqueId}`;
 
@@ -37,11 +37,20 @@ test('applicant sees status and cannot reapply after submitting an application',
 
     await expect(applicantPage.getByText('Application submitted successfully.')).toBeVisible();
     await expect(applicantCard.getByText('Application Status: Applied')).toBeVisible();
-    await expect(applicantCard.getByRole('button', { name: 'Applied' })).toBeDisabled();
+    await expect(applicantCard.getByRole('button', { name: 'Withdraw' })).toBeVisible();
+    await applicantCard.getByRole('button', { name: 'Withdraw' }).click();
+    await expect(applicantPage.getByText('Application withdrawn successfully.')).toBeVisible();
+    await expect(applicantCard.getByText('Application Status: Withdrawn')).toBeVisible();
+    await expect(applicantCard.getByRole('button', { name: 'Apply Again' })).toBeVisible();
+    await applicantCard.getByRole('button', { name: 'Apply Again' }).click();
+    await expect(applicantPage.getByText('Application submitted successfully.')).toBeVisible();
+    await expect(applicantCard.getByText('Application Status: Applied')).toBeVisible();
+    await expect(applicantCard.getByRole('button', { name: 'Withdraw' })).toBeVisible();
+
     await applicantPage.reload();
     const refreshedApplicantCard = applicantPage.locator('.job-card').filter({ hasText: title }).first();
     await expect(refreshedApplicantCard.getByText('Application Status: Applied')).toBeVisible();
-    await expect(refreshedApplicantCard.getByRole('button', { name: 'Applied' })).toBeDisabled();
+    await expect(refreshedApplicantCard.getByRole('button', { name: 'Withdraw' })).toBeVisible();
 
     adminPage.once('dialog', async (dialog) => {
         expect(dialog.message()).toContain('Delete this job?');

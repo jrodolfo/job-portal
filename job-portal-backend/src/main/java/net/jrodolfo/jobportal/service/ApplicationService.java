@@ -36,15 +36,19 @@ public class ApplicationService {
 
     public Application applyForJob(String username, Long jobId) {
         User user = resolveApplicantUser(username);
-        /* Fetch Job object using jobId or throw exception */
         Job job = jobRepository.findById(jobId)
                 .orElseThrow(() -> new ResourceException("Job with id " + jobId + " was not found"));
-        if (applicationRepository.existsByUserAndJob(user, job)) {
+
+        Application existingApplication = applicationRepository.findByUserAndJob(user, job).orElse(null);
+        if (existingApplication != null) {
+            if (existingApplication.getStatus() == ApplicationStatus.WITHDRAWN) {
+                existingApplication.setStatus(ApplicationStatus.APPLIED);
+                return applicationRepository.save(existingApplication);
+            }
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Application already exists for this user and job");
         }
-        /* Attach User and Job details to the application object */
+
         Application application = new Application(user, job);
-        /* Save it in DB using save() method of JPA Repository */
         return applicationRepository.save(application);
     }
 

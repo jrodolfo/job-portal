@@ -52,7 +52,7 @@ class ApplicationServiceTest {
 
         when(userRepository.findByName("user")).thenReturn(Optional.of(user));
         when(jobRepository.findById(10L)).thenReturn(Optional.of(job));
-        when(applicationRepository.existsByUserAndJob(user, job)).thenReturn(false);
+        when(applicationRepository.findByUserAndJob(user, job)).thenReturn(Optional.empty());
         when(applicationRepository.save(org.mockito.ArgumentMatchers.any(Application.class))).thenReturn(saved);
 
         Application result = applicationService.applyForJob("user", 10L);
@@ -74,7 +74,7 @@ class ApplicationServiceTest {
         when(userRepository.findByName("missing")).thenReturn(Optional.empty());
         when(userRepository.save(org.mockito.ArgumentMatchers.any(User.class))).thenReturn(persistedUser);
         when(jobRepository.findById(10L)).thenReturn(Optional.of(job));
-        when(applicationRepository.existsByUserAndJob(persistedUser, job)).thenReturn(false);
+        when(applicationRepository.findByUserAndJob(persistedUser, job)).thenReturn(Optional.empty());
         when(applicationRepository.save(org.mockito.ArgumentMatchers.any(Application.class))).thenReturn(saved);
 
         Application result = applicationService.applyForJob("missing", 10L);
@@ -107,7 +107,7 @@ class ApplicationServiceTest {
 
         when(userRepository.findByName("user")).thenReturn(Optional.of(user));
         when(jobRepository.findById(10L)).thenReturn(Optional.of(job));
-        when(applicationRepository.existsByUserAndJob(user, job)).thenReturn(true);
+        when(applicationRepository.findByUserAndJob(user, job)).thenReturn(Optional.of(new Application(user, job)));
 
         ResponseStatusException ex = assertThrows(
                 ResponseStatusException.class,
@@ -115,6 +115,28 @@ class ApplicationServiceTest {
         );
 
         assertEquals(409, ex.getStatusCode().value());
+    }
+
+    @Test
+    void applyForJobShouldReactivateWithdrawnApplication() {
+        User user = new User();
+        user.setName("user");
+        Job job = new Job();
+        job.setId(10L);
+        Application withdrawn = new Application(user, job);
+        withdrawn.setId(77L);
+        withdrawn.setStatus(ApplicationStatus.WITHDRAWN);
+
+        when(userRepository.findByName("user")).thenReturn(Optional.of(user));
+        when(jobRepository.findById(10L)).thenReturn(Optional.of(job));
+        when(applicationRepository.findByUserAndJob(user, job)).thenReturn(Optional.of(withdrawn));
+        when(applicationRepository.save(withdrawn)).thenReturn(withdrawn);
+
+        Application result = applicationService.applyForJob("user", 10L);
+
+        assertSame(withdrawn, result);
+        assertEquals(ApplicationStatus.APPLIED, result.getStatus());
+        verify(applicationRepository).save(withdrawn);
     }
 
     @Test

@@ -15,11 +15,37 @@ const formatStatus = (status) => {
         .join(" ");
 };
 
+const getJobApplication = (applicationsByJobId, jobId) => applicationsByJobId[jobId];
+
+const canWithdraw = (application) => application?.status === "APPLIED";
+
+const canApply = (application) => !application || application.status === "WITHDRAWN";
+
+const getActionLabel = (application, isSubmitting) => {
+    if (isSubmitting) {
+        return canWithdraw(application) ? "Withdrawing..." : "Applying...";
+    }
+
+    if (!application) {
+        return "Apply";
+    }
+
+    if (application.status === "WITHDRAWN") {
+        return "Apply Again";
+    }
+
+    if (application.status === "APPLIED") {
+        return "Withdraw";
+    }
+
+    return formatStatus(application.status);
+};
+
 const ApplicantDashboard = () => {
 
     const [jobs, setJobs] = useState([]);
     const [applicationsByJobId, setApplicationsByJobId] = useState({});
-    const [applyingJobs, setApplyingJobs] = useState({});
+    const [submittingJobs, setSubmittingJobs] = useState({});
     const [statusMessage, setStatusMessage] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
 
@@ -55,13 +81,14 @@ const ApplicantDashboard = () => {
     };
 
     const apply = async (jobId) => {
-        if (applyingJobs[jobId] || applicationsByJobId[jobId]) {
+        const application = getJobApplication(applicationsByJobId, jobId);
+        if (submittingJobs[jobId] || !canApply(application)) {
             return;
         }
 
         setStatusMessage("");
         setErrorMessage("");
-        setApplyingJobs((prev) => ({...prev, [jobId]: true}));
+        setSubmittingJobs((prev) => ({...prev, [jobId]: true}));
         try {
             const response = await axios.post(BACKEND_API_URL + "/api/applications/" + jobId,
                 {}, {
@@ -82,13 +109,56 @@ const ApplicantDashboard = () => {
                 : "We couldn't submit your application right now. Please try again.";
             setErrorMessage(message);
         } finally {
-            setApplyingJobs((prev) => {
+            setSubmittingJobs((prev) => {
                 const next = {...prev};
                 delete next[jobId];
                 return next;
             });
         }
-    }
+    };
+
+    const withdraw = async (jobId) => {
+        const application = getJobApplication(applicationsByJobId, jobId);
+        if (submittingJobs[jobId] || !canWithdraw(application)) {
+            return;
+        }
+
+        setStatusMessage("");
+        setErrorMessage("");
+        setSubmittingJobs((prev) => ({...prev, [jobId]: true}));
+        try {
+            const response = await axios.put(
+                `${BACKEND_API_URL}/api/applications/${application.id}`,
+                null,
+                {
+                    params: {
+                        status: "WITHDRAWN"
+                    },
+                    headers: {
+                        Authorization: "Bearer " + localStorage.getItem("token")
+                    }
+                }
+            );
+            setApplicationsByJobId((prev) => ({
+                ...prev,
+                [jobId]: response.data
+            }));
+            setStatusMessage("Application withdrawn successfully.");
+        } catch (error) {
+            const backendMessage = error?.response?.data?.message;
+            const message = backendMessage
+                ? backendMessage
+                : "We couldn't withdraw your application right now. Please try again.";
+            setErrorMessage(message);
+        } finally {
+            setSubmittingJobs((prev) => {
+                const next = {...prev};
+                delete next[jobId];
+                return next;
+            });
+        }
+    };
+
     return (
         <>
             <Navbar/>
@@ -99,6 +169,13 @@ const ApplicantDashboard = () => {
                 <div className="row">
                     {
                         jobs.map((job, index) => (
+                            (() => {
+                                const application = getJobApplication(applicationsByJobId, job.id);
+                                const isSubmitting = !!submittingJobs[job.id];
+                                const status = application?.status;
+                                const actionAllowed = canApply(application) || canWithdraw(application);
+
+                                return (
                             <div className="col-sm-4" key={index}>
                                 <div className={`card mb-4 job-card accent-${(index % 3) + 1}`}>
                                     <div className="card-body">
@@ -112,17 +189,17 @@ const ApplicantDashboard = () => {
                                         <div>
                                             <button
                                                 className="btn btn-accent-secondary"
-                                                disabled={!!applyingJobs[job.id] || !!applicationsByJobId[job.id]}
-                                                onClick={() => apply(job.id)}
+                                                disabled={!actionAllowed || isSubmitting}
+                                                onClick={() => canWithdraw(application) ? withdraw(job.id) : apply(job.id)}
                                             >
-                                                {applicationsByJobId[job.id]
-                                                    ? formatStatus(applicationsByJobId[job.id]?.status)
-                                                    : (applyingJobs[job.id] ? "Applying..." : "Apply")}
+                                                {getActionLabel(application, isSubmitting)}
                                             </button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                                );
+                            })()
                         ))
                     }
                 </div>
