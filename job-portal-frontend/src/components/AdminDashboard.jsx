@@ -108,6 +108,9 @@ const AdminDashboard = () => {
     const getApplicationCount = (jobId) => applications.filter((application) => application?.job?.id === jobId).length;
     const openJobsCount = jobs.filter((job) => job.status === "OPEN").length;
     const closedJobsCount = jobs.filter((job) => job.status === "CLOSED").length;
+    const applicationStatusSummary = applicationStatuses
+        .map((status) => `${formatStatus(status)}: ${applications.filter((application) => application.status === status).length}`)
+        .join(" | ");
     const getTabLabel = (tab) => {
         if (tab.id === "jobs") {
             return `${tab.label} (${jobs.length})`;
@@ -488,6 +491,7 @@ const AdminDashboard = () => {
                     hidden={activeTab !== "applications"}
                 >
                     <h2 className="section-title">Applications</h2>
+                    <p className="body-text muted-meta">{applicationStatusSummary}</p>
                     <AdminApplicationsPanel
                         applications={visibleApplications}
                         applicationStatuses={applicationStatuses}

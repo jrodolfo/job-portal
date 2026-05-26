@@ -94,6 +94,7 @@ describe("AdminDashboard", () => {
         expect(screen.getByText(byTextContent("Status: Open"))).toBeInTheDocument();
         expect(screen.getByText(byTextContent("Applications: 1"))).toBeInTheDocument();
         expect(screen.getByText("Open: 1 | Closed: 0")).toBeInTheDocument();
+        expect(screen.getByText("Applied: 1 | Reviewing: 0 | Accepted: 0 | Rejected: 0 | Withdrawn: 0")).toBeInTheDocument();
     });
 
     it("should switch between jobs, add job, and applications tabs", async () => {
