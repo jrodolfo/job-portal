@@ -16,7 +16,25 @@ Schema management:
 
 - Flyway owns schema changes through versioned migrations.
 - Hibernate runs in validation mode so startup still checks entity/schema alignment.
-- The initial baseline migration lives at `src/main/java/db/migration/V1__baseline_job_portal_schema.java`.
+- The current baseline and follow-up migrations live under `src/main/resources/db/migration/`.
+
+Current backend workflow rules:
+
+- Applicants can create applications, withdraw them, and reapply after a withdrawn state.
+- Admins can review application statuses such as `REVIEWING`, `ACCEPTED`, and `REJECTED`.
+- Jobs with existing applications cannot be deleted; the backend returns a clear `409 Conflict` instead.
+
+Tests:
+
+```bash
+mvn test
+```
+
+If you are running the local stack through Docker and only backend code changed, rebuild just the backend service from the repository root:
+
+```bash
+docker compose up -d --build backend
+```
 
 Related repository docs:
 

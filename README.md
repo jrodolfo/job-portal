@@ -74,11 +74,23 @@ Default local frontend login credentials:
 - Applicant user: `user` / `user123`
 - Admin user: `admin` / `admin123`
 
+Current local role workflows:
+
+- Applicants can browse jobs, apply, withdraw, and reapply.
+- Admins can create, edit, and delete jobs.
+- Admins can review applications, update application statuses, and filter/sort the application list.
+
 If you prefer to run Docker Compose directly instead of using the helper script:
 
 ```bash
 docker compose up -d --build
 ```
+
+Current test commands:
+
+- Backend: `mvn -f job-portal-backend test`
+- Frontend unit/component tests: `cd job-portal-frontend && npm test`
+- Frontend browser tests: `cd job-portal-frontend && npm run test:e2e`
 
 First-run expectations:
 
@@ -98,6 +110,13 @@ If you run commands from the repository root, use:
 ```bash
 bash scripts/local/start.sh
 ```
+
+### Rebuild Guidance
+
+- Frontend-only changes: `docker compose up -d --build frontend`
+- Backend-only changes: `docker compose up -d --build backend`
+- Frontend and backend changes together: `docker compose up -d --build frontend backend`
+- Use `docker compose down -v` only when you intentionally want to reset local database state, such as after a failed local migration or when you want a clean MySQL volume.
 
 ## Local Stack
 
