@@ -1,4 +1,4 @@
-name: Backend Docker Build and Push
+name: Backend and Frontend Docker Build and Push
 
 on:
   push:
@@ -10,7 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-      IMAGE_NAME: jrodolfo/job-portal-backend
+      BACKEND_IMAGE_NAME: jrodolfo/job-portal-backend
+      FRONTEND_IMAGE_NAME: jrodolfo/job-portal-frontend
       IMAGE_TAG: ${{ github.sha }}
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
@@ -25,7 +26,7 @@ jobs:
         distribution: temurin
         java-version: 21
 
-    - name: Build JAR file
+    - name: Build Backend JAR
       run: mvn -f job-portal-backend/pom.xml clean package -DskipTests
 
     - name: Log in to Docker Hub
@@ -35,12 +36,22 @@ jobs:
         username: ${{ env.DOCKER_USERNAME }}
         password: ${{ env.DOCKER_PASSWORD }}
 
-    - name: Build Docker Image
+    - name: Build Backend Docker Image
       run: |
-        docker build -t $IMAGE_NAME:$IMAGE_TAG -t $IMAGE_NAME:latest job-portal-backend
+        docker build -t $BACKEND_IMAGE_NAME:$IMAGE_TAG -t $BACKEND_IMAGE_NAME:latest job-portal-backend
 
-    - name: Push Docker Image
+    - name: Build Frontend Docker Image
+      run: |
+        docker build -t $FRONTEND_IMAGE_NAME:$IMAGE_TAG -t $FRONTEND_IMAGE_NAME:latest job-portal-frontend
+
+    - name: Push Backend Docker Image
       if: ${{ env.DOCKER_USERNAME != '' && env.DOCKER_PASSWORD != '' }}
       run: |
-        docker push $IMAGE_NAME:$IMAGE_TAG
-        docker push $IMAGE_NAME:latest
+        docker push $BACKEND_IMAGE_NAME:$IMAGE_TAG
+        docker push $BACKEND_IMAGE_NAME:latest
+
+    - name: Push Frontend Docker Image
+      if: ${{ env.DOCKER_USERNAME != '' && env.DOCKER_PASSWORD != '' }}
+      run: |
+        docker push $FRONTEND_IMAGE_NAME:$IMAGE_TAG
+        docker push $FRONTEND_IMAGE_NAME:latest
