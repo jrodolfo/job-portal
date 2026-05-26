@@ -114,6 +114,7 @@
 
 .job-card-open {
     border-top-color: var(--accent-green);
+    background: #edf5ec;
 }
 
 .job-card-closed {
