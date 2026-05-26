@@ -349,4 +349,104 @@ describe("AdminDashboard", () => {
         expect(await screen.findByText("Application status updated successfully.")).toBeInTheDocument();
         expect(screen.getByText("Current Status: Reviewing")).toBeInTheDocument();
     });
+
+    it("should filter applications by status", async () => {
+        localStorage.setItem("token", "jwt-admin");
+        axios.get
+            .mockResolvedValueOnce({data: []})
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 10,
+                        status: "APPLIED",
+                        user: {name: "alice"},
+                        job: {id: 1, title: "Java Developer"},
+                        createdAt: "2026-05-25T10:00:00"
+                    },
+                    {
+                        id: 11,
+                        status: "REVIEWING",
+                        user: {name: "bob"},
+                        job: {id: 2, title: "QA Engineer"},
+                        createdAt: "2026-05-26T10:00:00"
+                    }
+                ]
+            });
+
+        renderWithProviders(<AdminDashboard />);
+        const user = userEvent.setup();
+
+        await waitFor(() => expect(screen.getByLabelText("Filter by Status")).toBeInTheDocument());
+        await user.selectOptions(screen.getByLabelText("Filter by Status"), "REVIEWING");
+
+        expect(screen.getByText("Applicant: bob")).toBeInTheDocument();
+        expect(screen.queryByText("Applicant: alice")).not.toBeInTheDocument();
+    });
+
+    it("should filter applications by search term", async () => {
+        localStorage.setItem("token", "jwt-admin");
+        axios.get
+            .mockResolvedValueOnce({data: []})
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 10,
+                        status: "APPLIED",
+                        user: {name: "alice"},
+                        job: {id: 1, title: "Java Developer"},
+                        createdAt: "2026-05-25T10:00:00"
+                    },
+                    {
+                        id: 11,
+                        status: "REVIEWING",
+                        user: {name: "bob"},
+                        job: {id: 2, title: "QA Engineer"},
+                        createdAt: "2026-05-26T10:00:00"
+                    }
+                ]
+            });
+
+        renderWithProviders(<AdminDashboard />);
+        const user = userEvent.setup();
+
+        await waitFor(() => expect(screen.getByLabelText("Search Applications")).toBeInTheDocument());
+        await user.type(screen.getByLabelText("Search Applications"), "qa");
+
+        expect(screen.getByText("Applicant: bob")).toBeInTheDocument();
+        expect(screen.queryByText("Applicant: alice")).not.toBeInTheDocument();
+    });
+
+    it("should sort applications by oldest first", async () => {
+        localStorage.setItem("token", "jwt-admin");
+        axios.get
+            .mockResolvedValueOnce({data: []})
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 10,
+                        status: "APPLIED",
+                        user: {name: "alice"},
+                        job: {id: 1, title: "Java Developer"},
+                        createdAt: "2026-05-26T10:00:00"
+                    },
+                    {
+                        id: 11,
+                        status: "REVIEWING",
+                        user: {name: "bob"},
+                        job: {id: 2, title: "QA Engineer"},
+                        createdAt: "2026-05-25T10:00:00"
+                    }
+                ]
+            });
+
+        renderWithProviders(<AdminDashboard />);
+        const user = userEvent.setup();
+
+        await waitFor(() => expect(screen.getByLabelText("Sort By")).toBeInTheDocument());
+        await user.selectOptions(screen.getByLabelText("Sort By"), "oldest");
+
+        const headings = screen.getAllByRole("heading", {level: 4});
+        expect(headings[0]).toHaveTextContent("Applicant: bob");
+        expect(headings[1]).toHaveTextContent("Applicant: alice");
+    });
 });

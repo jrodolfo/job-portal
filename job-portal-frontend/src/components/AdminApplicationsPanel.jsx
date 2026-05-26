@@ -1,18 +1,66 @@
 const AdminApplicationsPanel = ({
     applications,
     applicationStatuses,
+    filterStatus,
     formatStatus,
+    searchTerm,
+    sortOrder,
     statusSelections,
     updatingApplicationId,
+    onFilterStatusChange,
     onStatusChange,
-    onSaveStatus
+    onSaveStatus,
+    onSearchTermChange,
+    onSortOrderChange
 }) => {
     if (applications.length === 0) {
-        return <p className="body-text">No applications have been submitted yet.</p>;
+        return <p className="body-text">No applications match the current filters.</p>;
     }
 
     return (
-        <div className="row">
+        <>
+            <div className="row g-2 mb-3">
+                <div className="col-md-5">
+                    <label className="form-label body-text" htmlFor="application-search">Search Applications</label>
+                    <input
+                        id="application-search"
+                        className="form-control"
+                        placeholder="Search by applicant or job title"
+                        value={searchTerm}
+                        onChange={(event) => onSearchTermChange(event.target.value)}
+                    />
+                </div>
+                <div className="col-md-4">
+                    <label className="form-label body-text" htmlFor="application-filter-status">Filter by Status</label>
+                    <select
+                        id="application-filter-status"
+                        className="form-select"
+                        value={filterStatus}
+                        onChange={(event) => onFilterStatusChange(event.target.value)}
+                    >
+                        <option value="ALL">All statuses</option>
+                        {applicationStatuses.map((status) => (
+                            <option key={status} value={status}>
+                                {formatStatus(status)}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                <div className="col-md-3">
+                    <label className="form-label body-text" htmlFor="application-sort-order">Sort By</label>
+                    <select
+                        id="application-sort-order"
+                        className="form-select"
+                        value={sortOrder}
+                        onChange={(event) => onSortOrderChange(event.target.value)}
+                    >
+                        <option value="newest">Newest first</option>
+                        <option value="oldest">Oldest first</option>
+                    </select>
+                </div>
+            </div>
+
+            <div className="row">
             {applications.map((application) => (
                 <div className="col-12" key={application.id}>
                     <div className="card mb-3">
@@ -53,7 +101,8 @@ const AdminApplicationsPanel = ({
                     </div>
                 </div>
             ))}
-        </div>
+            </div>
+        </>
     );
 };
 

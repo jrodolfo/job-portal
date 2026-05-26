@@ -52,6 +52,9 @@ const formatStatus = (status) => {
 const AdminDashboard = () => {
     const [jobs, setJobs] = useState([]);
     const [applications, setApplications] = useState([]);
+    const [applicationSearchTerm, setApplicationSearchTerm] = useState("");
+    const [applicationFilterStatus, setApplicationFilterStatus] = useState("ALL");
+    const [applicationSortOrder, setApplicationSortOrder] = useState("newest");
     const [statusSelections, setStatusSelections] = useState({});
     const [form, setForm] = useState(emptyForm);
     const [editingJobId, setEditingJobId] = useState(null);
@@ -92,6 +95,30 @@ const AdminDashboard = () => {
     };
 
     const getApplicationCount = (jobId) => applications.filter((application) => application?.job?.id === jobId).length;
+
+    const visibleApplications = applications
+        .filter((application) => {
+            const matchesStatus = applicationFilterStatus === "ALL" || application.status === applicationFilterStatus;
+            const normalizedSearchTerm = applicationSearchTerm.trim().toLowerCase();
+
+            if (!normalizedSearchTerm) {
+                return matchesStatus;
+            }
+
+            const applicantName = application.user?.name?.toLowerCase() || "";
+            const jobTitle = application.job?.title?.toLowerCase() || "";
+            return matchesStatus && (applicantName.includes(normalizedSearchTerm) || jobTitle.includes(normalizedSearchTerm));
+        })
+        .sort((left, right) => {
+            const leftTimestamp = new Date(left.createdAt || 0).getTime();
+            const rightTimestamp = new Date(right.createdAt || 0).getTime();
+
+            if (applicationSortOrder === "oldest") {
+                return leftTimestamp - rightTimestamp;
+            }
+
+            return rightTimestamp - leftTimestamp;
+        });
 
     const handleChange = (event) => {
         const {name, value} = event.target;
@@ -276,13 +303,19 @@ const AdminDashboard = () => {
                         <div className="mt-4">
                             <h2 className="section-title">Applications</h2>
                             <AdminApplicationsPanel
-                                applications={applications}
+                                applications={visibleApplications}
                                 applicationStatuses={applicationStatuses}
+                                filterStatus={applicationFilterStatus}
                                 formatStatus={formatStatus}
+                                searchTerm={applicationSearchTerm}
+                                sortOrder={applicationSortOrder}
                                 statusSelections={statusSelections}
                                 updatingApplicationId={updatingApplicationId}
+                                onFilterStatusChange={setApplicationFilterStatus}
                                 onStatusChange={handleApplicationStatusChange}
                                 onSaveStatus={updateApplicationStatus}
+                                onSearchTermChange={setApplicationSearchTerm}
+                                onSortOrderChange={setApplicationSortOrder}
                             />
                         </div>
                     </div>
