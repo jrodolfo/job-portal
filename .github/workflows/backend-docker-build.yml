@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-      IMAGE_NAME: imtiyazhirani/jobportal-backend
+      IMAGE_NAME: jrodolfo/job-portal-backend
       IMAGE_TAG: ${{ github.sha }}
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
