@@ -66,14 +66,21 @@ class ApplicationServiceTest {
 
     @Test
     void applyForJobShouldThrowWhenUserMissing() {
+        Job job = new Job();
+        job.setId(10L);
+        Application saved = new Application();
+        User persistedUser = new User("missing", "missing@local.test", null, net.jrodolfo.jobportal.constant.AuthProvider.LOCAL, net.jrodolfo.jobportal.constant.Role.APPLICANT);
+
         when(userRepository.findByName("missing")).thenReturn(Optional.empty());
+        when(userRepository.save(org.mockito.ArgumentMatchers.any(User.class))).thenReturn(persistedUser);
+        when(jobRepository.findById(10L)).thenReturn(Optional.of(job));
+        when(applicationRepository.existsByUserAndJob(persistedUser, job)).thenReturn(false);
+        when(applicationRepository.save(org.mockito.ArgumentMatchers.any(Application.class))).thenReturn(saved);
 
-        RuntimeException exception = assertThrows(
-                RuntimeException.class,
-                () -> applicationService.applyForJob("missing", 10L)
-        );
+        Application result = applicationService.applyForJob("missing", 10L);
 
-        assertEquals("User 'missing' was not found", exception.getMessage());
+        assertSame(saved, result);
+        verify(userRepository).save(org.mockito.ArgumentMatchers.any(User.class));
     }
 
     @Test

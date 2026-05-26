@@ -13,6 +13,7 @@ describe('ApplicantDashboard', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         localStorage.clear();
+        localStorage.setItem('token', 'jwt-123');
     });
 
     afterEach(() => {
@@ -20,42 +21,56 @@ describe('ApplicantDashboard', () => {
     });
 
     it('should fetch and render jobs on mount', async () => {
-        axios.get.mockResolvedValueOnce({
-            data: [
-                {
-                    id: 1,
-                    title: 'Java Developer',
-                    description: 'Build APIs',
-                    company: 'ACME',
-                    postedDate: '2026-01-01'
-                }
-            ]
-        });
+        axios.get
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 1,
+                        title: 'Java Developer',
+                        description: 'Build APIs',
+                        company: 'ACME',
+                        postedDate: '2026-01-01'
+                    }
+                ]
+            })
+            .mockResolvedValueOnce({ data: [] });
 
         renderWithProviders(<ApplicantDashboard />);
 
         await waitFor(() => expect(axios.get).toHaveBeenCalledWith('http://localhost:8080/api/jobs'));
+        expect(axios.get).toHaveBeenCalledWith('http://localhost:8080/api/applications', {
+            headers: {
+                Authorization: 'Bearer jwt-123'
+            }
+        });
         expect(screen.getByText('Title: Java Developer')).toBeInTheDocument();
         expect(screen.getByText('Company: ACME')).toBeInTheDocument();
+        expect(screen.getByText('Application Status: Not applied')).toBeInTheDocument();
     });
 
     it('should send apply request with bearer token', async () => {
-        const alertSpy = vi.fn();
-        vi.stubGlobal('alert', alertSpy);
-        localStorage.setItem('token', 'jwt-123');
-
-        axios.get.mockResolvedValueOnce({
-            data: [
-                {
-                    id: 1,
-                    title: 'Java Developer',
-                    description: 'Build APIs',
-                    company: 'ACME',
-                    postedDate: '2026-01-01'
+        axios.get
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 1,
+                        title: 'Java Developer',
+                        description: 'Build APIs',
+                        company: 'ACME',
+                        postedDate: '2026-01-01'
+                    }
+                ]
+            })
+            .mockResolvedValueOnce({ data: [] });
+        axios.post.mockResolvedValueOnce({
+            data: {
+                id: 50,
+                status: 'APPLIED',
+                job: {
+                    id: 1
                 }
-            ]
+            }
         });
-        axios.post.mockResolvedValueOnce({ data: {} });
 
         renderWithProviders(<ApplicantDashboard />);
         const user = userEvent.setup();
@@ -74,25 +89,25 @@ describe('ApplicantDashboard', () => {
                 }
             )
         );
-        expect(alertSpy).toHaveBeenCalledWith('Application Success!!!');
+        expect(await screen.findByText('Application submitted successfully.')).toBeInTheDocument();
+        expect(screen.getByText('Application Status: Applied')).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Applied' })).toBeDisabled();
     });
 
-    it('should show popup when apply request fails', async () => {
-        const alertSpy = vi.fn();
-        vi.stubGlobal('alert', alertSpy);
-        localStorage.setItem('token', 'jwt-123');
-
-        axios.get.mockResolvedValueOnce({
-            data: [
-                {
-                    id: 1,
-                    title: 'Java Developer',
-                    description: 'Build APIs',
-                    company: 'ACME',
-                    postedDate: '2026-01-01'
-                }
-            ]
-        });
+    it('should show inline message when apply request fails', async () => {
+        axios.get
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 1,
+                        title: 'Java Developer',
+                        description: 'Build APIs',
+                        company: 'ACME',
+                        postedDate: '2026-01-01'
+                    }
+                ]
+            })
+            .mockResolvedValueOnce({ data: [] });
         axios.post.mockRejectedValueOnce({
             response: {
                 status: 500,
@@ -108,8 +123,38 @@ describe('ApplicantDashboard', () => {
         await waitFor(() => expect(screen.getByRole('button', { name: 'Apply' })).toBeInTheDocument());
         await user.click(screen.getByRole('button', { name: 'Apply' }));
 
-        await waitFor(() =>
-            expect(alertSpy).toHaveBeenCalledWith('Error: A server error occurred while processing your request.')
-        );
+        expect(await screen.findByText('A server error occurred while processing your request.')).toBeInTheDocument();
+    });
+
+    it('should disable apply and show status when an application already exists', async () => {
+        axios.get
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 1,
+                        title: 'Java Developer',
+                        description: 'Build APIs',
+                        company: 'ACME',
+                        postedDate: '2026-01-01'
+                    }
+                ]
+            })
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 50,
+                        status: 'APPLIED',
+                        job: {
+                            id: 1
+                        }
+                    }
+                ]
+            });
+
+        renderWithProviders(<ApplicantDashboard />);
+
+        expect(await screen.findByText('Application Status: Applied')).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Applied' })).toBeDisabled();
+        expect(axios.post).not.toHaveBeenCalled();
     });
 });

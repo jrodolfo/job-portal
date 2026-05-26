@@ -1,6 +1,8 @@
 package net.jrodolfo.jobportal.service;
 
+import net.jrodolfo.jobportal.constant.AuthProvider;
 import net.jrodolfo.jobportal.constant.ApplicationStatus;
+import net.jrodolfo.jobportal.constant.Role;
 import net.jrodolfo.jobportal.exception.ResourceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,9 +35,7 @@ public class ApplicationService {
     }
 
     public Application applyForJob(String username, Long jobId) {
-        /* Fetch User object using userId or throw exception */
-        User user = userRepository.findByName(username)
-                .orElseThrow(() -> new ResourceException("User '" + username + "' was not found"));
+        User user = resolveApplicantUser(username);
         /* Fetch Job object using jobId or throw exception */
         Job job = jobRepository.findById(jobId)
                 .orElseThrow(() -> new ResourceException("Job with id " + jobId + " was not found"));
@@ -46,6 +46,16 @@ public class ApplicationService {
         Application application = new Application(user, job);
         /* Save it in DB using save() method of JPA Repository */
         return applicationRepository.save(application);
+    }
+
+    private User resolveApplicantUser(String username) {
+        return userRepository.findByName(username)
+                .orElseGet(() -> userRepository.save(createLocalApplicantUser(username)));
+    }
+
+    private User createLocalApplicantUser(String username) {
+        String email = username.contains("@") ? username : username + "@local.test";
+        return new User(username, email, null, AuthProvider.LOCAL, Role.APPLICANT);
     }
 
     public List<Application> getAllApplications() {
