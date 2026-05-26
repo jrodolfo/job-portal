@@ -61,7 +61,7 @@ const AdminJobList = ({
                             <p className="body-text">
                                 <span className="metadata-label">Applications:</span> {getApplicationCount(job.id)}
                             </p>
-                            <div className="d-flex gap-2">
+                            <div className="d-flex gap-2 admin-card-actions">
                                 <button
                                     type="button"
                                     className="btn btn-accent-secondary"

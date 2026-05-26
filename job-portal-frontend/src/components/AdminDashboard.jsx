@@ -386,7 +386,7 @@ const AdminDashboard = () => {
                 ) : null}
 
                 <div className="mb-4">
-                    <div className="nav nav-tabs" role="tablist" aria-label="Admin sections">
+                    <div className="nav nav-tabs admin-tabs" role="tablist" aria-label="Admin sections">
                         {adminTabs.map((tab) => (
                             <button
                                 key={tab.id}
@@ -411,8 +411,8 @@ const AdminDashboard = () => {
                     hidden={activeTab !== "jobs"}
                 >
                     <h2 className="section-title">Jobs</h2>
-                    <p className="body-text muted-meta">Open: {openJobsCount} | Closed: {closedJobsCount}</p>
-                    <div className="row g-2 mb-3">
+                    <p className="body-text muted-meta admin-summary-text">Open: {openJobsCount} | Closed: {closedJobsCount}</p>
+                    <div className="row g-2 mb-3 admin-filter-row">
                         <div className="col-md-5">
                             <label className="form-label body-text" htmlFor="job-search">Search Jobs</label>
                             <input
@@ -491,7 +491,7 @@ const AdminDashboard = () => {
                     hidden={activeTab !== "applications"}
                 >
                     <h2 className="section-title">Applications</h2>
-                    <p className="body-text muted-meta">{applicationStatusSummary}</p>
+                    <p className="body-text muted-meta admin-summary-text">{applicationStatusSummary}</p>
                     <AdminApplicationsPanel
                         applications={visibleApplications}
                         applicationStatuses={applicationStatuses}

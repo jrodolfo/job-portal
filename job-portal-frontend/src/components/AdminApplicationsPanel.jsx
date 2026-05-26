@@ -86,7 +86,7 @@ const AdminApplicationsPanel = ({
 
     return (
         <>
-            <div className="row g-2 mb-3">
+            <div className="row g-2 mb-3 admin-filter-row">
                 <div className="col-md-5">
                     <label className="form-label body-text" htmlFor="application-search">Search Applications</label>
                     <input
@@ -129,7 +129,7 @@ const AdminApplicationsPanel = ({
 
             {groupedApplications.map((group) => (
                 <div className="mb-4" key={group.status} data-testid={`application-group-${group.status.toLowerCase()}`}>
-                    <div className="d-flex justify-content-between align-items-center mb-2">
+                    <div className="d-flex justify-content-between align-items-center mb-2 application-group-header">
                         <h3 className="section-title mb-0">
                             {formatStatus(group.status)} ({group.applications.length})
                         </h3>
@@ -162,7 +162,7 @@ const AdminApplicationsPanel = ({
                                                     <span className="metadata-label">Applied On:</span> {formatApplicationTimestamp(application.createdAt)}
                                                 </p>
                                             ) : null}
-                                            <div className="d-flex flex-column flex-md-row gap-2 align-items-md-center">
+                                            <div className="d-flex flex-column flex-md-row gap-2 align-items-md-center application-status-controls">
                                                 <label className="body-text mb-0" htmlFor={`application-status-${application.id}`}>
                                                     Status
                                                 </label>

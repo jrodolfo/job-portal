@@ -97,6 +97,33 @@
     margin: 1rem 0 1.4rem;
 }
 
+.admin-tabs {
+    gap: 0.5rem;
+    border-bottom: none;
+}
+
+.admin-tabs .nav-link {
+    border-radius: 999px;
+    border: 1px solid rgba(20, 20, 19, 0.12);
+    color: var(--color-dark);
+    background: rgba(250, 249, 245, 0.92);
+    margin-bottom: 0;
+}
+
+.admin-tabs .nav-link.active {
+    background: var(--accent-blue);
+    border-color: var(--accent-blue);
+    color: var(--color-light);
+}
+
+.admin-summary-text {
+    margin-bottom: 1rem;
+}
+
+.admin-filter-row {
+    align-items: end;
+}
+
 .metadata-label {
     font-weight: 700;
     color: var(--color-dark);
@@ -115,6 +142,10 @@
 .job-card:hover {
     transform: translateY(-3px);
     box-shadow: 0 16px 30px rgba(20, 20, 19, 0.14);
+}
+
+.admin-card-actions {
+    flex-wrap: wrap;
 }
 
 .job-card-open {
@@ -139,6 +170,14 @@
 .application-card:hover {
     transform: translateY(-3px);
     box-shadow: 0 16px 30px rgba(20, 20, 19, 0.14);
+}
+
+.application-group-header {
+    gap: 0.75rem;
+}
+
+.application-status-controls .form-select {
+    min-width: 12rem;
 }
 
 .application-card-applied {
@@ -205,5 +244,44 @@
 @media (max-width: 768px) {
     .page-shell {
         padding-top: 1.2rem;
+    }
+
+    .dashboard-shell {
+        padding-top: 1rem;
+    }
+
+    .admin-tabs {
+        flex-wrap: wrap;
+    }
+
+    .admin-tabs .nav-link {
+        flex: 1 1 100%;
+        text-align: center;
+    }
+
+    .admin-summary-text {
+        line-height: 1.5;
+    }
+
+    .admin-card-actions > .btn {
+        flex: 1 1 100%;
+    }
+
+    .application-group-header {
+        align-items: stretch !important;
+        flex-direction: column;
+    }
+
+    .application-group-header .btn {
+        width: 100%;
+    }
+
+    .application-status-controls {
+        align-items: stretch !important;
+    }
+
+    .application-status-controls .form-select,
+    .application-status-controls .btn {
+        width: 100%;
     }
 }
