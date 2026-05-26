@@ -10,6 +10,18 @@ vi.mock("./Navbar", () => ({
     default: () => <div data-testid="navbar-mock">Navbar</div>
 }));
 
+const openAdminTab = async (user, name) => {
+    await user.click(screen.getByRole("tab", {name}));
+};
+
+const openAddJobTab = async (user) => {
+    await openAdminTab(user, "Add Job");
+};
+
+const openApplicationsTab = async (user) => {
+    await openAdminTab(user, "Applications");
+};
+
 describe("AdminDashboard", () => {
     beforeEach(() => {
         vi.clearAllMocks();
@@ -54,10 +66,52 @@ describe("AdminDashboard", () => {
                 Authorization: "Bearer jwt-admin"
             }
         });
-        expect(screen.getByText("Add New Job")).toBeInTheDocument();
+        expect(screen.getByRole("heading", {name: "Admin"})).toBeInTheDocument();
+        expect(screen.getByRole("tab", {name: "Jobs"})).toHaveAttribute("aria-selected", "true");
+        expect(screen.getByRole("tab", {name: "Add Job"})).toBeInTheDocument();
+        expect(screen.getByRole("tab", {name: "Applications"})).toBeInTheDocument();
         expect(screen.getByText("Title: Java Developer")).toBeInTheDocument();
         expect(screen.getByText("Status: Open")).toBeInTheDocument();
         expect(screen.getByText("Applications: 1")).toBeInTheDocument();
+    });
+
+    it("should switch between jobs, add job, and applications tabs", async () => {
+        localStorage.setItem("token", "jwt-admin");
+        axios.get
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 1,
+                        title: "Java Developer",
+                        description: "Build APIs",
+                        company: "ACME",
+                        postedDate: "2026-01-01",
+                        status: "OPEN"
+                    }
+                ]
+            })
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 10,
+                        status: "APPLIED",
+                        user: {name: "user"},
+                        job: {id: 1, title: "Java Developer"}
+                    }
+                ]
+            });
+
+        renderWithProviders(<AdminDashboard />);
+        const user = userEvent.setup();
+
+        await waitFor(() => expect(screen.getByText("Title: Java Developer")).toBeInTheDocument());
+        expect(screen.getByRole("tab", {name: "Jobs"})).toHaveAttribute("aria-selected", "true");
+
+        await openAddJobTab(user);
+        expect(screen.getByRole("heading", {name: "Add New Job"})).toBeInTheDocument();
+        expect(screen.getByLabelText("Title")).toBeInTheDocument();
+
+        await openApplicationsTab(user);
         expect(screen.getByRole("heading", {name: "Applied (1)"})).toBeInTheDocument();
         expect(screen.getByText("Applicant: user")).toBeInTheDocument();
     });
@@ -81,6 +135,7 @@ describe("AdminDashboard", () => {
         renderWithProviders(<AdminDashboard />);
         const user = userEvent.setup();
 
+        await openAddJobTab(user);
         await user.type(screen.getByLabelText("Title"), "Platform Engineer");
         await user.type(screen.getByLabelText("Company"), "ACME");
         await user.type(screen.getByLabelText("Description"), "Own internal services");
@@ -104,6 +159,7 @@ describe("AdminDashboard", () => {
 
         expect(await screen.findByText("Job created successfully.")).toBeInTheDocument();
         expect(screen.getByText("Title: Platform Engineer")).toBeInTheDocument();
+        expect(screen.getByRole("tab", {name: "Jobs"})).toHaveAttribute("aria-selected", "true");
     });
 
     it("should enter edit mode and send update request with bearer token", async () => {
@@ -138,6 +194,7 @@ describe("AdminDashboard", () => {
 
         await waitFor(() => expect(screen.getByRole("button", {name: "Edit"})).toBeInTheDocument());
         await user.click(screen.getByRole("button", {name: "Edit"}));
+        expect(screen.getByRole("tab", {name: "Add Job"})).toHaveAttribute("aria-selected", "true");
 
         const titleInput = screen.getByLabelText("Title");
         await user.clear(titleInput);
@@ -167,6 +224,7 @@ describe("AdminDashboard", () => {
 
         expect(await screen.findByText("Job updated successfully.")).toBeInTheDocument();
         expect(screen.getByText("Title: Senior Java Developer")).toBeInTheDocument();
+        expect(screen.getByRole("tab", {name: "Jobs"})).toHaveAttribute("aria-selected", "true");
     });
 
     it("should show backend validation message when create fails with bad request", async () => {
@@ -186,6 +244,7 @@ describe("AdminDashboard", () => {
         renderWithProviders(<AdminDashboard />);
         const user = userEvent.setup();
 
+        await openAddJobTab(user);
         await user.type(screen.getByLabelText("Title"), " ");
         await user.type(screen.getByLabelText("Company"), "ACME");
         await user.type(screen.getByLabelText("Description"), "Own internal services");
@@ -559,6 +618,7 @@ describe("AdminDashboard", () => {
         renderWithProviders(<AdminDashboard />);
         const user = userEvent.setup();
 
+        await openApplicationsTab(user);
         await waitFor(() => expect(screen.getByLabelText("Status")).toBeInTheDocument());
         await user.selectOptions(screen.getByLabelText("Status"), "REVIEWING");
         await user.click(screen.getByRole("button", {name: "Save"}));
@@ -608,6 +668,7 @@ describe("AdminDashboard", () => {
         renderWithProviders(<AdminDashboard />);
         const user = userEvent.setup();
 
+        await openApplicationsTab(user);
         await waitFor(() => expect(screen.getByLabelText("Filter by Status")).toBeInTheDocument());
         await user.selectOptions(screen.getByLabelText("Filter by Status"), "REVIEWING");
 
@@ -642,6 +703,7 @@ describe("AdminDashboard", () => {
         renderWithProviders(<AdminDashboard />);
         const user = userEvent.setup();
 
+        await openApplicationsTab(user);
         await waitFor(() => expect(screen.getByLabelText("Search Applications")).toBeInTheDocument());
         await user.type(screen.getByLabelText("Search Applications"), "qa");
 
@@ -674,7 +736,9 @@ describe("AdminDashboard", () => {
             });
 
         renderWithProviders(<AdminDashboard />);
+        const user = userEvent.setup();
 
+        await openApplicationsTab(user);
         await waitFor(() => expect(screen.getByRole("heading", {name: "Reviewing (1)"})).toBeInTheDocument());
         expect(screen.getByRole("heading", {name: "Applied (1)"})).toBeInTheDocument();
         expect(screen.getByRole("heading", {name: "Reviewing (1)"})).toBeInTheDocument();
@@ -702,7 +766,9 @@ describe("AdminDashboard", () => {
             });
 
         renderWithProviders(<AdminDashboard />);
+        const user = userEvent.setup();
 
+        await openApplicationsTab(user);
         await waitFor(() => expect(screen.getByRole("button", {name: "Collapse Applied"})).toBeInTheDocument());
         expect(screen.getByRole("button", {name: "Expand Accepted"})).toBeInTheDocument();
         expect(screen.getByText("Applicant: alice")).toBeInTheDocument();
@@ -727,6 +793,7 @@ describe("AdminDashboard", () => {
         renderWithProviders(<AdminDashboard />);
         const user = userEvent.setup();
 
+        await openApplicationsTab(user);
         await waitFor(() => expect(screen.getByRole("button", {name: "Collapse Applied"})).toBeInTheDocument());
         await user.click(screen.getByRole("button", {name: "Collapse Applied"}));
         expect(screen.queryByText("Applicant: alice")).not.toBeInTheDocument();
@@ -760,6 +827,7 @@ describe("AdminDashboard", () => {
         renderWithProviders(<AdminDashboard />);
         const user = userEvent.setup();
 
+        await openApplicationsTab(user);
         await waitFor(() => expect(screen.getByLabelText("Status")).toBeInTheDocument());
         await user.selectOptions(screen.getByLabelText("Status"), "REVIEWING");
         await user.click(screen.getByRole("button", {name: "Save"}));
@@ -796,6 +864,7 @@ describe("AdminDashboard", () => {
         renderWithProviders(<AdminDashboard />);
         const user = userEvent.setup();
 
+        await openApplicationsTab(user);
         await waitFor(() => expect(screen.getByLabelText("Sort By")).toBeInTheDocument());
         await user.selectOptions(screen.getByLabelText("Sort By"), "oldest");
 

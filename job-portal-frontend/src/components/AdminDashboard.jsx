@@ -14,6 +14,11 @@ const emptyForm = {
 
 const applicationStatuses = ["APPLIED", "REVIEWING", "ACCEPTED", "REJECTED", "WITHDRAWN"];
 const jobStatuses = ["OPEN", "CLOSED"];
+const adminTabs = [
+    {id: "jobs", label: "Jobs"},
+    {id: "add-job", label: "Add Job"},
+    {id: "applications", label: "Applications"}
+];
 
 const getApiErrorMessage = (error, fallbackMessage) => {
     const status = error?.response?.status;
@@ -60,6 +65,7 @@ const AdminDashboard = () => {
     const [applicationFilterStatus, setApplicationFilterStatus] = useState("ALL");
     const [applicationSortOrder, setApplicationSortOrder] = useState("newest");
     const [statusSelections, setStatusSelections] = useState({});
+    const [activeTab, setActiveTab] = useState("jobs");
     const [form, setForm] = useState(emptyForm);
     const [editingJobId, setEditingJobId] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -206,6 +212,7 @@ const AdminDashboard = () => {
             }
 
             resetForm();
+            setActiveTab("jobs");
         } catch (error) {
             showRequestError(error, editingJobId
                 ? "We couldn't update the job right now. Please try again."
@@ -219,6 +226,7 @@ const AdminDashboard = () => {
         setErrorMessage("");
         setStatusMessage("");
         setEditingJobId(job.id);
+        setActiveTab("add-job");
         setForm({
             title: job.title,
             company: job.company,
@@ -335,97 +343,142 @@ const AdminDashboard = () => {
         <>
             <Navbar />
             <div className="container dashboard-shell">
-                <div className="admin-panel mb-4">
-                    <h1>Admin Dashboard</h1>
-                    <p className="body-text mb-0">Manage jobs, users, and applications from this area.</p>
+                <div className="mb-4">
+                    <h1 className="mb-1">Admin</h1>
+                    <p className="body-text mb-0">Manage jobs and applications.</p>
                 </div>
 
-                <div className="row g-4">
-                    <div className="col-lg-5">
-                        <AdminJobForm
-                            form={form}
-                            editingJobId={editingJobId}
-                            isSubmitting={isSubmitting}
-                            statusMessage={statusMessage}
-                            errorMessage={errorMessage}
-                            onChange={handleChange}
-                            onSubmit={saveJob}
-                            onCancelEdit={resetForm}
-                        />
+                {statusMessage ? (
+                    <div className="alert alert-success" role="status">
+                        {statusMessage}
                     </div>
+                ) : null}
+                {errorMessage ? (
+                    <div className="alert alert-danger" role="alert">
+                        {errorMessage}
+                    </div>
+                ) : null}
 
-                    <div className="col-lg-7">
-                        <h2 className="section-title">Jobs</h2>
-                        <div className="row g-2 mb-3">
-                            <div className="col-md-5">
-                                <label className="form-label body-text" htmlFor="job-search">Search Jobs</label>
-                                <input
-                                    id="job-search"
-                                    className="form-control"
-                                    placeholder="Search by title or company"
-                                    value={jobSearchTerm}
-                                    onChange={(event) => setJobSearchTerm(event.target.value)}
-                                />
-                            </div>
-                            <div className="col-md-4">
-                                <label className="form-label body-text" htmlFor="job-filter-status">Job Status</label>
-                                <select
-                                    id="job-filter-status"
-                                    className="form-select"
-                                    value={jobFilterStatus}
-                                    onChange={(event) => setJobFilterStatus(event.target.value)}
-                                >
-                                    <option value="ALL">All statuses</option>
-                                    {jobStatuses.map((status) => (
-                                        <option key={status} value={status}>
-                                            {formatStatus(status)}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div className="col-md-3">
-                                <label className="form-label body-text" htmlFor="job-sort-order">Job Sort</label>
-                                <select
-                                    id="job-sort-order"
-                                    className="form-select"
-                                    value={jobSortOrder}
-                                    onChange={(event) => setJobSortOrder(event.target.value)}
-                                >
-                                    <option value="newest">Newest first</option>
-                                    <option value="oldest">Oldest first</option>
-                                </select>
-                            </div>
+                <div className="mb-4">
+                    <div className="nav nav-tabs" role="tablist" aria-label="Admin sections">
+                        {adminTabs.map((tab) => (
+                            <button
+                                key={tab.id}
+                                type="button"
+                                role="tab"
+                                className={`nav-link ${activeTab === tab.id ? "active" : ""}`}
+                                aria-selected={activeTab === tab.id}
+                                aria-controls={`admin-tab-panel-${tab.id}`}
+                                id={`admin-tab-${tab.id}`}
+                                onClick={() => setActiveTab(tab.id)}
+                            >
+                                {tab.label}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div
+                    id="admin-tab-panel-jobs"
+                    role="tabpanel"
+                    aria-labelledby="admin-tab-jobs"
+                    hidden={activeTab !== "jobs"}
+                >
+                    <h2 className="section-title">Jobs</h2>
+                    <div className="row g-2 mb-3">
+                        <div className="col-md-5">
+                            <label className="form-label body-text" htmlFor="job-search">Search Jobs</label>
+                            <input
+                                id="job-search"
+                                className="form-control"
+                                placeholder="Search by title or company"
+                                value={jobSearchTerm}
+                                onChange={(event) => setJobSearchTerm(event.target.value)}
+                            />
                         </div>
-                        <AdminJobList
-                            jobs={visibleJobs}
-                            deletingJobId={deletingJobId}
-                            formatStatus={formatStatus}
-                            getApplicationCount={getApplicationCount}
-                            onEdit={startEdit}
-                            onDelete={deleteJob}
-                            onUpdateJobStatus={updateJobStatus}
-                            updatingJobStatusId={updatingJobStatusId}
-                        />
+                        <div className="col-md-4">
+                            <label className="form-label body-text" htmlFor="job-filter-status">Job Status</label>
+                            <select
+                                id="job-filter-status"
+                                className="form-select"
+                                value={jobFilterStatus}
+                                onChange={(event) => setJobFilterStatus(event.target.value)}
+                            >
+                                <option value="ALL">All statuses</option>
+                                {jobStatuses.map((status) => (
+                                    <option key={status} value={status}>
+                                        {formatStatus(status)}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="col-md-3">
+                            <label className="form-label body-text" htmlFor="job-sort-order">Job Sort</label>
+                            <select
+                                id="job-sort-order"
+                                className="form-select"
+                                value={jobSortOrder}
+                                onChange={(event) => setJobSortOrder(event.target.value)}
+                            >
+                                <option value="newest">Newest first</option>
+                                <option value="oldest">Oldest first</option>
+                            </select>
+                        </div>
+                    </div>
+                    <AdminJobList
+                        jobs={visibleJobs}
+                        deletingJobId={deletingJobId}
+                        formatStatus={formatStatus}
+                        getApplicationCount={getApplicationCount}
+                        onEdit={startEdit}
+                        onDelete={deleteJob}
+                        onUpdateJobStatus={updateJobStatus}
+                        updatingJobStatusId={updatingJobStatusId}
+                    />
+                </div>
 
-                        <div className="mt-4">
-                            <h2 className="section-title">Applications</h2>
-                            <AdminApplicationsPanel
-                                applications={visibleApplications}
-                                applicationStatuses={applicationStatuses}
-                                filterStatus={applicationFilterStatus}
-                                formatStatus={formatStatus}
-                                searchTerm={applicationSearchTerm}
-                                sortOrder={applicationSortOrder}
-                                statusSelections={statusSelections}
-                                updatingApplicationId={updatingApplicationId}
-                                onFilterStatusChange={setApplicationFilterStatus}
-                                onStatusChange={handleApplicationStatusChange}
-                                onSaveStatus={updateApplicationStatus}
-                                onSearchTermChange={setApplicationSearchTerm}
-                                onSortOrderChange={setApplicationSortOrder}
+                <div
+                    id="admin-tab-panel-add-job"
+                    role="tabpanel"
+                    aria-labelledby="admin-tab-add-job"
+                    hidden={activeTab !== "add-job"}
+                >
+                    <div className="row justify-content-center">
+                        <div className="col-lg-8">
+                            <AdminJobForm
+                                form={form}
+                                editingJobId={editingJobId}
+                                isSubmitting={isSubmitting}
+                                onChange={handleChange}
+                                onSubmit={saveJob}
+                                onCancelEdit={resetForm}
                             />
                         </div>
                     </div>
+                </div>
+
+                <div
+                    id="admin-tab-panel-applications"
+                    role="tabpanel"
+                    aria-labelledby="admin-tab-applications"
+                    hidden={activeTab !== "applications"}
+                >
+                    <h2 className="section-title">Applications</h2>
+                    <AdminApplicationsPanel
+                        applications={visibleApplications}
+                        applicationStatuses={applicationStatuses}
+                        filterStatus={applicationFilterStatus}
+                        formatStatus={formatStatus}
+                        searchTerm={applicationSearchTerm}
+                        sortOrder={applicationSortOrder}
+                        statusSelections={statusSelections}
+                        updatingApplicationId={updatingApplicationId}
+                        onFilterStatusChange={setApplicationFilterStatus}
+                        onStatusChange={handleApplicationStatusChange}
+                        onSaveStatus={updateApplicationStatus}
+                        onSearchTermChange={setApplicationSearchTerm}
+                        onSortOrderChange={setApplicationSortOrder}
+                    />
                 </div>
             </div>
         </>

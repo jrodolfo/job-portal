@@ -2,8 +2,6 @@ const AdminJobForm = ({
     form,
     editingJobId,
     isSubmitting,
-    statusMessage,
-    errorMessage,
     onChange,
     onSubmit,
     onCancelEdit
@@ -49,8 +47,6 @@ const AdminJobForm = ({
                             required
                         />
                     </div>
-                    {statusMessage ? <p className="body-text text-success">{statusMessage}</p> : null}
-                    {errorMessage ? <p className="body-text text-danger">{errorMessage}</p> : null}
                     <div className="d-grid gap-2">
                         <button
                             type="submit"

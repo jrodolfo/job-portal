@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { createJob, getJobCard, loginAsAdmin, loginAsApplicant } from './helpers';
+import { createJob, getJobCard, loginAsAdmin, loginAsApplicant, openAdminTab } from './helpers';
 
 test('admin can create, edit, and delete a job from the dashboard', async ({ page }) => {
     const uniqueId = Date.now();
@@ -7,7 +7,7 @@ test('admin can create, edit, and delete a job from the dashboard', async ({ pag
     const updatedTitle = `${createdTitle} updated`;
 
     await loginAsAdmin(page);
-    await expect(page.getByRole('heading', { name: 'Admin Dashboard' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Admin' })).toBeVisible();
 
     await createJob(page, {
         title: createdTitle,
@@ -69,6 +69,7 @@ test('admin can review an applicant application from the dashboard', async ({ br
     const adminCard = getJobCard(adminPage, title);
     await expect(adminCard.getByText('Applications: 1')).toBeVisible();
 
+    await openAdminTab(adminPage, 'Applications');
     const applicationSection = adminPage.locator('.card').filter({ hasText: `Applicant: user` }).filter({ hasText: title }).first();
     await expect(applicationSection).toBeVisible();
     await applicationSection.getByLabel('Status').selectOption('REVIEWING');

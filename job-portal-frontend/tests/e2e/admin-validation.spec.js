@@ -8,7 +8,7 @@ test('admin sees backend validation message when description exceeds the limit',
     const description = 'x'.repeat(2001);
 
     await loginAsAdmin(page);
-    await expect(page.getByRole('heading', { name: 'Admin Dashboard' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Admin' })).toBeVisible();
 
     await createJob(page, { title, company, description });
 

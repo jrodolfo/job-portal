@@ -19,7 +19,12 @@ export async function login(page, username, password, expectedPath) {
     await expect(page).toHaveURL(new RegExp(`${expectedPath.replace('/', '\\/')}$`));
 }
 
+export async function openAdminTab(page, name) {
+    await page.getByRole('tab', { name }).click();
+}
+
 export async function createJob(page, { title, company, description }) {
+    await openAdminTab(page, 'Add Job');
     await page.getByLabel('Title').fill(title);
     await page.getByLabel('Company').fill(company);
     await page.getByLabel('Description').fill(description);
