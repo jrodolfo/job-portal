@@ -460,6 +460,9 @@ describe("AdminDashboard", () => {
         expect(screen.getByText("Status: Closed")).toBeInTheDocument();
         expect(screen.getByRole("button", {name: "Reopen"})).toBeInTheDocument();
 
+        const closedCard = screen.getByText("Title: Java Developer").closest(".job-card");
+        expect(closedCard).toHaveClass("job-card-closed");
+
         await user.click(screen.getByRole("button", {name: "Reopen"}));
 
         await waitFor(() =>
@@ -480,6 +483,8 @@ describe("AdminDashboard", () => {
         expect(await screen.findByText("Job reopened successfully.")).toBeInTheDocument();
         expect(screen.getByText("Status: Open")).toBeInTheDocument();
         expect(screen.getByRole("button", {name: "Close"})).toBeInTheDocument();
+        const reopenedCard = screen.getByText("Title: Java Developer").closest(".job-card");
+        expect(reopenedCard).toHaveClass("job-card-open");
     });
 
     it("should filter jobs by status", async () => {

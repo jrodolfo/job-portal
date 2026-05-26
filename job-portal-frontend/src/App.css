@@ -112,6 +112,15 @@
     box-shadow: 0 16px 30px rgba(20, 20, 19, 0.14);
 }
 
+.job-card-open {
+    border-top-color: var(--accent-blue);
+}
+
+.job-card-closed {
+    border-top-color: #8f8e88;
+    background: #f4f3ee;
+}
+
 .accent-1 {
     border-top-color: var(--accent-orange);
 }

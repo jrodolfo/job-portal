@@ -21,6 +21,10 @@ const formatJobPostedAt = (job) => {
     return jobDateTimeFormatter.format(parsedDate);
 };
 
+const getJobCardStatusClass = (jobStatus) => {
+    return jobStatus === "CLOSED" ? "job-card-closed" : "job-card-open";
+};
+
 const AdminJobList = ({
     jobs,
     deletingJobId,
@@ -39,7 +43,7 @@ const AdminJobList = ({
         <div className="row">
             {jobs.map((job, index) => (
                 <div className="col-md-6" key={job.id ?? `${job.title}-${index}`}>
-                        <div className={`card mb-4 job-card accent-${(index % 3) + 1}`}>
+                        <div className={`card mb-4 job-card ${getJobCardStatusClass(job.status)}`}>
                         <div className="card-body">
                             <h4 className="heading-text">Title: {job.title}</h4>
                             <p className="body-text">Details: {job.description}</p>
