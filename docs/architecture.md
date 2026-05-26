@@ -132,6 +132,9 @@ Its main responsibilities are:
 - browser routing and page composition
 - login and OAuth-related UI flows
 - user interaction for applicants and admins
+- applicant-side application lifecycle behavior such as apply, withdraw, and
+  reapply
+- admin-side job and application review workflows
 - client-side state through Redux Toolkit
 - backend API consumption through HTTP
 
@@ -148,6 +151,7 @@ Representative UI and state files:
 - `job-portal-frontend/src/components/Login.jsx`
 - `job-portal-frontend/src/components/OAuthLogin.jsx`
 - `job-portal-frontend/src/components/AdminDashboard.jsx`
+- `job-portal-frontend/src/components/AdminApplicationsPanel.jsx`
 - `job-portal-frontend/src/components/ApplicantDashboard.jsx`
 - `job-portal-frontend/src/store/userActions.js`
 - `job-portal-frontend/src/store/userReducer.js`
@@ -202,6 +206,16 @@ without forcing a destructive reset.
 This schema-management approach is documented in ADR 0012 and supersedes the
 earlier `ddl-auto=update` decision recorded in ADR 0009.
 
+The current persistence behavior also encodes lifecycle rules that matter to
+the application model:
+
+- application records remain meaningful after `WITHDRAWN` instead of being
+  deleted
+- previously withdrawn applications can be reactivated when an applicant
+  reapplies
+- jobs with existing applications cannot be hard-deleted and return
+  `409 Conflict` instead
+
 Representative persistence files:
 
 - `job-portal-backend/src/main/java/net/jrodolfo/jobportal/model/User.java`
@@ -211,6 +225,7 @@ Representative persistence files:
 - `job-portal-backend/src/main/java/net/jrodolfo/jobportal/repository/JobRepository.java`
 - `job-portal-backend/src/main/java/net/jrodolfo/jobportal/repository/ApplicationRepository.java`
 - `job-portal-backend/src/main/java/db/migration/V1__baseline_job_portal_schema.java`
+- `job-portal-backend/src/main/resources/db/migration/V2__expand_job_description_length.sql`
 - `docs/database/queries.sql`
 
 ### Authentication Model
@@ -261,6 +276,38 @@ Supporting files:
 
 This arrangement is important because it makes the repo runnable as a complete
 system instead of a loose set of code folders.
+
+## Application Lifecycle
+
+The current system has an explicit applicant/admin workflow rather than only a
+generic CRUD model.
+
+Applicants can:
+
+- browse the current job list
+- submit an application
+- withdraw an application
+- reapply after withdrawal
+- view the current application status directly on each job card
+
+Admins can:
+
+- create, edit, and delete jobs when no applications exist
+- see application counts per job
+- review applications in grouped admin views
+- update application states such as `REVIEWING`, `ACCEPTED`, and `REJECTED`
+
+This lifecycle is not just UI behavior. It is enforced jointly by backend
+services and frontend dashboards, and the durable rules are captured in
+[ADR 0013](./adr/0013-define-job-and-application-lifecycle-rules.md).
+
+Relevant files:
+
+- `job-portal-backend/src/main/java/net/jrodolfo/jobportal/service/ApplicationService.java`
+- `job-portal-backend/src/main/java/net/jrodolfo/jobportal/service/JobService.java`
+- `job-portal-frontend/src/components/ApplicantDashboard.jsx`
+- `job-portal-frontend/src/components/AdminDashboard.jsx`
+- `job-portal-frontend/src/components/AdminApplicationsPanel.jsx`
 
 ## Deployment Shape
 
@@ -318,6 +365,30 @@ The frontend does not directly own auth policy. Instead:
 
 This is one of the most important architectural choices in the repo because it
 keeps security behavior centralized and easier to reason about.
+
+## Verification Model
+
+The repository now relies on three complementary verification layers:
+
+- backend tests with Maven for controller, service, security, and schema-aware
+  behavior
+- frontend unit and component tests with Vitest for dashboard, auth, and UI
+  state behavior
+- browser workflow tests with Playwright for end-to-end flows such as admin
+  job management, applicant apply/withdraw/reapply, and admin review
+
+This matters architecturally because the project now encodes meaningful
+cross-role workflow rules. Unit-level coverage alone would not be enough to
+protect route guarding, browser auth state, and dashboard interaction paths.
+
+Relevant files:
+
+- `job-portal-backend/src/test/java/net/jrodolfo/jobportal/controller/`
+- `job-portal-backend/src/test/java/net/jrodolfo/jobportal/service/`
+- `job-portal-frontend/src/components/*.test.jsx`
+- `job-portal-frontend/tests/e2e/admin-crud.spec.js`
+- `job-portal-frontend/tests/e2e/applicant-status.spec.js`
+- `job-portal-frontend/tests/e2e/helpers.js`
 
 Code areas that reinforce this boundary:
 
