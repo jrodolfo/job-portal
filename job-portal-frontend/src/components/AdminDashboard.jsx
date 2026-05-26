@@ -172,6 +172,11 @@ const AdminDashboard = () => {
         setEditingJobId(null);
     };
 
+    const cancelEdit = () => {
+        resetForm();
+        setActiveTab("jobs");
+    };
+
     const showRequestError = (error, fallbackMessage) => {
         setErrorMessage(getApiErrorMessage(error, fallbackMessage));
     };
@@ -451,7 +456,7 @@ const AdminDashboard = () => {
                                 isSubmitting={isSubmitting}
                                 onChange={handleChange}
                                 onSubmit={saveJob}
-                                onCancelEdit={resetForm}
+                                onCancelEdit={cancelEdit}
                             />
                         </div>
                     </div>

@@ -262,6 +262,37 @@ describe("AdminDashboard", () => {
         expect(screen.getByRole("tab", {name: "Jobs"})).toHaveAttribute("aria-selected", "true");
     });
 
+    it("should return to the jobs tab when canceling edit mode", async () => {
+        localStorage.setItem("token", "jwt-admin");
+        axios.get
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 1,
+                        title: "Java Developer",
+                        description: "Build APIs",
+                        company: "ACME",
+                        postedDate: "2026-05-25",
+                        status: "OPEN"
+                    }
+                ]
+            })
+            .mockResolvedValueOnce({data: []});
+
+        renderWithProviders(<AdminDashboard />);
+        const user = userEvent.setup();
+
+        await waitFor(() => expect(screen.getByRole("button", {name: "Edit"})).toBeInTheDocument());
+        await user.click(screen.getByRole("button", {name: "Edit"}));
+        expect(screen.getByRole("tab", {name: "Add Job"})).toHaveAttribute("aria-selected", "true");
+
+        await user.click(screen.getByRole("button", {name: "Cancel Edit"}));
+
+        expect(screen.getByRole("tab", {name: "Jobs"})).toHaveAttribute("aria-selected", "true");
+        expect(screen.queryByRole("button", {name: "Cancel Edit"})).not.toBeInTheDocument();
+        expect(screen.getByText(byTextContent("Java Developer"))).toBeInTheDocument();
+    });
+
     it("should show backend validation message when create fails with bad request", async () => {
         localStorage.setItem("token", "jwt-admin");
         axios.get
