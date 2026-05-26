@@ -18,7 +18,7 @@ Schema management:
 - Hibernate runs in validation mode so startup still checks entity/schema alignment.
 - The current baseline and follow-up migrations live under `src/main/resources/db/migration/`.
 
-Current backend workflow rules:
+Current backend behavior:
 
 - Applicants can create applications, withdraw them, and reapply after a withdrawn state.
 - Public `GET /api/jobs` returns only `OPEN` jobs.
@@ -26,6 +26,17 @@ Current backend workflow rules:
 - Applying to a closed job is rejected by the backend.
 - Admins can review application statuses such as `REVIEWING`, `ACCEPTED`, and `REJECTED`.
 - Jobs with existing applications cannot be deleted; the backend returns a clear `409 Conflict` instead.
+- Application payloads can include `createdAt` and `updatedAt`, which the frontend uses for `Applied On` and `Last Updated` display.
+
+Local demo bootstrap:
+
+- For a full local demo with seeded jobs, users, and applications, use the root helper:
+
+```bash
+bash scripts/local/start-demo.sh
+```
+
+- That flow lives at the repository root because it starts the full stack and loads demo data into MySQL.
 
 Tests:
 
