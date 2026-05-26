@@ -780,6 +780,10 @@ describe("AdminDashboard", () => {
         await waitFor(() => expect(screen.getByRole("heading", {name: "Reviewing (1)"})).toBeInTheDocument());
         expect(screen.getByRole("heading", {name: "Applied (1)"})).toBeInTheDocument();
         expect(screen.getByRole("heading", {name: "Reviewing (1)"})).toBeInTheDocument();
+        const appliedCard = screen.getByText("Applicant: alice").closest(".application-card");
+        const reviewingCard = screen.getByText("Applicant: bob").closest(".application-card");
+        expect(appliedCard).toHaveClass("application-card-applied");
+        expect(reviewingCard).toHaveClass("application-card-reviewing");
     });
 
     it("should keep applied and reviewing groups expanded by default and historical groups collapsed", async () => {

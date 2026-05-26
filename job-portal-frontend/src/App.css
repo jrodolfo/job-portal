@@ -122,6 +122,45 @@
     background: #f7ece9;
 }
 
+.application-card {
+    height: 100%;
+    border: none;
+    border-top: 5px solid transparent;
+    border-radius: 0.8rem;
+    box-shadow: 0 12px 26px rgba(20, 20, 19, 0.08);
+    transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.application-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 30px rgba(20, 20, 19, 0.14);
+}
+
+.application-card-applied {
+    border-top-color: var(--accent-blue);
+    background: #eaf2fa;
+}
+
+.application-card-reviewing {
+    border-top-color: var(--accent-orange);
+    background: #fbf1e7;
+}
+
+.application-card-accepted {
+    border-top-color: var(--accent-green);
+    background: #edf5ec;
+}
+
+.application-card-rejected {
+    border-top-color: #c6473d;
+    background: #f7ece9;
+}
+
+.application-card-withdrawn {
+    border-top-color: #8f8e88;
+    background: #f1f0ec;
+}
+
 .accent-1 {
     border-top-color: var(--accent-orange);
 }

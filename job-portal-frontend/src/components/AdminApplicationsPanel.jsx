@@ -8,6 +8,22 @@ const defaultExpandedSections = {
     WITHDRAWN: false
 };
 
+const getApplicationCardStatusClass = (status) => {
+    switch (status) {
+        case "REVIEWING":
+            return "application-card-reviewing";
+        case "ACCEPTED":
+            return "application-card-accepted";
+        case "REJECTED":
+            return "application-card-rejected";
+        case "WITHDRAWN":
+            return "application-card-withdrawn";
+        case "APPLIED":
+        default:
+            return "application-card-applied";
+    }
+};
+
 const AdminApplicationsPanel = ({
     applications,
     applicationStatuses,
@@ -106,10 +122,10 @@ const AdminApplicationsPanel = ({
                         </button>
                     </div>
                     {(expandedSections[group.status] ?? false) ? (
-                        <div className="row">
+                        <div className="row g-4">
                             {group.applications.map((application) => (
-                                <div className="col-12" key={application.id}>
-                                    <div className="card mb-3">
+                                <div className="col-md-6" key={application.id}>
+                                    <div className={`card application-card ${getApplicationCardStatusClass(application.status)}`}>
                                         <div className="card-body">
                                             <h4 className="heading-text">
                                                 Applicant: {application.user?.name || "Unknown user"}
