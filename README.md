@@ -221,6 +221,15 @@ Then verify in Jaeger (`http://localhost:16686`):
 4. Trace attributes include `deployment.environment=local`.
 
 #### 8. Build Multi-Platform Images (ARM64 & AMD64)
+GitHub Actions publishes both Docker Hub images automatically on pushes to
+`main`:
+
+- `jrodolfo/job-portal-backend`
+- `jrodolfo/job-portal-frontend`
+
+The local commands below remain useful when you want to publish both images
+manually with `buildx`, especially for explicit multi-architecture pushes.
+
 If you are developing on a Mac (ARM64) but deploy on EC2 (Linux/AMD64), push multi-architecture images:
 
 ```bash

@@ -326,9 +326,11 @@ Two deployment-related ideas are especially important:
 
 - prod startup uses `docker-compose.yml` plus `docker-compose.prod.yml`
 - images are built and published for both `linux/amd64` and `linux/arm64`
+- GitHub Actions publishes both Docker Hub images as part of the default CI flow
 
 Relevant files:
 
+- `.github/workflows/backend-docker-build.yml`
 - `scripts/prod/start.sh`
 - `scripts/prod/stop.sh`
 - `docker-bake.hcl`
