@@ -10,6 +10,14 @@ vi.mock("./Navbar", () => ({
     default: () => <div data-testid="navbar-mock">Navbar</div>
 }));
 
+const jobDateTimeFormatter = new Intl.DateTimeFormat(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit"
+});
+
 const openAdminTab = async (user, name) => {
     await user.click(screen.getByRole("tab", {name}));
 };
@@ -114,6 +122,31 @@ describe("AdminDashboard", () => {
         await openApplicationsTab(user);
         expect(screen.getByRole("heading", {name: "Applied (1)"})).toBeInTheDocument();
         expect(screen.getByText("Applicant: user")).toBeInTheDocument();
+    });
+
+    it("should show the posted date with time when a timestamp is available", async () => {
+        localStorage.setItem("token", "jwt-admin");
+        const createdAt = "2026-05-26T14:43:00Z";
+        axios.get
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 1,
+                        title: "Java Developer",
+                        description: "Build APIs",
+                        company: "ACME",
+                        postedDate: "2026-05-26",
+                        createdAt,
+                        status: "OPEN"
+                    }
+                ]
+            })
+            .mockResolvedValueOnce({data: []});
+
+        renderWithProviders(<AdminDashboard />);
+
+        const expectedDateTime = jobDateTimeFormatter.format(new Date(createdAt));
+        await waitFor(() => expect(screen.getByText(`Posted Date: ${expectedDateTime}`)).toBeInTheDocument());
     });
 
     it("should send create job request with bearer token and prepend the new job", async () => {

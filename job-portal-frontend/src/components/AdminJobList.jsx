@@ -1,3 +1,26 @@
+const jobDateTimeFormatter = new Intl.DateTimeFormat(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit"
+});
+
+const formatJobPostedAt = (job) => {
+    const timestamp = job.createdAt || job.postedDate;
+
+    if (!timestamp) {
+        return "Created today";
+    }
+
+    const parsedDate = new Date(timestamp);
+    if (Number.isNaN(parsedDate.getTime())) {
+        return timestamp;
+    }
+
+    return jobDateTimeFormatter.format(parsedDate);
+};
+
 const AdminJobList = ({
     jobs,
     deletingJobId,
@@ -16,12 +39,12 @@ const AdminJobList = ({
         <div className="row">
             {jobs.map((job, index) => (
                 <div className="col-md-6" key={job.id ?? `${job.title}-${index}`}>
-                    <div className={`card mb-4 job-card accent-${(index % 3) + 1}`}>
+                        <div className={`card mb-4 job-card accent-${(index % 3) + 1}`}>
                         <div className="card-body">
                             <h4 className="heading-text">Title: {job.title}</h4>
                             <p className="body-text">Details: {job.description}</p>
                             <p className="body-text">Company: {job.company}</p>
-                            <p className="body-text muted-meta">Posted Date: {job.postedDate || "Created today"}</p>
+                            <p className="body-text muted-meta">Posted Date: {formatJobPostedAt(job)}</p>
                             <p className="body-text">Status: {formatStatus(job.status)}</p>
                             <p className="body-text">Applications: {getApplicationCount(job.id)}</p>
                             <div className="d-flex gap-2">
