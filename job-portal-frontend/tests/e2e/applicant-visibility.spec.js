@@ -1,12 +1,5 @@
 import { expect, test } from '@playwright/test';
-
-async function login(page, username, password, expectedPath) {
-    await page.goto(expectedPath);
-    await page.getByPlaceholder('Username').fill(username);
-    await page.getByPlaceholder('Password').fill(password);
-    await page.getByRole('button', { name: 'Login' }).click();
-    await expect(page).toHaveURL(new RegExp(`${expectedPath.replace('/', '\\/')}$`));
-}
+import { createJob, getJobCard, loginAsAdmin, loginAsApplicant } from './helpers';
 
 test('applicant sees jobs created by admin and no longer sees them after deletion', async ({ browser }) => {
     const uniqueId = Date.now();
@@ -17,20 +10,21 @@ test('applicant sees jobs created by admin and no longer sees them after deletio
     const adminPage = await adminContext.newPage();
     const applicantPage = await applicantContext.newPage();
 
-    await login(adminPage, 'admin', 'admin123', '/admin-dashboard');
+    await loginAsAdmin(adminPage);
 
-    await adminPage.getByLabel('Title').fill(title);
-    await adminPage.getByLabel('Company').fill('ACME Visibility');
-    await adminPage.getByLabel('Description').fill('Created to verify applicant job-list visibility.');
-    await adminPage.getByRole('button', { name: 'Create Job' }).click();
+    await createJob(adminPage, {
+        title,
+        company: 'ACME Visibility',
+        description: 'Created to verify applicant job-list visibility.'
+    });
 
     await expect(adminPage.getByText('Job created successfully.')).toBeVisible();
-    const adminCard = adminPage.locator('.job-card').filter({ hasText: title }).first();
+    const adminCard = getJobCard(adminPage, title);
     await expect(adminCard).toBeVisible();
 
-    await login(applicantPage, 'user', 'user123', '/applicant-dashboard');
+    await loginAsApplicant(applicantPage);
 
-    const applicantCard = applicantPage.locator('.job-card').filter({ hasText: title }).first();
+    const applicantCard = getJobCard(applicantPage, title);
     await expect(applicantCard).toBeVisible();
     await expect(applicantCard.getByText('Company: ACME Visibility')).toBeVisible();
 
