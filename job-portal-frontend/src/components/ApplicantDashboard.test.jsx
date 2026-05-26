@@ -91,6 +91,7 @@ describe('ApplicantDashboard', () => {
         );
         expect(await screen.findByText('Application submitted successfully.')).toBeInTheDocument();
         expect(screen.getByText('Application Status: Applied')).toBeInTheDocument();
+        expect(screen.getByText('Your application has been submitted and is waiting for review.')).toBeInTheDocument();
         expect(screen.getByRole('button', { name: 'Withdraw' })).toBeInTheDocument();
     });
 
@@ -154,6 +155,7 @@ describe('ApplicantDashboard', () => {
         renderWithProviders(<ApplicantDashboard />);
 
         expect(await screen.findByText('Application Status: Applied')).toBeInTheDocument();
+        expect(screen.getByText('Your application has been submitted and is waiting for review.')).toBeInTheDocument();
         expect(screen.getByRole('button', { name: 'Withdraw' })).toBeInTheDocument();
         expect(axios.post).not.toHaveBeenCalled();
     });
@@ -215,6 +217,7 @@ describe('ApplicantDashboard', () => {
 
         expect(await screen.findByText('Application withdrawn successfully.')).toBeInTheDocument();
         expect(screen.getByText('Application Status: Withdrawn')).toBeInTheDocument();
+        expect(screen.getByText('You withdrew this application and can apply again.')).toBeInTheDocument();
         expect(screen.getByRole('button', { name: 'Apply Again' })).toBeInTheDocument();
     });
 
@@ -258,5 +261,98 @@ describe('ApplicantDashboard', () => {
         await user.click(screen.getByRole('button', { name: 'Withdraw' }));
 
         expect(await screen.findByText('Applicants can only set application status to WITHDRAWN')).toBeInTheDocument();
+    });
+
+    it('should show reviewing helper text for reviewed applications', async () => {
+        axios.get
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 1,
+                        title: 'Java Developer',
+                        description: 'Build APIs',
+                        company: 'ACME',
+                        postedDate: '2026-01-01'
+                    }
+                ]
+            })
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 50,
+                        status: 'REVIEWING',
+                        job: {
+                            id: 1
+                        }
+                    }
+                ]
+            });
+
+        renderWithProviders(<ApplicantDashboard />);
+
+        expect(await screen.findByText('Application Status: Reviewing')).toBeInTheDocument();
+        expect(screen.getByText('Your application is currently under review.')).toBeInTheDocument();
+    });
+
+    it('should show accepted helper text for reviewed applications', async () => {
+        axios.get
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 1,
+                        title: 'Java Developer',
+                        description: 'Build APIs',
+                        company: 'ACME',
+                        postedDate: '2026-01-01'
+                    }
+                ]
+            })
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 50,
+                        status: 'ACCEPTED',
+                        job: {
+                            id: 1
+                        }
+                    }
+                ]
+            });
+
+        renderWithProviders(<ApplicantDashboard />);
+
+        expect(await screen.findByText('Application Status: Accepted')).toBeInTheDocument();
+        expect(screen.getByText('Your application has been accepted.')).toBeInTheDocument();
+    });
+
+    it('should show rejected helper text for reviewed applications', async () => {
+        axios.get
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 1,
+                        title: 'Java Developer',
+                        description: 'Build APIs',
+                        company: 'ACME',
+                        postedDate: '2026-01-01'
+                    }
+                ]
+            })
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 50,
+                        status: 'REJECTED',
+                        job: {
+                            id: 1
+                        }
+                    }
+                ]
+            });
+
+        renderWithProviders(<ApplicantDashboard />);
+
+        expect(await screen.findByText('Application Status: Rejected')).toBeInTheDocument();
+        expect(screen.getByText('Your application was not selected.')).toBeInTheDocument();
     });
 });

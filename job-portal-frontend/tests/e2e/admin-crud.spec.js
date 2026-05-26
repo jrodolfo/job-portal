@@ -81,6 +81,11 @@ test('admin can review an applicant application from the dashboard', async ({ br
     await expect(adminPage.getByText('Application status updated successfully.')).toBeVisible();
     await expect(applicationSection.getByText('Current Status: Reviewing')).toBeVisible();
 
+    await applicantPage.reload();
+    const refreshedApplicantCard = applicantPage.locator('.job-card').filter({ hasText: title }).first();
+    await expect(refreshedApplicantCard.getByText('Application Status: Reviewing')).toBeVisible();
+    await expect(refreshedApplicantCard.getByText('Your application is currently under review.')).toBeVisible();
+
     await adminContext.close();
     await applicantContext.close();
 });

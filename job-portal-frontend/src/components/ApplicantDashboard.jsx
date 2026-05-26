@@ -15,6 +15,23 @@ const formatStatus = (status) => {
         .join(" ");
 };
 
+const getStatusHelperText = (status) => {
+    switch (status) {
+        case "APPLIED":
+            return "Your application has been submitted and is waiting for review.";
+        case "REVIEWING":
+            return "Your application is currently under review.";
+        case "ACCEPTED":
+            return "Your application has been accepted.";
+        case "REJECTED":
+            return "Your application was not selected.";
+        case "WITHDRAWN":
+            return "You withdrew this application and can apply again.";
+        default:
+            return "You have not applied to this job yet.";
+    }
+};
+
 const getJobApplication = (applicationsByJobId, jobId) => applicationsByJobId[jobId];
 
 const canWithdraw = (application) => application?.status === "APPLIED";
@@ -172,7 +189,6 @@ const ApplicantDashboard = () => {
                             (() => {
                                 const application = getJobApplication(applicationsByJobId, job.id);
                                 const isSubmitting = !!submittingJobs[job.id];
-                                const status = application?.status;
                                 const actionAllowed = canApply(application) || canWithdraw(application);
 
                                 return (
@@ -185,6 +201,9 @@ const ApplicantDashboard = () => {
                                         <p className="body-text muted-meta">Posted Date: {job.postedDate}</p>
                                         <p className="body-text">
                                             Application Status: {formatStatus(applicationsByJobId[job.id]?.status)}
+                                        </p>
+                                        <p className="body-text muted-meta">
+                                            {getStatusHelperText(application?.status)}
                                         </p>
                                         <div>
                                             <button
