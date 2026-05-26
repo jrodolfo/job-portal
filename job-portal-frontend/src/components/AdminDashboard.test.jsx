@@ -18,8 +18,10 @@ const jobDateTimeFormatter = new Intl.DateTimeFormat(undefined, {
     minute: "2-digit"
 });
 
+const tabNamePattern = (name) => new RegExp(`^${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(\\s\\(\\d+\\))?$`);
+
 const openAdminTab = async (user, name) => {
-    await user.click(screen.getByRole("tab", {name}));
+    await user.click(screen.getByRole("tab", {name: tabNamePattern(name)}));
 };
 
 const openAddJobTab = async (user) => {
@@ -77,12 +79,13 @@ describe("AdminDashboard", () => {
             }
         });
         expect(screen.getByRole("heading", {name: "Admin"})).toBeInTheDocument();
-        expect(screen.getByRole("tab", {name: "Jobs"})).toHaveAttribute("aria-selected", "true");
+        expect(screen.getByRole("tab", {name: tabNamePattern("Jobs")})).toHaveAttribute("aria-selected", "true");
         expect(screen.getByRole("tab", {name: "Add Job"})).toBeInTheDocument();
-        expect(screen.getByRole("tab", {name: "Applications"})).toBeInTheDocument();
+        expect(screen.getByRole("tab", {name: tabNamePattern("Applications")})).toBeInTheDocument();
         expect(screen.getByText(byTextContent("Java Developer"))).toBeInTheDocument();
         expect(screen.getByText(byTextContent("Status: Open"))).toBeInTheDocument();
         expect(screen.getByText(byTextContent("Applications: 1"))).toBeInTheDocument();
+        expect(screen.getByText("Open: 1 | Closed: 0")).toBeInTheDocument();
     });
 
     it("should switch between jobs, add job, and applications tabs", async () => {
@@ -115,7 +118,7 @@ describe("AdminDashboard", () => {
         const user = userEvent.setup();
 
         await waitFor(() => expect(screen.getByText(byTextContent("Java Developer"))).toBeInTheDocument());
-        expect(screen.getByRole("tab", {name: "Jobs"})).toHaveAttribute("aria-selected", "true");
+        expect(screen.getByRole("tab", {name: tabNamePattern("Jobs")})).toHaveAttribute("aria-selected", "true");
 
         await openAddJobTab(user);
         expect(screen.getByRole("heading", {name: "Add New Job"})).toBeInTheDocument();
@@ -194,7 +197,7 @@ describe("AdminDashboard", () => {
 
         expect(await screen.findByText("Job created successfully.")).toBeInTheDocument();
         expect(screen.getByText(byTextContent("Platform Engineer"))).toBeInTheDocument();
-        expect(screen.getByRole("tab", {name: "Jobs"})).toHaveAttribute("aria-selected", "true");
+        expect(screen.getByRole("tab", {name: tabNamePattern("Jobs")})).toHaveAttribute("aria-selected", "true");
     });
 
     it("should enter edit mode and send update request with bearer token", async () => {
@@ -259,7 +262,7 @@ describe("AdminDashboard", () => {
 
         expect(await screen.findByText("Job updated successfully.")).toBeInTheDocument();
         expect(screen.getByText(byTextContent("Senior Java Developer"))).toBeInTheDocument();
-        expect(screen.getByRole("tab", {name: "Jobs"})).toHaveAttribute("aria-selected", "true");
+        expect(screen.getByRole("tab", {name: tabNamePattern("Jobs")})).toHaveAttribute("aria-selected", "true");
     });
 
     it("should return to the jobs tab when canceling edit mode", async () => {
@@ -288,7 +291,7 @@ describe("AdminDashboard", () => {
 
         await user.click(screen.getByRole("button", {name: "Cancel Edit"}));
 
-        expect(screen.getByRole("tab", {name: "Jobs"})).toHaveAttribute("aria-selected", "true");
+        expect(screen.getByRole("tab", {name: tabNamePattern("Jobs")})).toHaveAttribute("aria-selected", "true");
         expect(screen.queryByRole("button", {name: "Cancel Edit"})).not.toBeInTheDocument();
         expect(screen.getByText(byTextContent("Java Developer"))).toBeInTheDocument();
     });

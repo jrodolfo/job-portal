@@ -106,6 +106,19 @@ const AdminDashboard = () => {
     };
 
     const getApplicationCount = (jobId) => applications.filter((application) => application?.job?.id === jobId).length;
+    const openJobsCount = jobs.filter((job) => job.status === "OPEN").length;
+    const closedJobsCount = jobs.filter((job) => job.status === "CLOSED").length;
+    const getTabLabel = (tab) => {
+        if (tab.id === "jobs") {
+            return `${tab.label} (${jobs.length})`;
+        }
+
+        if (tab.id === "applications") {
+            return `${tab.label} (${applications.length})`;
+        }
+
+        return tab.label;
+    };
 
     const visibleJobs = jobs
         .filter((job) => {
@@ -377,7 +390,7 @@ const AdminDashboard = () => {
                                 id={`admin-tab-${tab.id}`}
                                 onClick={() => setActiveTab(tab.id)}
                             >
-                                {tab.label}
+                                {getTabLabel(tab)}
                             </button>
                         ))}
                     </div>
@@ -390,6 +403,7 @@ const AdminDashboard = () => {
                     hidden={activeTab !== "jobs"}
                 >
                     <h2 className="section-title">Jobs</h2>
+                    <p className="body-text muted-meta">Open: {openJobsCount} | Closed: {closedJobsCount}</p>
                     <div className="row g-2 mb-3">
                         <div className="col-md-5">
                             <label className="form-label body-text" htmlFor="job-search">Search Jobs</label>
