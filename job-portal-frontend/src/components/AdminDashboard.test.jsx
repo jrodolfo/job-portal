@@ -1,4 +1,5 @@
 import {screen, waitFor} from "@testing-library/react";
+import {within} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import axios from "axios";
 import AdminDashboard from "./AdminDashboard";
@@ -447,6 +448,96 @@ describe("AdminDashboard", () => {
         await waitFor(() => expect(screen.getByRole("heading", {name: "Reviewing (1)"})).toBeInTheDocument());
         expect(screen.getByRole("heading", {name: "Applied (1)"})).toBeInTheDocument();
         expect(screen.getByRole("heading", {name: "Reviewing (1)"})).toBeInTheDocument();
+    });
+
+    it("should keep applied and reviewing groups expanded by default and historical groups collapsed", async () => {
+        localStorage.setItem("token", "jwt-admin");
+        axios.get
+            .mockResolvedValueOnce({data: []})
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 10,
+                        status: "APPLIED",
+                        user: {name: "alice"},
+                        job: {id: 1, title: "Java Developer"}
+                    },
+                    {
+                        id: 11,
+                        status: "ACCEPTED",
+                        user: {name: "bob"},
+                        job: {id: 2, title: "QA Engineer"}
+                    }
+                ]
+            });
+
+        renderWithProviders(<AdminDashboard />);
+
+        await waitFor(() => expect(screen.getByRole("button", {name: "Collapse Applied"})).toBeInTheDocument());
+        expect(screen.getByRole("button", {name: "Expand Accepted"})).toBeInTheDocument();
+        expect(screen.getByText("Applicant: alice")).toBeInTheDocument();
+        expect(screen.queryByText("Applicant: bob")).not.toBeInTheDocument();
+    });
+
+    it("should collapse and expand a status group", async () => {
+        localStorage.setItem("token", "jwt-admin");
+        axios.get
+            .mockResolvedValueOnce({data: []})
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 10,
+                        status: "APPLIED",
+                        user: {name: "alice"},
+                        job: {id: 1, title: "Java Developer"}
+                    }
+                ]
+            });
+
+        renderWithProviders(<AdminDashboard />);
+        const user = userEvent.setup();
+
+        await waitFor(() => expect(screen.getByRole("button", {name: "Collapse Applied"})).toBeInTheDocument());
+        await user.click(screen.getByRole("button", {name: "Collapse Applied"}));
+        expect(screen.queryByText("Applicant: alice")).not.toBeInTheDocument();
+        await user.click(screen.getByRole("button", {name: "Expand Applied"}));
+        expect(screen.getByText("Applicant: alice")).toBeInTheDocument();
+    });
+
+    it("should move an updated application into the correct status group", async () => {
+        localStorage.setItem("token", "jwt-admin");
+        axios.get
+            .mockResolvedValueOnce({data: []})
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 10,
+                        status: "APPLIED",
+                        user: {name: "user"},
+                        job: {id: 1, title: "Java Developer"}
+                    }
+                ]
+            });
+        axios.put.mockResolvedValueOnce({
+            data: {
+                id: 10,
+                status: "REVIEWING",
+                user: {name: "user"},
+                job: {id: 1, title: "Java Developer"}
+            }
+        });
+
+        renderWithProviders(<AdminDashboard />);
+        const user = userEvent.setup();
+
+        await waitFor(() => expect(screen.getByLabelText("Update Status")).toBeInTheDocument());
+        await user.selectOptions(screen.getByLabelText("Update Status"), "REVIEWING");
+        await user.click(screen.getByRole("button", {name: "Save Status"}));
+
+        expect(await screen.findByText("Application status updated successfully.")).toBeInTheDocument();
+        expect(screen.queryByRole("heading", {name: "Applied (1)"})).not.toBeInTheDocument();
+        const reviewingGroup = screen.getByTestId("application-group-reviewing");
+        expect(within(reviewingGroup).getByText("Applicant: user")).toBeInTheDocument();
     });
 
     it("should sort applications within groups by oldest first", async () => {
