@@ -805,6 +805,37 @@ describe("AdminDashboard", () => {
         expect(screen.queryByText(byTextContent("Applicant: alice"))).not.toBeInTheDocument();
     });
 
+    it("should keep application search controls visible when no results match", async () => {
+        localStorage.setItem("token", "jwt-admin");
+        axios.get
+            .mockResolvedValueOnce({data: []})
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 10,
+                        status: "APPLIED",
+                        user: {name: "alice"},
+                        job: {id: 1, title: "Java Developer"},
+                        createdAt: "2026-05-25T10:00:00"
+                    }
+                ]
+            });
+
+        renderWithProviders(<AdminDashboard />);
+        const user = userEvent.setup();
+
+        await openApplicationsTab(user);
+        await waitFor(() => expect(screen.getByLabelText("Search Applications")).toBeInTheDocument());
+        await user.type(screen.getByLabelText("Search Applications"), "nonexistent-user");
+
+        expect(screen.getByText("No applications match the current filters.")).toBeInTheDocument();
+        expect(screen.getByLabelText("Search Applications")).toBeInTheDocument();
+        expect(screen.getByLabelText("Filter by Status")).toBeInTheDocument();
+
+        await user.clear(screen.getByLabelText("Search Applications"));
+        expect(screen.getByText(byTextContent("Applicant: alice"))).toBeInTheDocument();
+    });
+
     it("should group applications by status with counts", async () => {
         localStorage.setItem("token", "jwt-admin");
         axios.get
@@ -968,5 +999,66 @@ describe("AdminDashboard", () => {
         const headings = screen.getAllByRole("heading", {level: 4});
         expect(headings[0]).toHaveTextContent("Applicant: bob");
         expect(headings[1]).toHaveTextContent("Applicant: alice");
+    });
+
+    it("should sort jobs and applications correctly with MySQL-style timestamps", async () => {
+        localStorage.setItem("token", "jwt-admin");
+        axios.get
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 1,
+                        title: "Newer Job",
+                        description: "Own internal services",
+                        company: "ACME",
+                        createdAt: "2026-05-26 10:00:00",
+                        status: "OPEN"
+                    },
+                    {
+                        id: 2,
+                        title: "Older Job",
+                        description: "Maintain internal tooling",
+                        company: "Globex",
+                        createdAt: "2026-05-25 10:00:00",
+                        status: "OPEN"
+                    }
+                ]
+            })
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 10,
+                        status: "APPLIED",
+                        user: {name: "alice"},
+                        job: {id: 1, title: "Java Developer"},
+                        createdAt: "2026-05-26 10:00:00"
+                    },
+                    {
+                        id: 11,
+                        status: "APPLIED",
+                        user: {name: "bob"},
+                        job: {id: 2, title: "QA Engineer"},
+                        createdAt: "2026-05-25 10:00:00"
+                    }
+                ]
+            });
+
+        renderWithProviders(<AdminDashboard />);
+        const user = userEvent.setup();
+
+        await waitFor(() => expect(screen.getByText(byTextContent("Newer Job"))).toBeInTheDocument());
+        await user.selectOptions(screen.getByLabelText("Job Sort"), "oldest");
+
+        let headings = screen.getAllByRole("heading", {level: 4}).map((element) => element.textContent);
+        expect(headings[0]).toBe("Older Job");
+        expect(headings[1]).toBe("Newer Job");
+
+        await openApplicationsTab(user);
+        await waitFor(() => expect(screen.getByLabelText("Sort By")).toBeInTheDocument());
+        await user.selectOptions(screen.getByLabelText("Sort By"), "oldest");
+
+        headings = screen.getAllByRole("heading", {level: 4}).map((element) => element.textContent);
+        expect(headings[0]).toContain("Applicant: bob");
+        expect(headings[1]).toContain("Applicant: alice");
     });
 });

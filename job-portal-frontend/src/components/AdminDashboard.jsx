@@ -55,6 +55,18 @@ const formatStatus = (status) => {
         .join(" ");
 };
 
+const parseSortableTimestamp = (timestamp) => {
+    if (!timestamp) {
+        return 0;
+    }
+
+    const normalizedTimestamp = typeof timestamp === "string"
+        ? timestamp.trim().replace(" ", "T")
+        : timestamp;
+    const parsedDate = new Date(normalizedTimestamp);
+    return Number.isNaN(parsedDate.getTime()) ? 0 : parsedDate.getTime();
+};
+
 const AdminDashboard = () => {
     const [jobs, setJobs] = useState([]);
     const [applications, setApplications] = useState([]);
@@ -137,8 +149,8 @@ const AdminDashboard = () => {
             return matchesStatus && (title.includes(normalizedSearchTerm) || company.includes(normalizedSearchTerm));
         })
         .sort((left, right) => {
-            const leftTimestamp = new Date(left.createdAt || left.postedDate || 0).getTime();
-            const rightTimestamp = new Date(right.createdAt || right.postedDate || 0).getTime();
+            const leftTimestamp = parseSortableTimestamp(left.createdAt || left.postedDate);
+            const rightTimestamp = parseSortableTimestamp(right.createdAt || right.postedDate);
 
             if (jobSortOrder === "oldest") {
                 return leftTimestamp - rightTimestamp;
@@ -161,8 +173,8 @@ const AdminDashboard = () => {
             return matchesStatus && (applicantName.includes(normalizedSearchTerm) || jobTitle.includes(normalizedSearchTerm));
         })
         .sort((left, right) => {
-            const leftTimestamp = new Date(left.createdAt || 0).getTime();
-            const rightTimestamp = new Date(right.createdAt || 0).getTime();
+            const leftTimestamp = parseSortableTimestamp(left.createdAt);
+            const rightTimestamp = parseSortableTimestamp(right.createdAt);
 
             if (applicationSortOrder === "oldest") {
                 return leftTimestamp - rightTimestamp;
