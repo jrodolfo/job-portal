@@ -74,6 +74,17 @@ Default local frontend login credentials:
 - Applicant user: `user` / `user123`
 - Admin user: `admin` / `admin123`
 
+Optional demo seed data:
+
+- Load [docs/database/demo-seed.sql](./docs/database/demo-seed.sql) if you want a fuller local UI with 20 jobs, 4 users, and 30 applications across mixed statuses.
+- This script resets the `jobs`, `users`, and `applications` tables for demo purposes.
+- It does not change the built-in login credentials above.
+- Default local Docker command:
+
+```bash
+docker exec -i mysql-db mysql -ujobuser -pjobpass jobportal < docs/database/demo-seed.sql
+```
+
 Current local role workflows:
 
 - Applicants can browse open jobs, apply, withdraw, and reapply.
