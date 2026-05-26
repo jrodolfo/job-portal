@@ -40,6 +40,43 @@ test('admin can create, edit, and delete a job from the dashboard', async ({ pag
     await expect(page.locator('.job-card').filter({ hasText: updatedTitle })).toHaveCount(0);
 });
 
+test('admin returns to jobs after canceling edit mode', async ({ page }) => {
+    const uniqueId = Date.now();
+    const title = `e2e cancel edit ${uniqueId}`;
+
+    await loginAsAdmin(page);
+    await expect(page.getByRole('heading', { name: 'Admin' })).toBeVisible();
+
+    await createJob(page, {
+        title,
+        company: 'ACME Cancel',
+        description: 'Created to verify cancel edit navigation.'
+    });
+
+    await expect(page.getByText('Job created successfully.')).toBeVisible();
+    const jobCard = getJobCard(page, title);
+    await expect(jobCard).toBeVisible();
+
+    await jobCard.getByRole('button', { name: 'Edit' }).click();
+    await expect(page.getByRole('tab', { name: 'Add Job' })).toHaveAttribute('aria-selected', 'true');
+    await expect(page.getByRole('button', { name: 'Cancel Edit' })).toBeVisible();
+
+    await page.getByRole('button', { name: 'Cancel Edit' }).click();
+
+    await expect(page.getByRole('tab', { name: 'Jobs' })).toHaveAttribute('aria-selected', 'true');
+    await expect(page.getByRole('button', { name: 'Cancel Edit' })).toHaveCount(0);
+    await expect(getJobCard(page, title)).toBeVisible();
+
+    page.once('dialog', async (dialog) => {
+        expect(dialog.message()).toContain('Delete this job?');
+        await dialog.accept();
+    });
+    await getJobCard(page, title).getByRole('button', { name: 'Delete' }).click();
+
+    await expect(page.getByText('Job deleted successfully.')).toBeVisible();
+    await expect(page.locator('.job-card').filter({ hasText: title })).toHaveCount(0);
+});
+
 test('admin can review an applicant application from the dashboard', async ({ browser }) => {
     const uniqueId = Date.now();
     const title = `e2e admin review ${uniqueId}`;
