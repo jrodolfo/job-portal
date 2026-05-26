@@ -1,6 +1,7 @@
 package net.jrodolfo.jobportal.controller;
 
 import net.jrodolfo.jobportal.constant.ApplicationStatus;
+import net.jrodolfo.jobportal.exception.ResourceException;
 import net.jrodolfo.jobportal.model.Application;
 import net.jrodolfo.jobportal.model.Job;
 import net.jrodolfo.jobportal.model.User;
@@ -14,9 +15,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
-import java.util.Optional;
 
-import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
@@ -24,6 +24,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -67,6 +68,17 @@ class ApplicationControllerTest {
     }
 
     @Test
+    void applyForJobShouldReturnNotFoundWhenJobDoesNotExist() throws Exception {
+        when(applicationService.applyForJob("user", 404L))
+                .thenThrow(new ResourceException("Job with id 404 was not found"));
+
+        mockMvc.perform(post("/api/applications/404")
+                        .with(httpBasic("user", "user123")))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Job with id 404 was not found"));
+    }
+
+    @Test
     void getApplicationsShouldRequireAuthentication() throws Exception {
         when(applicationService.getApplicationsByUsername("user")).thenReturn(List.of(new Application()));
 
@@ -97,7 +109,34 @@ class ApplicationControllerTest {
         mockMvc.perform(put("/api/applications/10")
                         .with(httpBasic("user", "user123"))
                         .param("status", "ACCEPTED"))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.message").value("Applicants can only set application status to WITHDRAWN"));
+    }
+
+    @Test
+    void getApplicationByIdShouldReturnNotFoundWhenApplicationDoesNotExist() throws Exception {
+        when(applicationService.getApplicationById(77L))
+                .thenThrow(new ResourceException("Application with id 77 was not found"));
+
+        mockMvc.perform(get("/api/applications/77")
+                        .with(httpBasic("admin", "admin123")))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Application with id 77 was not found"));
+    }
+
+    @Test
+    void getApplicationByIdShouldReturnForbiddenWhenApplicantDoesNotOwnApplication() throws Exception {
+        User owner = new User();
+        owner.setName("other-user");
+        Job job = new Job("Java Developer", "Build APIs", "ACME");
+        Application application = new Application(owner, job);
+        application.setId(12L);
+        when(applicationService.getApplicationById(12L)).thenReturn(application);
+
+        mockMvc.perform(get("/api/applications/12")
+                        .with(httpBasic("user", "user123")))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.message").value("You are not allowed to access this application"));
     }
 
     @Test
@@ -112,5 +151,16 @@ class ApplicationControllerTest {
         mockMvc.perform(delete("/api/applications/11")
                         .with(httpBasic("user", "user123")))
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void deleteApplicationShouldReturnNotFoundWhenApplicationDoesNotExist() throws Exception {
+        doThrow(new ResourceException("Application with id 88 was not found"))
+                .when(applicationService).getApplicationById(88L);
+
+        mockMvc.perform(delete("/api/applications/88")
+                        .with(httpBasic("admin", "admin123")))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Application with id 88 was not found"));
     }
 }

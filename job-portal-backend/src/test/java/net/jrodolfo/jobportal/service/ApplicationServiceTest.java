@@ -73,7 +73,7 @@ class ApplicationServiceTest {
                 () -> applicationService.applyForJob("missing", 10L)
         );
 
-        assertEquals("User not found", exception.getMessage());
+        assertEquals("User 'missing' was not found", exception.getMessage());
     }
 
     @Test
@@ -88,7 +88,7 @@ class ApplicationServiceTest {
                 () -> applicationService.applyForJob("user", 404L)
         );
 
-        assertEquals("Job not found", exception.getMessage());
+        assertEquals("Job with id 404 was not found", exception.getMessage());
     }
 
     @Test
@@ -157,6 +157,6 @@ class ApplicationServiceTest {
 
         RuntimeException ex = assertThrows(RuntimeException.class, () -> applicationService.getApplicationById(999L));
 
-        assertTrue(ex.getMessage().contains("Application not found"));
+        assertEquals("Application with id 999 was not found", ex.getMessage());
     }
 }

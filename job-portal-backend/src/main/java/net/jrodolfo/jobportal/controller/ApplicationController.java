@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.server.ResponseStatusException;
 
 import net.jrodolfo.jobportal.model.Application;
 import net.jrodolfo.jobportal.service.ApplicationService;
@@ -89,7 +90,7 @@ public class ApplicationController {
 
         // Applicants can only withdraw their own applications.
         if (!isAdmin(authentication) && status != ApplicationStatus.WITHDRAWN) {
-            throw new ResourceException("Applicants can only set application status to WITHDRAWN");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Applicants can only set application status to WITHDRAWN");
         }
 
         Application updatedApplication = applicationService.updateApplicationStatus(existingApplication.getId(), status);
@@ -109,12 +110,7 @@ public class ApplicationController {
     }
 
     private Application getAuthorizedApplication(Long id, Authentication authentication) {
-        Application application;
-        try {
-            application = applicationService.getApplicationById(id);
-        } catch (Exception e) {
-            throw new ResourceException("Application with id " + id + " was not found");
-        }
+        Application application = applicationService.getApplicationById(id);
 
         if (isAdmin(authentication)) {
             return application;
@@ -122,7 +118,7 @@ public class ApplicationController {
 
         if (application.getUser() == null || application.getUser().getName() == null ||
                 !application.getUser().getName().equals(authentication.getName())) {
-            throw new ResourceException("Application with id " + id + " was not found");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to access this application");
         }
 
         return application;

@@ -1,6 +1,7 @@
 package net.jrodolfo.jobportal.service;
 
 import net.jrodolfo.jobportal.constant.ApplicationStatus;
+import net.jrodolfo.jobportal.exception.ResourceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,10 +35,10 @@ public class ApplicationService {
     public Application applyForJob(String username, Long jobId) {
         /* Fetch User object using userId or throw exception */
         User user = userRepository.findByName(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceException("User '" + username + "' was not found"));
         /* Fetch Job object using jobId or throw exception */
         Job job = jobRepository.findById(jobId)
-                .orElseThrow(() -> new RuntimeException("Job not found"));
+                .orElseThrow(() -> new ResourceException("Job with id " + jobId + " was not found"));
         if (applicationRepository.existsByUserAndJob(user, job)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Application already exists for this user and job");
         }
@@ -56,19 +57,20 @@ public class ApplicationService {
     }
 
     public Application getApplicationById(Long id) {
-        return applicationRepository.findById(id).orElseThrow(() -> new RuntimeException("Application not found"));
+        return applicationRepository.findById(id)
+                .orElseThrow(() -> new ResourceException("Application with id " + id + " was not found"));
     }
 
     public Application updateApplicationStatus(Long id, ApplicationStatus status) {
         Application application = applicationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Application not found"));
+                .orElseThrow(() -> new ResourceException("Application with id " + id + " was not found"));
         application.setStatus(status);
         return applicationRepository.save(application);
     }
 
     public void deleteApplication(Long id) {
         if (!applicationRepository.existsById(id)) {
-            throw new RuntimeException("Application not found");
+            throw new ResourceException("Application with id " + id + " was not found");
         }
         applicationRepository.deleteById(id);
     }
