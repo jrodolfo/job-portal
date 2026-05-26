@@ -46,6 +46,13 @@ use the local helper script from the repository root:
 bash scripts/local/start.sh
 ```
 
+If you want a fuller local demo with preloaded jobs, users, and applications,
+use:
+
+```bash
+bash scripts/local/start-demo.sh
+```
+
 What this starts:
 
 - frontend
@@ -80,6 +87,13 @@ Optional demo seed data:
 - This script resets the `jobs`, `users`, and `applications` tables for demo purposes.
 - It does not change the built-in login credentials above.
 - Preferred local helper script:
+- One-command demo bootstrap:
+
+```bash
+bash scripts/local/start-demo.sh
+```
+
+- Seed-only helper script:
 
 ```bash
 bash scripts/local/seed-demo-data.sh
