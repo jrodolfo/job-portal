@@ -73,6 +73,54 @@ describe('Login', () => {
         await waitFor(() => expect(alertSpy).toHaveBeenCalledWith('Invalid credentials'));
     });
 
+    it('should alert when the login request fails with a server error', async () => {
+        const alertSpy = vi.fn();
+        vi.stubGlobal('alert', alertSpy);
+        axios.post.mockRejectedValueOnce({
+            response: {
+                status: 500,
+                data: {
+                    message: 'Internal Server Error'
+                }
+            }
+        });
+
+        const { store } = renderWithProviders(<Login />);
+        const user = userEvent.setup();
+
+        await user.type(screen.getByPlaceholderText('Username'), 'alice');
+        await user.type(screen.getByPlaceholderText('Password'), 'secret');
+        await user.click(screen.getByRole('button', { name: 'Login' }));
+
+        await waitFor(() => expect(alertSpy).toHaveBeenCalledWith('Invalid credentials'));
+        expect(mockNavigate).not.toHaveBeenCalled();
+        expect(store.getState().user).toEqual({
+            username: '',
+            role: ''
+        });
+    });
+
+    it('should alert when fetching user details fails after login succeeds', async () => {
+        const alertSpy = vi.fn();
+        vi.stubGlobal('alert', alertSpy);
+        axios.post.mockResolvedValueOnce({ data: { token: 'jwt-123' } });
+        axios.get.mockRejectedValueOnce(new Error('network error'));
+
+        const { store } = renderWithProviders(<Login />);
+        const user = userEvent.setup();
+
+        await user.type(screen.getByPlaceholderText('Username'), 'alice');
+        await user.type(screen.getByPlaceholderText('Password'), 'secret');
+        await user.click(screen.getByRole('button', { name: 'Login' }));
+
+        await waitFor(() => expect(alertSpy).toHaveBeenCalledWith('Invalid credentials'));
+        expect(mockNavigate).not.toHaveBeenCalled();
+        expect(store.getState().user).toEqual({
+            username: '',
+            role: ''
+        });
+    });
+
     it('should redirect to Google OAuth endpoint when Google button is clicked', async () => {
         renderWithProviders(<Login />);
         const user = userEvent.setup();
