@@ -53,6 +53,14 @@ const formatApplicationTimestamp = (timestamp) => {
     return applicationDateTimeFormatter.format(parsedDate);
 };
 
+const shouldShowLastUpdated = (createdAt, updatedAt) => {
+    if (!createdAt || !updatedAt) {
+        return false;
+    }
+
+    return new Date(createdAt).getTime() !== new Date(updatedAt).getTime();
+};
+
 const getJobApplication = (applicationsByJobId, jobId) => applicationsByJobId[jobId];
 
 const canWithdraw = (application) => application?.status === "APPLIED";
@@ -137,7 +145,10 @@ const ApplicantDashboard = () => {
             );
             setApplicationsByJobId((prev) => ({
                 ...prev,
-                [jobId]: response.data
+                [jobId]: {
+                    ...prev[jobId],
+                    ...response.data
+                }
             }));
             setStatusMessage("Application submitted successfully.");
         } catch (error) {
@@ -179,7 +190,10 @@ const ApplicantDashboard = () => {
             );
             setApplicationsByJobId((prev) => ({
                 ...prev,
-                [jobId]: response.data
+                [jobId]: {
+                    ...prev[jobId],
+                    ...response.data
+                }
             }));
             setStatusMessage("Application withdrawn successfully.");
         } catch (error) {
@@ -212,6 +226,9 @@ const ApplicantDashboard = () => {
                                 const isSubmitting = !!submittingJobs[job.id];
                                 const actionAllowed = canApply(application) || canWithdraw(application);
                                 const appliedOn = formatApplicationTimestamp(application?.createdAt);
+                                const lastUpdated = shouldShowLastUpdated(application?.createdAt, application?.updatedAt)
+                                    ? formatApplicationTimestamp(application?.updatedAt)
+                                    : null;
 
                                 return (
                             <div className="col-sm-4" key={index}>
@@ -233,6 +250,11 @@ const ApplicantDashboard = () => {
                                         {appliedOn ? (
                                             <p className="body-text muted-meta">
                                                 <span className="metadata-label">Applied On:</span> {appliedOn}
+                                            </p>
+                                        ) : null}
+                                        {lastUpdated ? (
+                                            <p className="body-text muted-meta">
+                                                <span className="metadata-label">Last Updated:</span> {lastUpdated}
                                             </p>
                                         ) : null}
                                         <p className="body-text muted-meta">

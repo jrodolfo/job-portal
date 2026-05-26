@@ -139,6 +139,46 @@ describe('ApplicantDashboard', () => {
 
     it('should disable apply and show status when an application already exists', async () => {
         const createdAt = '2026-05-26T14:43:00Z';
+        const updatedAt = '2026-05-26T14:43:00Z';
+        axios.get
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 1,
+                        title: 'Java Developer',
+                        description: 'Build APIs',
+                        company: 'ACME',
+                        postedDate: '2026-01-01'
+                    }
+                ]
+            })
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 50,
+                        status: 'APPLIED',
+                        createdAt,
+                        updatedAt,
+                        job: {
+                            id: 1
+                        }
+                    }
+                ]
+            });
+
+        renderWithProviders(<ApplicantDashboard />);
+
+        expect(await screen.findByText(byTextContent('Application Status: Applied'))).toBeInTheDocument();
+        expect(screen.getByText(byTextContent(`Applied On: ${applicationDateTimeFormatter.format(new Date(createdAt))}`))).toBeInTheDocument();
+        expect(screen.queryByText(/Last Updated:/)).not.toBeInTheDocument();
+        expect(screen.getByText('Your application has been submitted and is waiting for review.')).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Withdraw' })).toBeInTheDocument();
+        expect(axios.post).not.toHaveBeenCalled();
+    });
+
+    it('should withdraw an applied application and allow reapply after reload state changes', async () => {
+        const createdAt = '2026-05-26T14:43:00Z';
+        const updatedAt = '2026-05-26T15:10:00Z';
         axios.get
             .mockResolvedValueOnce({
                 data: [
@@ -163,44 +203,11 @@ describe('ApplicantDashboard', () => {
                     }
                 ]
             });
-
-        renderWithProviders(<ApplicantDashboard />);
-
-        expect(await screen.findByText(byTextContent('Application Status: Applied'))).toBeInTheDocument();
-        expect(screen.getByText(byTextContent(`Applied On: ${applicationDateTimeFormatter.format(new Date(createdAt))}`))).toBeInTheDocument();
-        expect(screen.getByText('Your application has been submitted and is waiting for review.')).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: 'Withdraw' })).toBeInTheDocument();
-        expect(axios.post).not.toHaveBeenCalled();
-    });
-
-    it('should withdraw an applied application and allow reapply after reload state changes', async () => {
-        axios.get
-            .mockResolvedValueOnce({
-                data: [
-                    {
-                        id: 1,
-                        title: 'Java Developer',
-                        description: 'Build APIs',
-                        company: 'ACME',
-                        postedDate: '2026-01-01'
-                    }
-                ]
-            })
-            .mockResolvedValueOnce({
-                data: [
-                    {
-                        id: 50,
-                        status: 'APPLIED',
-                        job: {
-                            id: 1
-                        }
-                    }
-                ]
-            });
         axios.put.mockResolvedValueOnce({
             data: {
                 id: 50,
                 status: 'WITHDRAWN',
+                updatedAt,
                 job: {
                     id: 1
                 }
@@ -230,6 +237,8 @@ describe('ApplicantDashboard', () => {
 
         expect(await screen.findByText('Application withdrawn successfully.')).toBeInTheDocument();
         expect(screen.getByText(byTextContent('Application Status: Withdrawn'))).toBeInTheDocument();
+        expect(screen.getByText(byTextContent(`Applied On: ${applicationDateTimeFormatter.format(new Date(createdAt))}`))).toBeInTheDocument();
+        expect(screen.getByText(byTextContent(`Last Updated: ${applicationDateTimeFormatter.format(new Date(updatedAt))}`))).toBeInTheDocument();
         expect(screen.getByText('You withdrew this application and can apply again.')).toBeInTheDocument();
         expect(screen.getByRole('button', { name: 'Apply Again' })).toBeInTheDocument();
     });

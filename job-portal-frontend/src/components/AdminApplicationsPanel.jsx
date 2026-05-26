@@ -45,6 +45,14 @@ const formatApplicationTimestamp = (timestamp) => {
     return applicationDateTimeFormatter.format(parsedDate);
 };
 
+const shouldShowLastUpdated = (createdAt, updatedAt) => {
+    if (!createdAt || !updatedAt) {
+        return false;
+    }
+
+    return new Date(createdAt).getTime() !== new Date(updatedAt).getTime();
+};
+
 const AdminApplicationsPanel = ({
     applications,
     applicationStatuses,
@@ -160,6 +168,11 @@ const AdminApplicationsPanel = ({
                                             {formatApplicationTimestamp(application.createdAt) ? (
                                                 <p className="body-text muted-meta">
                                                     <span className="metadata-label">Applied On:</span> {formatApplicationTimestamp(application.createdAt)}
+                                                </p>
+                                            ) : null}
+                                            {shouldShowLastUpdated(application.createdAt, application.updatedAt) ? (
+                                                <p className="body-text muted-meta">
+                                                    <span className="metadata-label">Last Updated:</span> {formatApplicationTimestamp(application.updatedAt)}
                                                 </p>
                                             ) : null}
                                             <div className="d-flex flex-column flex-md-row gap-2 align-items-md-center application-status-controls">

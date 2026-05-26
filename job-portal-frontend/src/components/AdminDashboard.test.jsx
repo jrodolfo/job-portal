@@ -672,6 +672,7 @@ describe("AdminDashboard", () => {
     it("should update an application status and refresh the admin list", async () => {
         localStorage.setItem("token", "jwt-admin");
         const createdAt = "2026-05-25T10:00:00Z";
+        const updatedAt = "2026-05-26T12:30:00Z";
         axios.get
             .mockResolvedValueOnce({
                 data: [
@@ -699,6 +700,7 @@ describe("AdminDashboard", () => {
             data: {
                 id: 10,
                 status: "REVIEWING",
+                updatedAt,
                 user: {name: "user"},
                 job: {id: 1, title: "Java Developer"}
             }
@@ -730,6 +732,7 @@ describe("AdminDashboard", () => {
         expect(await screen.findByText("Application status updated successfully.")).toBeInTheDocument();
         expect(screen.getByText(byTextContent("Current Status: Reviewing"))).toBeInTheDocument();
         expect(screen.getByText(byTextContent(`Applied On: ${applicationDateTimeFormatter.format(new Date(createdAt))}`))).toBeInTheDocument();
+        expect(screen.getByText(byTextContent(`Last Updated: ${applicationDateTimeFormatter.format(new Date(updatedAt))}`))).toBeInTheDocument();
     });
 
     it("should filter applications by status", async () => {
