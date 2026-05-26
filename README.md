@@ -76,9 +76,10 @@ Default local frontend login credentials:
 
 Current local role workflows:
 
-- Applicants can browse jobs, apply, withdraw, and reapply.
-- Admins can create, edit, and delete jobs.
+- Applicants can browse open jobs, apply, withdraw, and reapply.
+- Admins can create, edit, close, reopen, and delete jobs.
 - Admins can review applications, update application statuses, and filter/sort the application list.
+- Jobs with existing applications still cannot be deleted; they should be closed instead.
 
 If you prefer to run Docker Compose directly instead of using the helper script:
 

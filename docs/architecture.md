@@ -209,6 +209,8 @@ earlier `ddl-auto=update` decision recorded in ADR 0009.
 The current persistence behavior also encodes lifecycle rules that matter to
 the application model:
 
+- jobs now carry an explicit `OPEN` / `CLOSED` lifecycle state
+- public job discovery is limited to `OPEN` jobs
 - application records remain meaningful after `WITHDRAWN` instead of being
   deleted
 - previously withdrawn applications can be reactivated when an applicant
@@ -284,7 +286,7 @@ generic CRUD model.
 
 Applicants can:
 
-- browse the current job list
+- browse the current open job list
 - submit an application
 - withdraw an application
 - reapply after withdrawal
@@ -292,10 +294,15 @@ Applicants can:
 
 Admins can:
 
-- create, edit, and delete jobs when no applications exist
+- create, edit, close, reopen, and delete jobs when no applications exist
 - see application counts per job
 - review applications in grouped admin views
 - update application states such as `REVIEWING`, `ACCEPTED`, and `REJECTED`
+
+The visibility rule is intentionally asymmetric:
+
+- applicants only see `OPEN` jobs
+- admins can see both `OPEN` and `CLOSED` jobs through the authenticated admin view
 
 This lifecycle is not just UI behavior. It is enforced jointly by backend
 services and frontend dashboards, and the durable rules are captured in

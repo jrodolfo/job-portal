@@ -13,8 +13,9 @@ It provides the browser UI for:
 
 Current supported workflows:
 
-- Applicants can log in, apply to jobs, withdraw applications, and reapply later.
-- Admins can create, edit, and delete jobs.
+- Applicants can log in, browse open jobs, apply to jobs, withdraw applications, and reapply later.
+- Closed jobs disappear from the applicant dashboard instead of staying available for new applications.
+- Admins can create, edit, close, reopen, and delete jobs.
 - Admins can review submitted applications and update their statuses.
 
 ## Tech Stack

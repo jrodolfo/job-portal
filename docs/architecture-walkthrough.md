@@ -176,9 +176,9 @@ explaining the project credibly to other engineers and reviewers.
 
 ### Job and application lifecycle rules are now intentional
 
-The repository no longer treats apply, withdraw, reapply, review, and
-delete-blocking behavior as incidental controller logic. Those flows now form
-an explicit lifecycle model shared by the backend and frontend.
+The repository no longer treats apply, withdraw, reapply, review, close,
+reopen, and delete-blocking behavior as incidental controller logic. Those
+flows now form an explicit lifecycle model shared by the backend and frontend.
 
 Related ADR:
 

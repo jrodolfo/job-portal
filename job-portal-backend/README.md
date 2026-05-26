@@ -21,6 +21,9 @@ Schema management:
 Current backend workflow rules:
 
 - Applicants can create applications, withdraw them, and reapply after a withdrawn state.
+- Public `GET /api/jobs` returns only `OPEN` jobs.
+- Admins use the authenticated full jobs view and can move jobs between `OPEN` and `CLOSED`.
+- Applying to a closed job is rejected by the backend.
 - Admins can review application statuses such as `REVIEWING`, `ACCEPTED`, and `REJECTED`.
 - Jobs with existing applications cannot be deleted; the backend returns a clear `409 Conflict` instead.
 
