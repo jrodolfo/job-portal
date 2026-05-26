@@ -44,3 +44,54 @@ test('admin can create, edit, and delete a job from the dashboard', async ({ pag
     await expect(page.getByText('Job deleted successfully.')).toBeVisible();
     await expect(page.locator('.job-card').filter({ hasText: updatedTitle })).toHaveCount(0);
 });
+
+test('admin can review an applicant application from the dashboard', async ({ browser }) => {
+    const uniqueId = Date.now();
+    const title = `e2e admin review ${uniqueId}`;
+
+    const adminContext = await browser.newContext();
+    const applicantContext = await browser.newContext();
+    const adminPage = await adminContext.newPage();
+    const applicantPage = await applicantContext.newPage();
+
+    await pageLogin(adminPage, 'admin', 'admin123', '/admin-dashboard');
+
+    await adminPage.getByLabel('Title').fill(title);
+    await adminPage.getByLabel('Company').fill('ACME Review');
+    await adminPage.getByLabel('Description').fill('Created to verify admin application review.');
+    await adminPage.getByRole('button', { name: 'Create Job' }).click();
+
+    await expect(adminPage.getByText('Job created successfully.')).toBeVisible();
+
+    await pageLogin(applicantPage, 'user', 'user123', '/applicant-dashboard');
+    const applicantCard = applicantPage.locator('.job-card').filter({ hasText: title }).first();
+    await expect(applicantCard).toBeVisible();
+    await applicantCard.getByRole('button', { name: 'Apply' }).click();
+    await expect(applicantPage.getByText('Application submitted successfully.')).toBeVisible();
+
+    await adminPage.reload();
+    const adminCard = adminPage.locator('.job-card').filter({ hasText: title }).first();
+    await expect(adminCard.getByText('Applications: 1')).toBeVisible();
+
+    const applicationSection = adminPage.locator('.card').filter({ hasText: `Applicant: user` }).filter({ hasText: title }).first();
+    await expect(applicationSection).toBeVisible();
+    await applicationSection.getByLabel('Update Status').selectOption('REVIEWING');
+    await applicationSection.getByRole('button', { name: 'Save Status' }).click();
+
+    await expect(adminPage.getByText('Application status updated successfully.')).toBeVisible();
+    await expect(applicationSection.getByText('Current Status: Reviewing')).toBeVisible();
+
+    await adminContext.close();
+    await applicantContext.close();
+});
+
+async function pageLogin(page, username, password, expectedPath) {
+    await page.goto(expectedPath);
+    await expect(page).toHaveURL(/\/$/);
+
+    await page.getByPlaceholder('Username').fill(username);
+    await page.getByPlaceholder('Password').fill(password);
+    await page.getByRole('button', { name: 'Login' }).click();
+
+    await expect(page).toHaveURL(new RegExp(`${expectedPath.replace('/', '\\/')}$`));
+}

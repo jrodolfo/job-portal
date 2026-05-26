@@ -16,28 +16,49 @@ describe("AdminDashboard", () => {
     });
 
     it("should fetch and render jobs on mount", async () => {
-        axios.get.mockResolvedValueOnce({
-            data: [
-                {
-                    id: 1,
-                    title: "Java Developer",
-                    description: "Build APIs",
-                    company: "ACME",
-                    postedDate: "2026-01-01"
-                }
-            ]
-        });
+        localStorage.setItem("token", "jwt-admin");
+        axios.get
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 1,
+                        title: "Java Developer",
+                        description: "Build APIs",
+                        company: "ACME",
+                        postedDate: "2026-01-01"
+                    }
+                ]
+            })
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 10,
+                        status: "APPLIED",
+                        user: {name: "user"},
+                        job: {id: 1, title: "Java Developer"}
+                    }
+                ]
+            });
 
         renderWithProviders(<AdminDashboard />);
 
         await waitFor(() => expect(axios.get).toHaveBeenCalledWith("http://localhost:8080/api/jobs"));
+        expect(axios.get).toHaveBeenCalledWith("http://localhost:8080/api/applications", {
+            headers: {
+                Authorization: "Bearer jwt-admin"
+            }
+        });
         expect(screen.getByText("Add New Job")).toBeInTheDocument();
         expect(screen.getByText("Title: Java Developer")).toBeInTheDocument();
+        expect(screen.getByText("Applications: 1")).toBeInTheDocument();
+        expect(screen.getByText("Applicant: user")).toBeInTheDocument();
     });
 
     it("should send create job request with bearer token and prepend the new job", async () => {
         localStorage.setItem("token", "jwt-admin");
-        axios.get.mockResolvedValueOnce({data: []});
+        axios.get
+            .mockResolvedValueOnce({data: []})
+            .mockResolvedValueOnce({data: []});
         axios.post.mockResolvedValueOnce({
             data: {
                 id: 10,
@@ -78,17 +99,19 @@ describe("AdminDashboard", () => {
 
     it("should enter edit mode and send update request with bearer token", async () => {
         localStorage.setItem("token", "jwt-admin");
-        axios.get.mockResolvedValueOnce({
-            data: [
-                {
-                    id: 1,
-                    title: "Java Developer",
-                    description: "Build APIs",
-                    company: "ACME",
-                    postedDate: "2026-05-25"
-                }
-            ]
-        });
+        axios.get
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 1,
+                        title: "Java Developer",
+                        description: "Build APIs",
+                        company: "ACME",
+                        postedDate: "2026-05-25"
+                    }
+                ]
+            })
+            .mockResolvedValueOnce({data: []});
         axios.put.mockResolvedValueOnce({
             data: {
                 id: 1,
@@ -137,7 +160,9 @@ describe("AdminDashboard", () => {
 
     it("should show backend validation message when create fails with bad request", async () => {
         localStorage.setItem("token", "jwt-admin");
-        axios.get.mockResolvedValueOnce({data: []});
+        axios.get
+            .mockResolvedValueOnce({data: []})
+            .mockResolvedValueOnce({data: []});
         axios.post.mockRejectedValueOnce({
             response: {
                 status: 400,
@@ -160,17 +185,19 @@ describe("AdminDashboard", () => {
 
     it("should show backend validation message when update fails with bad request", async () => {
         localStorage.setItem("token", "jwt-admin");
-        axios.get.mockResolvedValueOnce({
-            data: [
-                {
-                    id: 1,
-                    title: "Java Developer",
-                    description: "Build APIs",
-                    company: "ACME",
-                    postedDate: "2026-05-25"
-                }
-            ]
-        });
+        axios.get
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 1,
+                        title: "Java Developer",
+                        description: "Build APIs",
+                        company: "ACME",
+                        postedDate: "2026-05-25"
+                    }
+                ]
+            })
+            .mockResolvedValueOnce({data: []});
         axios.put.mockRejectedValueOnce({
             response: {
                 status: 400,
@@ -193,17 +220,19 @@ describe("AdminDashboard", () => {
     it("should delete a job after confirmation", async () => {
         localStorage.setItem("token", "jwt-admin");
         vi.stubGlobal("confirm", vi.fn(() => true));
-        axios.get.mockResolvedValueOnce({
-            data: [
-                {
-                    id: 1,
-                    title: "Java Developer",
-                    description: "Build APIs",
-                    company: "ACME",
-                    postedDate: "2026-05-25"
-                }
-            ]
-        });
+        axios.get
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 1,
+                        title: "Java Developer",
+                        description: "Build APIs",
+                        company: "ACME",
+                        postedDate: "2026-05-25"
+                    }
+                ]
+            })
+            .mockResolvedValueOnce({data: []});
         axios.delete.mockResolvedValueOnce({});
 
         renderWithProviders(<AdminDashboard />);
@@ -230,17 +259,19 @@ describe("AdminDashboard", () => {
     it("should show the backend conflict message when deleting a job with applications", async () => {
         localStorage.setItem("token", "jwt-admin");
         vi.stubGlobal("confirm", vi.fn(() => true));
-        axios.get.mockResolvedValueOnce({
-            data: [
-                {
-                    id: 1,
-                    title: "Java Developer",
-                    description: "Build APIs",
-                    company: "ACME",
-                    postedDate: "2026-05-25"
-                }
-            ]
-        });
+        axios.get
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 1,
+                        title: "Java Developer",
+                        description: "Build APIs",
+                        company: "ACME",
+                        postedDate: "2026-05-25"
+                    }
+                ]
+            })
+            .mockResolvedValueOnce({data: []});
         axios.delete.mockRejectedValueOnce({
             response: {
                 status: 409,
@@ -258,5 +289,64 @@ describe("AdminDashboard", () => {
 
         expect(await screen.findByText("Cannot delete job with existing applications")).toBeInTheDocument();
         expect(screen.getByText("Title: Java Developer")).toBeInTheDocument();
+    });
+
+    it("should update an application status and refresh the admin list", async () => {
+        localStorage.setItem("token", "jwt-admin");
+        axios.get
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 1,
+                        title: "Java Developer",
+                        description: "Build APIs",
+                        company: "ACME",
+                        postedDate: "2026-05-25"
+                    }
+                ]
+            })
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 10,
+                        status: "APPLIED",
+                        user: {name: "user"},
+                        job: {id: 1, title: "Java Developer"}
+                    }
+                ]
+            });
+        axios.put.mockResolvedValueOnce({
+            data: {
+                id: 10,
+                status: "REVIEWING",
+                user: {name: "user"},
+                job: {id: 1, title: "Java Developer"}
+            }
+        });
+
+        renderWithProviders(<AdminDashboard />);
+        const user = userEvent.setup();
+
+        await waitFor(() => expect(screen.getByLabelText("Update Status")).toBeInTheDocument());
+        await user.selectOptions(screen.getByLabelText("Update Status"), "REVIEWING");
+        await user.click(screen.getByRole("button", {name: "Save Status"}));
+
+        await waitFor(() =>
+            expect(axios.put).toHaveBeenCalledWith(
+                "http://localhost:8080/api/applications/10",
+                null,
+                {
+                    params: {
+                        status: "REVIEWING"
+                    },
+                    headers: {
+                        Authorization: "Bearer jwt-admin"
+                    }
+                }
+            )
+        );
+
+        expect(await screen.findByText("Application status updated successfully.")).toBeInTheDocument();
+        expect(screen.getByText("Current Status: Reviewing")).toBeInTheDocument();
     });
 });

@@ -9,6 +9,8 @@ const emptyForm = {
     company: ""
 };
 
+const applicationStatuses = ["APPLIED", "REVIEWING", "ACCEPTED", "REJECTED", "WITHDRAWN"];
+
 const getApiErrorMessage = (error, fallbackMessage) => {
     const status = error?.response?.status;
     const backendMessage = error?.response?.data?.message;
@@ -32,31 +34,72 @@ const getApiErrorMessage = (error, fallbackMessage) => {
     return backendMessage || fallbackMessage;
 };
 
+const formatStatus = (status) => {
+    if (!status) {
+        return "Unknown";
+    }
+
+    return status
+        .toLowerCase()
+        .split("_")
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+        .join(" ");
+};
+
 const AdminDashboard = () => {
     const [jobs, setJobs] = useState([]);
+    const [applications, setApplications] = useState([]);
+    const [statusSelections, setStatusSelections] = useState({});
     const [form, setForm] = useState(emptyForm);
     const [editingJobId, setEditingJobId] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [deletingJobId, setDeletingJobId] = useState(null);
+    const [updatingApplicationId, setUpdatingApplicationId] = useState(null);
     const [statusMessage, setStatusMessage] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
 
     useEffect(() => {
-        getAllJobs();
+        loadAdminData();
     }, []);
 
-    const getAllJobs = async () => {
+    const buildStatusSelections = (items) => {
+        return items.reduce((lookup, application) => {
+            lookup[application.id] = application.status;
+            return lookup;
+        }, {});
+    };
+
+    const loadAdminData = async () => {
         try {
-            const response = await axios.get(BACKEND_API_URL + "/api/jobs");
-            setJobs(response.data);
+            const requestConfig = {
+                headers: {
+                    Authorization: "Bearer " + localStorage.getItem("token")
+                }
+            };
+            const [jobsResponse, applicationsResponse] = await Promise.all([
+                axios.get(BACKEND_API_URL + "/api/jobs"),
+                axios.get(BACKEND_API_URL + "/api/applications", requestConfig)
+            ]);
+            setJobs(jobsResponse.data);
+            setApplications(applicationsResponse.data);
+            setStatusSelections(buildStatusSelections(applicationsResponse.data));
         } catch (error) {
-            setErrorMessage("We couldn't load jobs right now. Please refresh and try again.");
+            setErrorMessage("We couldn't load jobs and applications right now. Please refresh and try again.");
         }
     };
+
+    const getApplicationCount = (jobId) => applications.filter((application) => application?.job?.id === jobId).length;
 
     const handleChange = (event) => {
         const {name, value} = event.target;
         setForm((prev) => ({...prev, [name]: value}));
+    };
+
+    const handleApplicationStatusChange = (applicationId, status) => {
+        setStatusSelections((prev) => ({
+            ...prev,
+            [applicationId]: status
+        }));
     };
 
     const resetForm = () => {
@@ -156,6 +199,44 @@ const AdminDashboard = () => {
         }
     };
 
+    const updateApplicationStatus = async (applicationId) => {
+        const status = statusSelections[applicationId];
+        if (!status || updatingApplicationId) {
+            return;
+        }
+
+        setUpdatingApplicationId(applicationId);
+        setErrorMessage("");
+        setStatusMessage("");
+
+        try {
+            const response = await axios.put(
+                `${BACKEND_API_URL}/api/applications/${applicationId}`,
+                null,
+                {
+                    params: {
+                        status
+                    },
+                    headers: {
+                        Authorization: "Bearer " + localStorage.getItem("token")
+                    }
+                }
+            );
+            setApplications((prev) => prev.map((application) => (
+                application.id === applicationId ? response.data : application
+            )));
+            setStatusSelections((prev) => ({
+                ...prev,
+                [applicationId]: response.data.status
+            }));
+            setStatusMessage("Application status updated successfully.");
+        } catch (error) {
+            showRequestError(error, "We couldn't update the application status right now. Please try again.");
+        } finally {
+            setUpdatingApplicationId(null);
+        }
+    };
+
     return (
         <>
             <Navbar />
@@ -245,6 +326,7 @@ const AdminDashboard = () => {
                                             <p className="body-text">Details: {job.description}</p>
                                             <p className="body-text">Company: {job.company}</p>
                                             <p className="body-text muted-meta">Posted Date: {job.postedDate || "Created today"}</p>
+                                            <p className="body-text">Applications: {getApplicationCount(job.id)}</p>
                                             <div className="d-flex gap-2">
                                                 <button
                                                     type="button"
@@ -266,6 +348,56 @@ const AdminDashboard = () => {
                                     </div>
                                 </div>
                             ))}
+                        </div>
+
+                        <div className="mt-4">
+                            <h2 className="section-title">Applications</h2>
+                            {applications.length === 0 ? (
+                                <p className="body-text">No applications have been submitted yet.</p>
+                            ) : (
+                                <div className="row">
+                                    {applications.map((application) => (
+                                        <div className="col-12" key={application.id}>
+                                            <div className="card mb-3">
+                                                <div className="card-body">
+                                                    <h4 className="heading-text">
+                                                        Applicant: {application.user?.name || "Unknown user"}
+                                                    </h4>
+                                                    <p className="body-text">Job: {application.job?.title || "Unknown job"}</p>
+                                                    <p className="body-text">
+                                                        Current Status: {formatStatus(application.status)}
+                                                    </p>
+                                                    <div className="d-flex flex-column flex-md-row gap-2 align-items-md-center">
+                                                        <label className="body-text mb-0" htmlFor={`application-status-${application.id}`}>
+                                                            Update Status
+                                                        </label>
+                                                        <select
+                                                            id={`application-status-${application.id}`}
+                                                            className="form-select"
+                                                            value={statusSelections[application.id] || application.status}
+                                                            onChange={(event) => handleApplicationStatusChange(application.id, event.target.value)}
+                                                        >
+                                                            {applicationStatuses.map((status) => (
+                                                                <option key={status} value={status}>
+                                                                    {formatStatus(status)}
+                                                                </option>
+                                                            ))}
+                                                        </select>
+                                                        <button
+                                                            type="button"
+                                                            className="btn btn-accent-secondary"
+                                                            disabled={updatingApplicationId === application.id}
+                                                            onClick={() => updateApplicationStatus(application.id)}
+                                                        >
+                                                            {updatingApplicationId === application.id ? "Updating..." : "Save Status"}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
