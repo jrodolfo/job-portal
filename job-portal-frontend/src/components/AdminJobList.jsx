@@ -40,10 +40,10 @@ const AdminJobList = ({
     }
 
     return (
-        <div className="row">
+        <div className="row g-4">
             {jobs.map((job, index) => (
                 <div className="col-md-6" key={job.id ?? `${job.title}-${index}`}>
-                        <div className={`card mb-4 job-card ${getJobCardStatusClass(job.status)}`}>
+                        <div className={`card job-card ${getJobCardStatusClass(job.status)}`}>
                         <div className="card-body">
                             <h4 className="heading-text">Title: {job.title}</h4>
                             <p className="body-text">Details: {job.description}</p>
