@@ -45,9 +45,7 @@ const AdminJobList = ({
                 <div className="col-md-6" key={job.id ?? `${job.title}-${index}`}>
                         <div className={`card job-card ${getJobCardStatusClass(job.status)}`}>
                         <div className="card-body">
-                            <h4 className="heading-text">
-                                <span className="metadata-label">Title:</span> {job.title}
-                            </h4>
+                            <h4 className="heading-text">{job.title}</h4>
                             <p className="body-text">
                                 <span className="metadata-label">Details:</span> {job.description}
                             </p>

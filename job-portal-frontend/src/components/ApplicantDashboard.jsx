@@ -195,9 +195,7 @@ const ApplicantDashboard = () => {
                             <div className="col-sm-4" key={index}>
                                 <div className={`card mb-4 job-card accent-${(index % 3) + 1}`}>
                                     <div className="card-body">
-                                        <h4 className="heading-text">
-                                            <span className="metadata-label">Title:</span> {job.title}
-                                        </h4>
+                                        <h4 className="heading-text">{job.title}</h4>
                                         <p className="body-text">
                                             <span className="metadata-label">Details:</span> {job.description}
                                         </p>

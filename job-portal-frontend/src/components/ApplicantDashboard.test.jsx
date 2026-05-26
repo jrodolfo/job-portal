@@ -45,7 +45,7 @@ describe('ApplicantDashboard', () => {
                 Authorization: 'Bearer jwt-123'
             }
         });
-        expect(screen.getByText(byTextContent('Title: Java Developer'))).toBeInTheDocument();
+        expect(screen.getByText(byTextContent('Java Developer'))).toBeInTheDocument();
         expect(screen.getByText(byTextContent('Company: ACME'))).toBeInTheDocument();
         expect(screen.getByText(byTextContent('Application Status: Not applied'))).toBeInTheDocument();
     });
