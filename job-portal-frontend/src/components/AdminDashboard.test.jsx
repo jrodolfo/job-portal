@@ -51,6 +51,7 @@ describe("AdminDashboard", () => {
         expect(screen.getByText("Add New Job")).toBeInTheDocument();
         expect(screen.getByText("Title: Java Developer")).toBeInTheDocument();
         expect(screen.getByText("Applications: 1")).toBeInTheDocument();
+        expect(screen.getByRole("heading", {name: "Applied (1)"})).toBeInTheDocument();
         expect(screen.getByText("Applicant: user")).toBeInTheDocument();
     });
 
@@ -379,6 +380,7 @@ describe("AdminDashboard", () => {
         await waitFor(() => expect(screen.getByLabelText("Filter by Status")).toBeInTheDocument());
         await user.selectOptions(screen.getByLabelText("Filter by Status"), "REVIEWING");
 
+        expect(screen.getByRole("heading", {name: "Reviewing (1)"})).toBeInTheDocument();
         expect(screen.getByText("Applicant: bob")).toBeInTheDocument();
         expect(screen.queryByText("Applicant: alice")).not.toBeInTheDocument();
     });
@@ -412,11 +414,12 @@ describe("AdminDashboard", () => {
         await waitFor(() => expect(screen.getByLabelText("Search Applications")).toBeInTheDocument());
         await user.type(screen.getByLabelText("Search Applications"), "qa");
 
+        expect(screen.getByRole("heading", {name: "Reviewing (1)"})).toBeInTheDocument();
         expect(screen.getByText("Applicant: bob")).toBeInTheDocument();
         expect(screen.queryByText("Applicant: alice")).not.toBeInTheDocument();
     });
 
-    it("should sort applications by oldest first", async () => {
+    it("should group applications by status with counts", async () => {
         localStorage.setItem("token", "jwt-admin");
         axios.get
             .mockResolvedValueOnce({data: []})
@@ -432,6 +435,36 @@ describe("AdminDashboard", () => {
                     {
                         id: 11,
                         status: "REVIEWING",
+                        user: {name: "bob"},
+                        job: {id: 2, title: "QA Engineer"},
+                        createdAt: "2026-05-25T10:00:00"
+                    }
+                ]
+            });
+
+        renderWithProviders(<AdminDashboard />);
+
+        await waitFor(() => expect(screen.getByRole("heading", {name: "Reviewing (1)"})).toBeInTheDocument());
+        expect(screen.getByRole("heading", {name: "Applied (1)"})).toBeInTheDocument();
+        expect(screen.getByRole("heading", {name: "Reviewing (1)"})).toBeInTheDocument();
+    });
+
+    it("should sort applications within groups by oldest first", async () => {
+        localStorage.setItem("token", "jwt-admin");
+        axios.get
+            .mockResolvedValueOnce({data: []})
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 10,
+                        status: "APPLIED",
+                        user: {name: "alice"},
+                        job: {id: 1, title: "Java Developer"},
+                        createdAt: "2026-05-26T10:00:00"
+                    },
+                    {
+                        id: 11,
+                        status: "APPLIED",
                         user: {name: "bob"},
                         job: {id: 2, title: "QA Engineer"},
                         createdAt: "2026-05-25T10:00:00"
