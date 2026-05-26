@@ -2,6 +2,7 @@ package net.jrodolfo.jobportal.service;
 
 import java.util.List;
 
+import net.jrodolfo.jobportal.constant.JobStatus;
 import net.jrodolfo.jobportal.exception.ResourceException;
 import net.jrodolfo.jobportal.repository.ApplicationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +25,16 @@ public class JobService {
 
     // Create a new Job
     public Job createJob(Job job) {
+        job.setStatus(JobStatus.OPEN);
         return jobRepository.save(job); // save(T) method from JPA Repository
     }
     
-    // Get all jobs
+    // Get jobs visible to applicants/public
+    public List<Job> getOpenJobs() {
+        return jobRepository.findByStatusOrderByCreatedAtDesc(JobStatus.OPEN);
+    }
+
+    // Get all jobs for admins
     public List<Job> getAllJobs() {
         return jobRepository.findAll(); // findAll() method from JPA Repository
     }
@@ -50,6 +57,15 @@ public class JobService {
             existingJob.setPostedDate(incomingJob.getPostedDate());
         }
 
+        return jobRepository.save(existingJob);
+    }
+
+    @Transactional
+    public Job updateJobStatus(Long id, JobStatus status) {
+        Job existingJob = jobRepository.findById(id)
+                .orElseThrow(() -> new ResourceException("Job with id " + id + " was not found"));
+
+        existingJob.setStatus(status);
         return jobRepository.save(existingJob);
     }
 

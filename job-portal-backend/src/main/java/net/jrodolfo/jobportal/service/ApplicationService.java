@@ -2,6 +2,7 @@ package net.jrodolfo.jobportal.service;
 
 import net.jrodolfo.jobportal.constant.AuthProvider;
 import net.jrodolfo.jobportal.constant.ApplicationStatus;
+import net.jrodolfo.jobportal.constant.JobStatus;
 import net.jrodolfo.jobportal.constant.Role;
 import net.jrodolfo.jobportal.exception.ResourceException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,10 @@ public class ApplicationService {
         User user = resolveApplicantUser(username);
         Job job = jobRepository.findById(jobId)
                 .orElseThrow(() -> new ResourceException("Job with id " + jobId + " was not found"));
+
+        if (job.getStatus() == JobStatus.CLOSED) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot apply to a closed job");
+        }
 
         Application existingApplication = applicationRepository.findByUserAndJob(user, job).orElse(null);
         if (existingApplication != null) {

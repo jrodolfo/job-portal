@@ -2,6 +2,7 @@ package net.jrodolfo.jobportal.controller;
 
 import java.util.List;
 
+import net.jrodolfo.jobportal.constant.JobStatus;
 import net.jrodolfo.jobportal.exception.ResourceException;
 import net.jrodolfo.jobportal.exception.ErrorResponse;
 import jakarta.validation.Valid;
@@ -45,6 +46,13 @@ public class JobController {
     @Operation(summary = "Get all jobs", description = "Public endpoint.")
     @ApiResponse(responseCode = "200", description = "Jobs returned")
     public ResponseEntity<List<Job>> getAllJobs() {
+        return ResponseEntity.ok(jobService.getOpenJobs());
+    }
+
+    @GetMapping("/admin")
+    @Operation(summary = "Get all jobs for admin review", security = @SecurityRequirement(name = "basicAuth"))
+    @ApiResponse(responseCode = "200", description = "Jobs returned")
+    public ResponseEntity<List<Job>> getAllJobsForAdmin() {
         return ResponseEntity.ok(jobService.getAllJobs());
     }
 
@@ -67,6 +75,17 @@ public class JobController {
     })
     public ResponseEntity<Job> updateJob(@PathVariable @Min(value = 1) long id, @Valid @RequestBody Job job) {
         return ResponseEntity.ok(jobService.updateJob(id, job));
+    }
+
+    @PutMapping("/{id}/status")
+    @Operation(summary = "Update job status", security = @SecurityRequirement(name = "basicAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Job status updated"),
+            @ApiResponse(responseCode = "404", description = "Job not found", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public ResponseEntity<Job> updateJobStatus(@PathVariable @Min(value = 1) long id,
+                                               @RequestParam JobStatus status) {
+        return ResponseEntity.ok(jobService.updateJobStatus(id, status));
     }
 
     @DeleteMapping("/{id}")

@@ -1,6 +1,7 @@
 package net.jrodolfo.jobportal.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.jrodolfo.jobportal.constant.JobStatus;
 import net.jrodolfo.jobportal.exception.ResourceException;
 import net.jrodolfo.jobportal.model.Job;
 import net.jrodolfo.jobportal.service.JobService;
@@ -78,13 +79,36 @@ class JobControllerTest {
 
     @Test
     void getAllJobsShouldBePublic() throws Exception {
-        when(jobService.getAllJobs()).thenReturn(List.of(
-                new Job("Java Developer", "Build APIs", "ACME"),
-                new Job("QA Engineer", "Test releases", "ACME")
+        Job openJob = new Job("Java Developer", "Build APIs", "ACME");
+        openJob.setStatus(JobStatus.OPEN);
+        Job openJobTwo = new Job("QA Engineer", "Test releases", "ACME");
+        openJobTwo.setStatus(JobStatus.OPEN);
+
+        when(jobService.getOpenJobs()).thenReturn(List.of(
+                openJob,
+                openJobTwo
         ));
 
         mockMvc.perform(get("/api/jobs"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void getAllJobsForAdminShouldRequireAdmin() throws Exception {
+        Job openJob = new Job("Java Developer", "Build APIs", "ACME");
+        openJob.setStatus(JobStatus.OPEN);
+        Job closedJob = new Job("QA Engineer", "Test releases", "ACME");
+        closedJob.setStatus(JobStatus.CLOSED);
+
+        when(jobService.getAllJobs()).thenReturn(List.of(openJob, closedJob));
+
+        mockMvc.perform(get("/api/jobs/admin")
+                        .with(httpBasic("admin", "admin123")))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/api/jobs/admin")
+                        .with(httpBasic("user", "user123")))
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -101,6 +125,7 @@ class JobControllerTest {
         Job request = new Job("Updated Title", "Updated Desc", "Updated Co");
         Job response = new Job("Updated Title", "Updated Desc", "Updated Co");
         response.setId(1L);
+        response.setStatus(JobStatus.OPEN);
         when(jobService.updateJob(eq(1L), any(Job.class))).thenReturn(response);
 
         mockMvc.perform(put("/api/jobs/1")
@@ -230,5 +255,24 @@ class JobControllerTest {
                         .with(httpBasic("admin", "admin123")))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.message").value("Cannot delete job with existing applications"));
+    }
+
+    @Test
+    void updateJobStatusShouldRequireAdmin() throws Exception {
+        Job response = new Job("Java Developer", "Build APIs", "ACME");
+        response.setId(1L);
+        response.setStatus(JobStatus.CLOSED);
+        when(jobService.updateJobStatus(1L, JobStatus.CLOSED)).thenReturn(response);
+
+        mockMvc.perform(put("/api/jobs/1/status")
+                        .with(httpBasic("admin", "admin123"))
+                        .param("status", "CLOSED"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("CLOSED"));
+
+        mockMvc.perform(put("/api/jobs/1/status")
+                        .with(httpBasic("user", "user123"))
+                        .param("status", "CLOSED"))
+                .andExpect(status().isForbidden());
     }
 }

@@ -1,6 +1,7 @@
 package net.jrodolfo.jobportal.service;
 
 import net.jrodolfo.jobportal.constant.ApplicationStatus;
+import net.jrodolfo.jobportal.constant.JobStatus;
 import net.jrodolfo.jobportal.model.Application;
 import net.jrodolfo.jobportal.model.Job;
 import net.jrodolfo.jobportal.model.User;
@@ -46,6 +47,7 @@ class ApplicationServiceTest {
         user.setName("user");
         Job job = new Job();
         job.setId(10L);
+        job.setStatus(JobStatus.OPEN);
 
         Application saved = new Application(user, job);
         saved.setId(99L);
@@ -68,6 +70,7 @@ class ApplicationServiceTest {
     void applyForJobShouldThrowWhenUserMissing() {
         Job job = new Job();
         job.setId(10L);
+        job.setStatus(JobStatus.OPEN);
         Application saved = new Application();
         User persistedUser = new User("missing", "missing@local.test", null, net.jrodolfo.jobportal.constant.AuthProvider.LOCAL, net.jrodolfo.jobportal.constant.Role.APPLICANT);
 
@@ -104,6 +107,7 @@ class ApplicationServiceTest {
         user.setName("user");
         Job job = new Job();
         job.setId(10L);
+        job.setStatus(JobStatus.OPEN);
 
         when(userRepository.findByName("user")).thenReturn(Optional.of(user));
         when(jobRepository.findById(10L)).thenReturn(Optional.of(job));
@@ -123,6 +127,7 @@ class ApplicationServiceTest {
         user.setName("user");
         Job job = new Job();
         job.setId(10L);
+        job.setStatus(JobStatus.OPEN);
         Application withdrawn = new Application(user, job);
         withdrawn.setId(77L);
         withdrawn.setStatus(ApplicationStatus.WITHDRAWN);
@@ -137,6 +142,26 @@ class ApplicationServiceTest {
         assertSame(withdrawn, result);
         assertEquals(ApplicationStatus.APPLIED, result.getStatus());
         verify(applicationRepository).save(withdrawn);
+    }
+
+    @Test
+    void applyForJobShouldRejectClosedJobs() {
+        User user = new User();
+        user.setName("user");
+        Job job = new Job();
+        job.setId(10L);
+        job.setStatus(JobStatus.CLOSED);
+
+        when(userRepository.findByName("user")).thenReturn(Optional.of(user));
+        when(jobRepository.findById(10L)).thenReturn(Optional.of(job));
+
+        ResponseStatusException ex = assertThrows(
+                ResponseStatusException.class,
+                () -> applicationService.applyForJob("user", 10L)
+        );
+
+        assertEquals(409, ex.getStatusCode().value());
+        assertEquals("Cannot apply to a closed job", ex.getReason());
     }
 
     @Test

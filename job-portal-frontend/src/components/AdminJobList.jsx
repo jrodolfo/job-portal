@@ -1,9 +1,12 @@
 const AdminJobList = ({
     jobs,
     deletingJobId,
+    formatStatus,
     getApplicationCount,
     onEdit,
-    onDelete
+    onDelete,
+    onUpdateJobStatus,
+    updatingJobStatusId
 }) => {
     return (
         <div className="row">
@@ -15,6 +18,7 @@ const AdminJobList = ({
                             <p className="body-text">Details: {job.description}</p>
                             <p className="body-text">Company: {job.company}</p>
                             <p className="body-text muted-meta">Posted Date: {job.postedDate || "Created today"}</p>
+                            <p className="body-text">Status: {formatStatus(job.status)}</p>
                             <p className="body-text">Applications: {getApplicationCount(job.id)}</p>
                             <div className="d-flex gap-2">
                                 <button
@@ -23,6 +27,18 @@ const AdminJobList = ({
                                     onClick={() => onEdit(job)}
                                 >
                                     Edit
+                                </button>
+                                <button
+                                    type="button"
+                                    className="btn btn-outline-secondary"
+                                    disabled={updatingJobStatusId === job.id}
+                                    onClick={() => onUpdateJobStatus(job.id, job.status === "CLOSED" ? "OPEN" : "CLOSED")}
+                                >
+                                    {updatingJobStatusId === job.id
+                                        ? "Saving..."
+                                        : job.status === "CLOSED"
+                                            ? "Reopen"
+                                            : "Close"}
                                 </button>
                                 <button
                                     type="button"

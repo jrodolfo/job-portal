@@ -13,6 +13,7 @@ const emptyForm = {
 };
 
 const applicationStatuses = ["APPLIED", "REVIEWING", "ACCEPTED", "REJECTED", "WITHDRAWN"];
+const jobStatuses = ["OPEN", "CLOSED"];
 
 const getApiErrorMessage = (error, fallbackMessage) => {
     const status = error?.response?.status;
@@ -60,6 +61,7 @@ const AdminDashboard = () => {
     const [editingJobId, setEditingJobId] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [deletingJobId, setDeletingJobId] = useState(null);
+    const [updatingJobStatusId, setUpdatingJobStatusId] = useState(null);
     const [updatingApplicationId, setUpdatingApplicationId] = useState(null);
     const [statusMessage, setStatusMessage] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
@@ -83,7 +85,7 @@ const AdminDashboard = () => {
                 }
             };
             const [jobsResponse, applicationsResponse] = await Promise.all([
-                axios.get(BACKEND_API_URL + "/api/jobs"),
+                axios.get(BACKEND_API_URL + "/api/jobs/admin", requestConfig),
                 axios.get(BACKEND_API_URL + "/api/applications", requestConfig)
             ]);
             setJobs(jobsResponse.data);
@@ -229,6 +231,41 @@ const AdminDashboard = () => {
         }
     };
 
+    const updateJobStatus = async (jobId, status) => {
+        if (updatingJobStatusId) {
+            return;
+        }
+
+        setUpdatingJobStatusId(jobId);
+        setErrorMessage("");
+        setStatusMessage("");
+
+        try {
+            const response = await axios.put(
+                `${BACKEND_API_URL}/api/jobs/${jobId}/status`,
+                null,
+                {
+                    params: {
+                        status
+                    },
+                    headers: {
+                        Authorization: "Bearer " + localStorage.getItem("token")
+                    }
+                }
+            );
+            setJobs((prev) => prev.map((job) => (
+                job.id === jobId ? response.data : job
+            )));
+            setStatusMessage(status === "CLOSED"
+                ? "Job closed successfully."
+                : "Job reopened successfully.");
+        } catch (error) {
+            showRequestError(error, "We couldn't update the job status right now. Please try again.");
+        } finally {
+            setUpdatingJobStatusId(null);
+        }
+    };
+
     const updateApplicationStatus = async (applicationId) => {
         const status = statusSelections[applicationId];
         if (!status || updatingApplicationId) {
@@ -291,13 +328,16 @@ const AdminDashboard = () => {
                     </div>
 
                     <div className="col-lg-7">
-                        <h2 className="section-title">Open Jobs</h2>
+                        <h2 className="section-title">Jobs</h2>
                         <AdminJobList
                             jobs={jobs}
                             deletingJobId={deletingJobId}
+                            formatStatus={formatStatus}
                             getApplicationCount={getApplicationCount}
                             onEdit={startEdit}
                             onDelete={deleteJob}
+                            onUpdateJobStatus={updateJobStatus}
+                            updatingJobStatusId={updatingJobStatusId}
                         />
 
                         <div className="mt-4">

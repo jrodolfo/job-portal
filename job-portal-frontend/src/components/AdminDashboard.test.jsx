@@ -26,7 +26,8 @@ describe("AdminDashboard", () => {
                         title: "Java Developer",
                         description: "Build APIs",
                         company: "ACME",
-                        postedDate: "2026-01-01"
+                        postedDate: "2026-01-01",
+                        status: "OPEN"
                     }
                 ]
             })
@@ -43,7 +44,11 @@ describe("AdminDashboard", () => {
 
         renderWithProviders(<AdminDashboard />);
 
-        await waitFor(() => expect(axios.get).toHaveBeenCalledWith("http://localhost:8080/api/jobs"));
+        await waitFor(() => expect(axios.get).toHaveBeenCalledWith("http://localhost:8080/api/jobs/admin", {
+            headers: {
+                Authorization: "Bearer jwt-admin"
+            }
+        }));
         expect(axios.get).toHaveBeenCalledWith("http://localhost:8080/api/applications", {
             headers: {
                 Authorization: "Bearer jwt-admin"
@@ -51,6 +56,7 @@ describe("AdminDashboard", () => {
         });
         expect(screen.getByText("Add New Job")).toBeInTheDocument();
         expect(screen.getByText("Title: Java Developer")).toBeInTheDocument();
+        expect(screen.getByText("Status: Open")).toBeInTheDocument();
         expect(screen.getByText("Applications: 1")).toBeInTheDocument();
         expect(screen.getByRole("heading", {name: "Applied (1)"})).toBeInTheDocument();
         expect(screen.getByText("Applicant: user")).toBeInTheDocument();
@@ -67,7 +73,8 @@ describe("AdminDashboard", () => {
                 title: "Platform Engineer",
                 description: "Own internal services",
                 company: "ACME",
-                postedDate: "2026-05-25"
+                postedDate: "2026-05-25",
+                status: "OPEN"
             }
         });
 
@@ -109,7 +116,8 @@ describe("AdminDashboard", () => {
                         title: "Java Developer",
                         description: "Build APIs",
                         company: "ACME",
-                        postedDate: "2026-05-25"
+                        postedDate: "2026-05-25",
+                        status: "OPEN"
                     }
                 ]
             })
@@ -120,7 +128,8 @@ describe("AdminDashboard", () => {
                 title: "Senior Java Developer",
                 description: "Build platform APIs",
                 company: "ACME",
-                postedDate: "2026-05-25"
+                postedDate: "2026-05-25",
+                status: "OPEN"
             }
         });
 
@@ -195,7 +204,8 @@ describe("AdminDashboard", () => {
                         title: "Java Developer",
                         description: "Build APIs",
                         company: "ACME",
-                        postedDate: "2026-05-25"
+                        postedDate: "2026-05-25",
+                        status: "OPEN"
                     }
                 ]
             })
@@ -230,7 +240,8 @@ describe("AdminDashboard", () => {
                         title: "Java Developer",
                         description: "Build APIs",
                         company: "ACME",
-                        postedDate: "2026-05-25"
+                        postedDate: "2026-05-25",
+                        status: "OPEN"
                     }
                 ]
             })
@@ -269,7 +280,8 @@ describe("AdminDashboard", () => {
                         title: "Java Developer",
                         description: "Build APIs",
                         company: "ACME",
-                        postedDate: "2026-05-25"
+                        postedDate: "2026-05-25",
+                        status: "OPEN"
                     }
                 ]
             })
@@ -291,6 +303,91 @@ describe("AdminDashboard", () => {
 
         expect(await screen.findByText("Cannot delete job with existing applications")).toBeInTheDocument();
         expect(screen.getByText("Title: Java Developer")).toBeInTheDocument();
+    });
+
+    it("should close and reopen a job with the admin status action", async () => {
+        localStorage.setItem("token", "jwt-admin");
+        axios.get
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 1,
+                        title: "Java Developer",
+                        description: "Build APIs",
+                        company: "ACME",
+                        postedDate: "2026-05-25",
+                        status: "OPEN"
+                    }
+                ]
+            })
+            .mockResolvedValueOnce({data: []});
+        axios.put
+            .mockResolvedValueOnce({
+                data: {
+                    id: 1,
+                    title: "Java Developer",
+                    description: "Build APIs",
+                    company: "ACME",
+                    postedDate: "2026-05-25",
+                    status: "CLOSED"
+                }
+            })
+            .mockResolvedValueOnce({
+                data: {
+                    id: 1,
+                    title: "Java Developer",
+                    description: "Build APIs",
+                    company: "ACME",
+                    postedDate: "2026-05-25",
+                    status: "OPEN"
+                }
+            });
+
+        renderWithProviders(<AdminDashboard />);
+        const user = userEvent.setup();
+
+        await waitFor(() => expect(screen.getByRole("button", {name: "Close"})).toBeInTheDocument());
+        await user.click(screen.getByRole("button", {name: "Close"}));
+
+        await waitFor(() =>
+            expect(axios.put).toHaveBeenCalledWith(
+                "http://localhost:8080/api/jobs/1/status",
+                null,
+                {
+                    params: {
+                        status: "CLOSED"
+                    },
+                    headers: {
+                        Authorization: "Bearer jwt-admin"
+                    }
+                }
+            )
+        );
+
+        expect(await screen.findByText("Job closed successfully.")).toBeInTheDocument();
+        expect(screen.getByText("Status: Closed")).toBeInTheDocument();
+        expect(screen.getByRole("button", {name: "Reopen"})).toBeInTheDocument();
+
+        await user.click(screen.getByRole("button", {name: "Reopen"}));
+
+        await waitFor(() =>
+            expect(axios.put).toHaveBeenCalledWith(
+                "http://localhost:8080/api/jobs/1/status",
+                null,
+                {
+                    params: {
+                        status: "OPEN"
+                    },
+                    headers: {
+                        Authorization: "Bearer jwt-admin"
+                    }
+                }
+            )
+        );
+
+        expect(await screen.findByText("Job reopened successfully.")).toBeInTheDocument();
+        expect(screen.getByText("Status: Open")).toBeInTheDocument();
+        expect(screen.getByRole("button", {name: "Close"})).toBeInTheDocument();
     });
 
     it("should update an application status and refresh the admin list", async () => {

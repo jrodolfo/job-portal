@@ -1,5 +1,6 @@
 package net.jrodolfo.jobportal.service;
 
+import net.jrodolfo.jobportal.constant.JobStatus;
 import net.jrodolfo.jobportal.model.Job;
 import net.jrodolfo.jobportal.repository.ApplicationRepository;
 import net.jrodolfo.jobportal.repository.JobRepository;
@@ -41,11 +42,27 @@ class JobServiceTest {
         Job result = jobService.createJob(job);
 
         assertSame(job, result);
+        assertEquals(JobStatus.OPEN, job.getStatus());
         verify(jobRepository).save(job);
     }
 
     @Test
-    void getAllJobsShouldReturnAllJobs() {
+    void getOpenJobsShouldReturnOpenJobs() {
+        Job one = new Job("Java Dev", "Build apps", "ACME");
+        Job two = new Job("QA", "Test apps", "ACME");
+        one.setStatus(JobStatus.OPEN);
+        two.setStatus(JobStatus.OPEN);
+        List<Job> jobs = List.of(one, two);
+        when(jobRepository.findByStatusOrderByCreatedAtDesc(JobStatus.OPEN)).thenReturn(jobs);
+
+        List<Job> result = jobService.getOpenJobs();
+
+        assertEquals(2, result.size());
+        assertSame(jobs, result);
+    }
+
+    @Test
+    void getAllJobsShouldReturnAllJobsForAdmin() {
         Job one = new Job("Java Dev", "Build apps", "ACME");
         Job two = new Job("QA", "Test apps", "ACME");
         List<Job> jobs = List.of(one, two);
@@ -80,6 +97,7 @@ class JobServiceTest {
     void updateJobShouldPersistNewValues() {
         Job existing = new Job("Old", "Old desc", "OldCo");
         existing.setId(10L);
+        existing.setStatus(JobStatus.OPEN);
         Job incoming = new Job("New", "New desc", "NewCo");
 
         when(jobRepository.findById(10L)).thenReturn(Optional.of(existing));
@@ -90,6 +108,22 @@ class JobServiceTest {
         assertEquals("New", updated.getTitle());
         assertEquals("New desc", updated.getDescription());
         assertEquals("NewCo", updated.getCompany());
+        assertEquals(JobStatus.OPEN, updated.getStatus());
+        verify(jobRepository).save(existing);
+    }
+
+    @Test
+    void updateJobStatusShouldPersistLifecycleState() {
+        Job existing = new Job("Old", "Old desc", "OldCo");
+        existing.setId(10L);
+        existing.setStatus(JobStatus.OPEN);
+
+        when(jobRepository.findById(10L)).thenReturn(Optional.of(existing));
+        when(jobRepository.save(existing)).thenReturn(existing);
+
+        Job updated = jobService.updateJobStatus(10L, JobStatus.CLOSED);
+
+        assertEquals(JobStatus.CLOSED, updated.getStatus());
         verify(jobRepository).save(existing);
     }
 
