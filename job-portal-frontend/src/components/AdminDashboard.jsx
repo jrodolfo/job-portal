@@ -9,6 +9,25 @@ const emptyForm = {
     company: ""
 };
 
+const getApiErrorMessage = (error, fallbackMessage) => {
+    const status = error?.response?.status;
+    const backendMessage = error?.response?.data?.message;
+
+    if (status === 401) {
+        return "Your session is missing or expired. Please log in again.";
+    }
+
+    if (status === 403) {
+        return "Only admin users can manage jobs.";
+    }
+
+    if (status === 400 && backendMessage) {
+        return backendMessage;
+    }
+
+    return backendMessage || fallbackMessage;
+};
+
 const AdminDashboard = () => {
     const [jobs, setJobs] = useState([]);
     const [form, setForm] = useState(emptyForm);
@@ -42,14 +61,7 @@ const AdminDashboard = () => {
     };
 
     const showRequestError = (error, fallbackMessage) => {
-        const backendMessage = error?.response?.data?.message;
-        if (error?.response?.status === 401) {
-            setErrorMessage("Your session is missing or expired. Please log in again.");
-        } else if (error?.response?.status === 403) {
-            setErrorMessage("Only admin users can manage jobs.");
-        } else {
-            setErrorMessage(backendMessage || fallbackMessage);
-        }
+        setErrorMessage(getApiErrorMessage(error, fallbackMessage));
     };
 
     const saveJob = async (event) => {

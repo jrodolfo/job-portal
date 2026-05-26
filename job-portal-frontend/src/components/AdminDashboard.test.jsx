@@ -135,6 +135,61 @@ describe("AdminDashboard", () => {
         expect(screen.getByText("Title: Senior Java Developer")).toBeInTheDocument();
     });
 
+    it("should show backend validation message when create fails with bad request", async () => {
+        localStorage.setItem("token", "jwt-admin");
+        axios.get.mockResolvedValueOnce({data: []});
+        axios.post.mockRejectedValueOnce({
+            response: {
+                status: 400,
+                data: {
+                    message: "Title is required"
+                }
+            }
+        });
+
+        renderWithProviders(<AdminDashboard />);
+        const user = userEvent.setup();
+
+        await user.type(screen.getByLabelText("Title"), " ");
+        await user.type(screen.getByLabelText("Company"), "ACME");
+        await user.type(screen.getByLabelText("Description"), "Own internal services");
+        await user.click(screen.getByRole("button", {name: "Create Job"}));
+
+        expect(await screen.findByText("Title is required")).toBeInTheDocument();
+    });
+
+    it("should show backend validation message when update fails with bad request", async () => {
+        localStorage.setItem("token", "jwt-admin");
+        axios.get.mockResolvedValueOnce({
+            data: [
+                {
+                    id: 1,
+                    title: "Java Developer",
+                    description: "Build APIs",
+                    company: "ACME",
+                    postedDate: "2026-05-25"
+                }
+            ]
+        });
+        axios.put.mockRejectedValueOnce({
+            response: {
+                status: 400,
+                data: {
+                    message: "Description must be at most 2000 characters"
+                }
+            }
+        });
+
+        renderWithProviders(<AdminDashboard />);
+        const user = userEvent.setup();
+
+        await waitFor(() => expect(screen.getByRole("button", {name: "Edit"})).toBeInTheDocument());
+        await user.click(screen.getByRole("button", {name: "Edit"}));
+        await user.click(screen.getByRole("button", {name: "Save Changes"}));
+
+        expect(await screen.findByText("Description must be at most 2000 characters")).toBeInTheDocument();
+    });
+
     it("should delete a job after confirmation", async () => {
         localStorage.setItem("token", "jwt-admin");
         vi.stubGlobal("confirm", vi.fn(() => true));

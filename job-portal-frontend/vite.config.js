@@ -11,6 +11,8 @@ export default defineConfig({
     pool: 'threads',
     globals: true,
     environment: 'happy-dom',
-    setupFiles: './src/test/setupTests.js'
+    setupFiles: './src/test/setupTests.js',
+    include: ['src/**/*.{test,spec}.{js,jsx,ts,tsx}'],
+    exclude: ['tests/e2e/**']
   }
 })
