@@ -226,4 +226,37 @@ describe("AdminDashboard", () => {
         expect(await screen.findByText("Job deleted successfully.")).toBeInTheDocument();
         expect(screen.queryByText("Title: Java Developer")).not.toBeInTheDocument();
     });
+
+    it("should show the backend conflict message when deleting a job with applications", async () => {
+        localStorage.setItem("token", "jwt-admin");
+        vi.stubGlobal("confirm", vi.fn(() => true));
+        axios.get.mockResolvedValueOnce({
+            data: [
+                {
+                    id: 1,
+                    title: "Java Developer",
+                    description: "Build APIs",
+                    company: "ACME",
+                    postedDate: "2026-05-25"
+                }
+            ]
+        });
+        axios.delete.mockRejectedValueOnce({
+            response: {
+                status: 409,
+                data: {
+                    message: "Cannot delete job with existing applications"
+                }
+            }
+        });
+
+        renderWithProviders(<AdminDashboard />);
+        const user = userEvent.setup();
+
+        await waitFor(() => expect(screen.getByRole("button", {name: "Delete"})).toBeInTheDocument());
+        await user.click(screen.getByRole("button", {name: "Delete"}));
+
+        expect(await screen.findByText("Cannot delete job with existing applications")).toBeInTheDocument();
+        expect(screen.getByText("Title: Java Developer")).toBeInTheDocument();
+    });
 });

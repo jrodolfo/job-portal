@@ -25,6 +25,10 @@ const getApiErrorMessage = (error, fallbackMessage) => {
         return backendMessage;
     }
 
+    if (status === 409) {
+        return backendMessage || "Cannot delete job with existing applications";
+    }
+
     return backendMessage || fallbackMessage;
 };
 

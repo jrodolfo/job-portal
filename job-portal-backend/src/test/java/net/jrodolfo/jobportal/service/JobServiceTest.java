@@ -1,12 +1,14 @@
 package net.jrodolfo.jobportal.service;
 
 import net.jrodolfo.jobportal.model.Job;
+import net.jrodolfo.jobportal.repository.ApplicationRepository;
 import net.jrodolfo.jobportal.repository.JobRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,6 +16,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -23,6 +26,9 @@ class JobServiceTest {
 
     @Mock
     private JobRepository jobRepository;
+
+    @Mock
+    private ApplicationRepository applicationRepository;
 
     @InjectMocks
     private JobService jobService;
@@ -90,6 +96,7 @@ class JobServiceTest {
     @Test
     void deleteJobShouldDeleteWhenExists() {
         when(jobRepository.existsById(11L)).thenReturn(true);
+        when(applicationRepository.existsByJob_Id(11L)).thenReturn(false);
 
         jobService.deleteJob(11L);
 
@@ -104,5 +111,17 @@ class JobServiceTest {
 
         assertEquals("Job with id 12 was not found", ex.getMessage());
         verify(jobRepository, never()).deleteById(12L);
+    }
+
+    @Test
+    void deleteJobShouldReturnConflictWhenApplicationsExist() {
+        when(jobRepository.existsById(13L)).thenReturn(true);
+        when(applicationRepository.existsByJob_Id(13L)).thenReturn(true);
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class, () -> jobService.deleteJob(13L));
+
+        assertEquals(CONFLICT, ex.getStatusCode());
+        assertEquals("Cannot delete job with existing applications", ex.getReason());
+        verify(jobRepository, never()).deleteById(13L);
     }
 }

@@ -3,9 +3,12 @@ package net.jrodolfo.jobportal.service;
 import java.util.List;
 
 import net.jrodolfo.jobportal.exception.ResourceException;
+import net.jrodolfo.jobportal.repository.ApplicationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import net.jrodolfo.jobportal.model.Job;
 import net.jrodolfo.jobportal.repository.JobRepository;
@@ -15,6 +18,9 @@ public class JobService {
 
 	@Autowired
     private JobRepository jobRepository;
+
+    @Autowired
+    private ApplicationRepository applicationRepository;
 
     // Create a new Job
     public Job createJob(Job job) {
@@ -50,6 +56,9 @@ public class JobService {
     public void deleteJob(Long id) {
         if (!jobRepository.existsById(id)) {
             throw new ResourceException("Job with id " + id + " was not found");
+        }
+        if (applicationRepository.existsByJob_Id(id)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot delete job with existing applications");
         }
         jobRepository.deleteById(id);
     }

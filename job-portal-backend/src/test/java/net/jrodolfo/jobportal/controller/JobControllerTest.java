@@ -12,6 +12,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -22,6 +23,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -217,5 +219,16 @@ class JobControllerTest {
                         .with(httpBasic("admin", "admin123")))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Job with id 99 was not found"));
+    }
+
+    @Test
+    void deleteJobShouldReturnConflictWhenJobHasApplications() throws Exception {
+        doThrow(new ResponseStatusException(CONFLICT, "Cannot delete job with existing applications"))
+                .when(jobService).deleteJob(1L);
+
+        mockMvc.perform(delete("/api/jobs/1")
+                        .with(httpBasic("admin", "admin123")))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").value("Cannot delete job with existing applications"));
     }
 }

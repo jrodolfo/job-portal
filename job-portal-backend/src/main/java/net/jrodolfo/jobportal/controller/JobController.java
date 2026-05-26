@@ -73,6 +73,7 @@ public class JobController {
     @Operation(summary = "Delete job", security = @SecurityRequirement(name = "basicAuth"))
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Job deleted"),
+            @ApiResponse(responseCode = "409", description = "Job has existing applications", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(responseCode = "404", description = "Job not found", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     public ResponseEntity<Void> deleteJob(@PathVariable @Min(value = 1) long id) {

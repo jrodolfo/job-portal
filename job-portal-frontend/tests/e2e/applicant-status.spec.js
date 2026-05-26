@@ -43,6 +43,14 @@ test('applicant sees status and cannot reapply after submitting an application',
     await expect(refreshedApplicantCard.getByText('Application Status: Applied')).toBeVisible();
     await expect(refreshedApplicantCard.getByRole('button', { name: 'Applied' })).toBeDisabled();
 
+    adminPage.once('dialog', async (dialog) => {
+        expect(dialog.message()).toContain('Delete this job?');
+        await dialog.accept();
+    });
+    await adminCard.getByRole('button', { name: 'Delete' }).click();
+    await expect(adminPage.getByText('Cannot delete job with existing applications')).toBeVisible();
+    await expect(adminCard).toBeVisible();
+
     await adminContext.close();
     await applicantContext.close();
 });
