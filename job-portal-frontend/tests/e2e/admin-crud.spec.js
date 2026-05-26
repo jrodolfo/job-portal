@@ -71,8 +71,8 @@ test('admin can review an applicant application from the dashboard', async ({ br
 
     const applicationSection = adminPage.locator('.card').filter({ hasText: `Applicant: user` }).filter({ hasText: title }).first();
     await expect(applicationSection).toBeVisible();
-    await applicationSection.getByLabel('Update Status').selectOption('REVIEWING');
-    await applicationSection.getByRole('button', { name: 'Save Status' }).click();
+    await applicationSection.getByLabel('Status').selectOption('REVIEWING');
+    await applicationSection.getByRole('button', { name: 'Save' }).click();
 
     await expect(adminPage.getByText('Application status updated successfully.')).toBeVisible();
     await expect(applicationSection.getByText('Current Status: Reviewing')).toBeVisible();

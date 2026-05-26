@@ -120,7 +120,7 @@ const AdminApplicationsPanel = ({
                                             </p>
                                             <div className="d-flex flex-column flex-md-row gap-2 align-items-md-center">
                                                 <label className="body-text mb-0" htmlFor={`application-status-${application.id}`}>
-                                                    Update Status
+                                                    Status
                                                 </label>
                                                 <select
                                                     id={`application-status-${application.id}`}
@@ -140,7 +140,7 @@ const AdminApplicationsPanel = ({
                                                     disabled={updatingApplicationId === application.id}
                                                     onClick={() => onSaveStatus(application.id)}
                                                 >
-                                                    {updatingApplicationId === application.id ? "Updating..." : "Save Status"}
+                                                    {updatingApplicationId === application.id ? "Updating..." : "Save"}
                                                 </button>
                                             </div>
                                         </div>

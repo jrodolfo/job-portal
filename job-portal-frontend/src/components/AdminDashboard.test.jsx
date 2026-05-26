@@ -329,9 +329,9 @@ describe("AdminDashboard", () => {
         renderWithProviders(<AdminDashboard />);
         const user = userEvent.setup();
 
-        await waitFor(() => expect(screen.getByLabelText("Update Status")).toBeInTheDocument());
-        await user.selectOptions(screen.getByLabelText("Update Status"), "REVIEWING");
-        await user.click(screen.getByRole("button", {name: "Save Status"}));
+        await waitFor(() => expect(screen.getByLabelText("Status")).toBeInTheDocument());
+        await user.selectOptions(screen.getByLabelText("Status"), "REVIEWING");
+        await user.click(screen.getByRole("button", {name: "Save"}));
 
         await waitFor(() =>
             expect(axios.put).toHaveBeenCalledWith(
@@ -530,9 +530,9 @@ describe("AdminDashboard", () => {
         renderWithProviders(<AdminDashboard />);
         const user = userEvent.setup();
 
-        await waitFor(() => expect(screen.getByLabelText("Update Status")).toBeInTheDocument());
-        await user.selectOptions(screen.getByLabelText("Update Status"), "REVIEWING");
-        await user.click(screen.getByRole("button", {name: "Save Status"}));
+        await waitFor(() => expect(screen.getByLabelText("Status")).toBeInTheDocument());
+        await user.selectOptions(screen.getByLabelText("Status"), "REVIEWING");
+        await user.click(screen.getByRole("button", {name: "Save"}));
 
         expect(await screen.findByText("Application status updated successfully.")).toBeInTheDocument();
         expect(screen.queryByRole("heading", {name: "Applied (1)"})).not.toBeInTheDocument();
