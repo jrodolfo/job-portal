@@ -33,6 +33,17 @@ Tests:
 mvn test
 ```
 
+Local Java requirement:
+
+- Use Java 21 for local Maven work on this module.
+- If your shell defaults to another JDK, run Maven like this:
+
+```bash
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-21.jdk/Contents/Home
+export PATH="$JAVA_HOME/bin:$PATH"
+mvn test
+```
+
 If you are running the local stack through Docker and only backend code changed, rebuild just the backend service from the repository root:
 
 ```bash
