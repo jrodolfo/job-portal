@@ -78,3 +78,4 @@ Start new records from [template.md](template.md).
 - [0010-publish-multi-architecture-docker-images-from-the-repo.md](0010-publish-multi-architecture-docker-images-from-the-repo.md)
 - [0011-keep-the-backend-rest-openapi-first-and-reusable.md](0011-keep-the-backend-rest-openapi-first-and-reusable.md)
 - [0012-use-flyway-with-hibernate-validation-for-schema-management.md](0012-use-flyway-with-hibernate-validation-for-schema-management.md)
+- [0013-define-job-and-application-lifecycle-rules.md](0013-define-job-and-application-lifecycle-rules.md)

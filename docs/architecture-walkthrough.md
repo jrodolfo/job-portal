@@ -174,6 +174,16 @@ This project is intentionally set up so it can be run as an integrated stack,
 not just as isolated code folders. That matters for maintainability and for
 explaining the project credibly to other engineers and reviewers.
 
+### Job and application lifecycle rules are now intentional
+
+The repository no longer treats apply, withdraw, reapply, review, and
+delete-blocking behavior as incidental controller logic. Those flows now form
+an explicit lifecycle model shared by the backend and frontend.
+
+Related ADR:
+
+- [ADR 0013](./adr/0013-define-job-and-application-lifecycle-rules.md)
+
 ### Backend-centric security model
 
 The frontend does not own authentication policy. The backend does. That keeps
