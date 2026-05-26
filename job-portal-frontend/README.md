@@ -11,12 +11,27 @@ It provides the browser UI for:
 - client-side state management
 - HTTP calls to the Spring Boot backend
 
-Current supported workflows:
+## Current Frontend Workflows
 
-- Applicants can log in, browse open jobs, apply to jobs, withdraw applications, and reapply later.
-- Closed jobs disappear from the applicant dashboard instead of staying available for new applications.
-- Admins can create, edit, close, reopen, and delete jobs.
-- Admins can review submitted applications and update their statuses.
+Applicants can:
+
+- log in with local credentials or OAuth
+- browse open jobs only
+- apply, withdraw, and reapply
+- see application status, `Applied On`, and `Last Updated` when available
+
+Admins can:
+
+- use overview cards for total jobs, open jobs, closed jobs, and total applications
+- manage the dashboard through `Jobs`, `Add Job`, and `Applications` tabs
+- create, edit, close, reopen, and delete jobs
+- review applications, update statuses, and use grouped/filterable application views
+
+Current UI behavior:
+
+- Closed jobs disappear from the applicant dashboard instead of remaining available for new applications.
+- Jobs with existing applications cannot be deleted and should be closed instead.
+- The admin applications tab shows status summaries plus `Applied On` and `Last Updated` when those timestamps are meaningful.
 
 ## Tech Stack
 
@@ -75,6 +90,12 @@ The browser suite assumes the local stack is already running, typically through:
 
 ```bash
 bash scripts/local/start.sh
+```
+
+If you want the fuller seeded demo environment first, use:
+
+```bash
+bash ../scripts/local/start-demo.sh
 ```
 
 Or run coverage with:
