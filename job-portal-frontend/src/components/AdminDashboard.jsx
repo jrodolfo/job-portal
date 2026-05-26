@@ -2,6 +2,9 @@ import {useEffect, useState} from "react";
 import axios from "axios";
 import Navbar from "./Navbar";
 import {BACKEND_API_URL} from "../config/backend";
+import AdminJobForm from "./AdminJobForm";
+import AdminJobList from "./AdminJobList";
+import AdminApplicationsPanel from "./AdminApplicationsPanel";
 
 const emptyForm = {
     title: "",
@@ -248,156 +251,39 @@ const AdminDashboard = () => {
 
                 <div className="row g-4">
                     <div className="col-lg-5">
-                        <div className="card login-panel p-4">
-                            <div className="card-header login-header text-center">
-                                <h3 className="mb-0 login-title">{editingJobId ? "Edit Job" : "Add New Job"}</h3>
-                            </div>
-                            <div className="card-body">
-                                <form onSubmit={saveJob}>
-                                    <div className="mb-3">
-                                        <label className="form-label body-text" htmlFor="job-title">Title</label>
-                                        <input
-                                            id="job-title"
-                                            name="title"
-                                            className="form-control"
-                                            value={form.title}
-                                            onChange={handleChange}
-                                            required
-                                        />
-                                    </div>
-                                    <div className="mb-3">
-                                        <label className="form-label body-text" htmlFor="job-company">Company</label>
-                                        <input
-                                            id="job-company"
-                                            name="company"
-                                            className="form-control"
-                                            value={form.company}
-                                            onChange={handleChange}
-                                            required
-                                        />
-                                    </div>
-                                    <div className="mb-3">
-                                        <label className="form-label body-text" htmlFor="job-description">Description</label>
-                                        <textarea
-                                            id="job-description"
-                                            name="description"
-                                            className="form-control"
-                                            rows="5"
-                                            value={form.description}
-                                            onChange={handleChange}
-                                            required
-                                        />
-                                    </div>
-                                    {statusMessage ? <p className="body-text text-success">{statusMessage}</p> : null}
-                                    {errorMessage ? <p className="body-text text-danger">{errorMessage}</p> : null}
-                                    <div className="d-grid gap-2">
-                                        <button
-                                            type="submit"
-                                            className="btn btn-accent-primary w-100"
-                                            disabled={isSubmitting}
-                                        >
-                                            {isSubmitting
-                                                ? (editingJobId ? "Saving..." : "Creating...")
-                                                : (editingJobId ? "Save Changes" : "Create Job")}
-                                        </button>
-                                        {editingJobId ? (
-                                            <button
-                                                type="button"
-                                                className="btn btn-outline-secondary w-100"
-                                                onClick={resetForm}
-                                            >
-                                                Cancel Edit
-                                            </button>
-                                        ) : null}
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
+                        <AdminJobForm
+                            form={form}
+                            editingJobId={editingJobId}
+                            isSubmitting={isSubmitting}
+                            statusMessage={statusMessage}
+                            errorMessage={errorMessage}
+                            onChange={handleChange}
+                            onSubmit={saveJob}
+                            onCancelEdit={resetForm}
+                        />
                     </div>
 
                     <div className="col-lg-7">
                         <h2 className="section-title">Open Jobs</h2>
-                        <div className="row">
-                            {jobs.map((job, index) => (
-                                <div className="col-md-6" key={job.id ?? `${job.title}-${index}`}>
-                                    <div className={`card mb-4 job-card accent-${(index % 3) + 1}`}>
-                                        <div className="card-body">
-                                            <h4 className="heading-text">Title: {job.title}</h4>
-                                            <p className="body-text">Details: {job.description}</p>
-                                            <p className="body-text">Company: {job.company}</p>
-                                            <p className="body-text muted-meta">Posted Date: {job.postedDate || "Created today"}</p>
-                                            <p className="body-text">Applications: {getApplicationCount(job.id)}</p>
-                                            <div className="d-flex gap-2">
-                                                <button
-                                                    type="button"
-                                                    className="btn btn-accent-secondary"
-                                                    onClick={() => startEdit(job)}
-                                                >
-                                                    Edit
-                                                </button>
-                                                <button
-                                                    type="button"
-                                                    className="btn btn-outline-danger"
-                                                    disabled={deletingJobId === job.id}
-                                                    onClick={() => deleteJob(job.id)}
-                                                >
-                                                    {deletingJobId === job.id ? "Deleting..." : "Delete"}
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                        <AdminJobList
+                            jobs={jobs}
+                            deletingJobId={deletingJobId}
+                            getApplicationCount={getApplicationCount}
+                            onEdit={startEdit}
+                            onDelete={deleteJob}
+                        />
 
                         <div className="mt-4">
                             <h2 className="section-title">Applications</h2>
-                            {applications.length === 0 ? (
-                                <p className="body-text">No applications have been submitted yet.</p>
-                            ) : (
-                                <div className="row">
-                                    {applications.map((application) => (
-                                        <div className="col-12" key={application.id}>
-                                            <div className="card mb-3">
-                                                <div className="card-body">
-                                                    <h4 className="heading-text">
-                                                        Applicant: {application.user?.name || "Unknown user"}
-                                                    </h4>
-                                                    <p className="body-text">Job: {application.job?.title || "Unknown job"}</p>
-                                                    <p className="body-text">
-                                                        Current Status: {formatStatus(application.status)}
-                                                    </p>
-                                                    <div className="d-flex flex-column flex-md-row gap-2 align-items-md-center">
-                                                        <label className="body-text mb-0" htmlFor={`application-status-${application.id}`}>
-                                                            Update Status
-                                                        </label>
-                                                        <select
-                                                            id={`application-status-${application.id}`}
-                                                            className="form-select"
-                                                            value={statusSelections[application.id] || application.status}
-                                                            onChange={(event) => handleApplicationStatusChange(application.id, event.target.value)}
-                                                        >
-                                                            {applicationStatuses.map((status) => (
-                                                                <option key={status} value={status}>
-                                                                    {formatStatus(status)}
-                                                                </option>
-                                                            ))}
-                                                        </select>
-                                                        <button
-                                                            type="button"
-                                                            className="btn btn-accent-secondary"
-                                                            disabled={updatingApplicationId === application.id}
-                                                            onClick={() => updateApplicationStatus(application.id)}
-                                                        >
-                                                            {updatingApplicationId === application.id ? "Updating..." : "Save Status"}
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
+                            <AdminApplicationsPanel
+                                applications={applications}
+                                applicationStatuses={applicationStatuses}
+                                formatStatus={formatStatus}
+                                statusSelections={statusSelections}
+                                updatingApplicationId={updatingApplicationId}
+                                onStatusChange={handleApplicationStatusChange}
+                                onSaveStatus={updateApplicationStatus}
+                            />
                         </div>
                     </div>
                 </div>
