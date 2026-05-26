@@ -24,6 +24,27 @@ const getApplicationCardStatusClass = (status) => {
     }
 };
 
+const applicationDateTimeFormatter = new Intl.DateTimeFormat(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit"
+});
+
+const formatApplicationTimestamp = (timestamp) => {
+    if (!timestamp) {
+        return null;
+    }
+
+    const parsedDate = new Date(timestamp);
+    if (Number.isNaN(parsedDate.getTime())) {
+        return timestamp;
+    }
+
+    return applicationDateTimeFormatter.format(parsedDate);
+};
+
 const AdminApplicationsPanel = ({
     applications,
     applicationStatuses,
@@ -136,6 +157,11 @@ const AdminApplicationsPanel = ({
                                             <p className="body-text">
                                                 <span className="metadata-label">Current Status:</span> {formatStatus(application.status)}
                                             </p>
+                                            {formatApplicationTimestamp(application.createdAt) ? (
+                                                <p className="body-text muted-meta">
+                                                    <span className="metadata-label">Applied On:</span> {formatApplicationTimestamp(application.createdAt)}
+                                                </p>
+                                            ) : null}
                                             <div className="d-flex flex-column flex-md-row gap-2 align-items-md-center">
                                                 <label className="body-text mb-0" htmlFor={`application-status-${application.id}`}>
                                                     Status

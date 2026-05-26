@@ -18,6 +18,14 @@ const jobDateTimeFormatter = new Intl.DateTimeFormat(undefined, {
     minute: "2-digit"
 });
 
+const applicationDateTimeFormatter = new Intl.DateTimeFormat(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit"
+});
+
 const tabNamePattern = (name) => new RegExp(`^${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(\\s\\(\\d+\\))?$`);
 
 const openAdminTab = async (user, name) => {
@@ -658,6 +666,7 @@ describe("AdminDashboard", () => {
 
     it("should update an application status and refresh the admin list", async () => {
         localStorage.setItem("token", "jwt-admin");
+        const createdAt = "2026-05-25T10:00:00Z";
         axios.get
             .mockResolvedValueOnce({
                 data: [
@@ -675,6 +684,7 @@ describe("AdminDashboard", () => {
                     {
                         id: 10,
                         status: "APPLIED",
+                        createdAt,
                         user: {name: "user"},
                         job: {id: 1, title: "Java Developer"}
                     }
@@ -714,6 +724,7 @@ describe("AdminDashboard", () => {
 
         expect(await screen.findByText("Application status updated successfully.")).toBeInTheDocument();
         expect(screen.getByText(byTextContent("Current Status: Reviewing"))).toBeInTheDocument();
+        expect(screen.getByText(byTextContent(`Applied On: ${applicationDateTimeFormatter.format(new Date(createdAt))}`))).toBeInTheDocument();
     });
 
     it("should filter applications by status", async () => {

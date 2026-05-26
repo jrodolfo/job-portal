@@ -3,6 +3,14 @@ import Navbar from "./Navbar";
 import axios from "axios";
 import {BACKEND_API_URL} from '../config/backend'
 
+const applicationDateTimeFormatter = new Intl.DateTimeFormat(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit"
+});
+
 const formatStatus = (status) => {
     if (!status) {
         return "Not applied";
@@ -30,6 +38,19 @@ const getStatusHelperText = (status) => {
         default:
             return "You have not applied to this job yet.";
     }
+};
+
+const formatApplicationTimestamp = (timestamp) => {
+    if (!timestamp) {
+        return null;
+    }
+
+    const parsedDate = new Date(timestamp);
+    if (Number.isNaN(parsedDate.getTime())) {
+        return timestamp;
+    }
+
+    return applicationDateTimeFormatter.format(parsedDate);
 };
 
 const getJobApplication = (applicationsByJobId, jobId) => applicationsByJobId[jobId];
@@ -190,6 +211,7 @@ const ApplicantDashboard = () => {
                                 const application = getJobApplication(applicationsByJobId, job.id);
                                 const isSubmitting = !!submittingJobs[job.id];
                                 const actionAllowed = canApply(application) || canWithdraw(application);
+                                const appliedOn = formatApplicationTimestamp(application?.createdAt);
 
                                 return (
                             <div className="col-sm-4" key={index}>
@@ -208,6 +230,11 @@ const ApplicantDashboard = () => {
                                         <p className="body-text">
                                             <span className="metadata-label">Application Status:</span> {formatStatus(applicationsByJobId[job.id]?.status)}
                                         </p>
+                                        {appliedOn ? (
+                                            <p className="body-text muted-meta">
+                                                <span className="metadata-label">Applied On:</span> {appliedOn}
+                                            </p>
+                                        ) : null}
                                         <p className="body-text muted-meta">
                                             {getStatusHelperText(application?.status)}
                                         </p>

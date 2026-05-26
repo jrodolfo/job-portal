@@ -9,6 +9,14 @@ vi.mock('./Navbar', () => ({
     default: () => <div data-testid="navbar-mock">Navbar</div>
 }));
 
+const applicationDateTimeFormatter = new Intl.DateTimeFormat(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit'
+});
+
 const byTextContent = (text) => (_, element) => element?.textContent === text;
 
 describe('ApplicantDashboard', () => {
@@ -130,6 +138,7 @@ describe('ApplicantDashboard', () => {
     });
 
     it('should disable apply and show status when an application already exists', async () => {
+        const createdAt = '2026-05-26T14:43:00Z';
         axios.get
             .mockResolvedValueOnce({
                 data: [
@@ -147,6 +156,7 @@ describe('ApplicantDashboard', () => {
                     {
                         id: 50,
                         status: 'APPLIED',
+                        createdAt,
                         job: {
                             id: 1
                         }
@@ -157,6 +167,7 @@ describe('ApplicantDashboard', () => {
         renderWithProviders(<ApplicantDashboard />);
 
         expect(await screen.findByText(byTextContent('Application Status: Applied'))).toBeInTheDocument();
+        expect(screen.getByText(byTextContent(`Applied On: ${applicationDateTimeFormatter.format(new Date(createdAt))}`))).toBeInTheDocument();
         expect(screen.getByText('Your application has been submitted and is waiting for review.')).toBeInTheDocument();
         expect(screen.getByRole('button', { name: 'Withdraw' })).toBeInTheDocument();
         expect(axios.post).not.toHaveBeenCalled();

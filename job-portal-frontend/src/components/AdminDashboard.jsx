@@ -343,7 +343,12 @@ const AdminDashboard = () => {
                 }
             );
             setApplications((prev) => prev.map((application) => (
-                application.id === applicationId ? response.data : application
+                application.id === applicationId
+                    ? {
+                        ...application,
+                        ...response.data
+                    }
+                    : application
             )));
             setStatusSelections((prev) => ({
                 ...prev,
