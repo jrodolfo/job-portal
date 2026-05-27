@@ -74,6 +74,22 @@ docker compose up -d --build frontend
 
 ## Tests
 
+### Testing Layers
+
+The frontend currently uses three testing layers:
+
+- Unit/component tests with `Vitest` and `Testing Library` for focused component behavior and local state changes
+- MSW-backed integration tests for realistic request/response flows without needing the real backend
+- Playwright E2E tests for full browser workflows across the running stack
+
+The MSW layer fills the gap between isolated mocked component tests and full browser E2E coverage. It exercises real network-shaped UI behavior and helps catch API/UI contract drift earlier.
+
+Current test locations:
+
+- component tests: `src/components/*.test.jsx`
+- integration tests: `src/components/*.integration.test.jsx`
+- browser tests: `tests/e2e/*.spec.js`
+
 Run the frontend test suite with:
 
 ```bash
