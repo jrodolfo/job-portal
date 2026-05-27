@@ -32,4 +32,21 @@ class ApiSecurityJwtIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(header().doesNotExist("Location"));
     }
+
+    @Test
+    void adminEndpointShouldRejectApplicantTokenThroughSecurityChain() throws Exception {
+        String token = jwtUtil.generateToken("user");
+
+        mockMvc.perform(get("/api/jobs/admin")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isForbidden())
+                .andExpect(header().doesNotExist("Location"));
+    }
+
+    @Test
+    void adminEndpointShouldRequireAuthenticationWhenTokenIsMissing() throws Exception {
+        mockMvc.perform(get("/api/jobs/admin"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(header().doesNotExist("Location"));
+    }
 }
