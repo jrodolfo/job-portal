@@ -138,6 +138,15 @@ Its main responsibilities are:
 - client-side state through Redux Toolkit
 - backend API consumption through HTTP
 
+In the current UI, those responsibilities surface as:
+
+- applicant job cards that show open jobs, application status, and application
+  timestamps when available
+- an admin dashboard with overview cards plus `Jobs`, `Add Job`, and
+  `Applications` tabs
+- grouped admin application review views with search, status filtering, and
+  status-update actions
+
 Relevant files:
 
 - `job-portal-frontend/package.json`

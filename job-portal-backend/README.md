@@ -26,7 +26,7 @@ Current backend behavior:
 - Applying to a closed job is rejected by the backend.
 - Admins can review application statuses such as `REVIEWING`, `ACCEPTED`, and `REJECTED`.
 - Jobs with existing applications cannot be deleted; the backend returns a clear `409 Conflict` instead.
-- Application payloads can include `createdAt` and `updatedAt`, which the frontend uses for `Applied On` and `Last Updated` display.
+- Application response payloads can include `createdAt` and `updatedAt`, which the frontend uses for `Applied On` and `Last Updated` display.
 
 Local demo bootstrap:
 
