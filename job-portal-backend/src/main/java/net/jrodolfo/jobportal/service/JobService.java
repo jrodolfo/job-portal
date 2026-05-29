@@ -13,6 +13,10 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
+/**
+ * Service class for managing {@link Job} entities.
+ * Handles operations like creating, updating, and retrieving job listings.
+ */
 @Service
 public class JobService {
 
@@ -22,28 +26,55 @@ public class JobService {
     @Autowired
     private ApplicationRepository applicationRepository;
 
-    // Create a new Job
+    /**
+     * Creates a new job listing and sets its initial status to {@link JobStatus#OPEN}.
+     *
+     * @param job the {@link Job} entity to create
+     * @return the saved {@link Job}
+     */
     public Job createJob(Job job) {
         job.setStatus(JobStatus.OPEN);
         return jobRepository.save(job); // save(T) method from JPA Repository
     }
 
-    // Get jobs visible to applicants/public
+    /**
+     * Retrieves all jobs that are currently open, ordered by their creation date in descending order.
+     *
+     * @return a list of open {@link Job} entities
+     */
     public List<Job> getOpenJobs() {
         return jobRepository.findByStatusOrderByCreatedAtDesc(JobStatus.OPEN);
     }
 
-    // Get all jobs for admins
+    /**
+     * Retrieves all job listings, regardless of their status.
+     *
+     * @return a list of all {@link Job} entities
+     */
     public List<Job> getAllJobs() {
         return jobRepository.findAll(); // findAll() method from JPA Repository
     }
 
-    // Get a job by id
+    /**
+     * Retrieves a specific job listing by its ID.
+     *
+     * @param id the ID of the job
+     * @return the {@link Job} if found
+     * @throws ResourceException if the job is not found
+     */
     public Job getJobById(Long id) {
         return jobRepository.findById(id)
                 .orElseThrow(() -> new ResourceException("Job with id " + id + " was not found"));
     }
 
+    /**
+     * Updates the details of an existing job.
+     *
+     * @param id           the ID of the job to update
+     * @param incomingJob the new details for the job
+     * @return the updated {@link Job}
+     * @throws ResourceException if the job is not found
+     */
     @Transactional
     public Job updateJob(Long id, Job incomingJob) {
         Job existingJob = jobRepository.findById(id)
@@ -59,6 +90,14 @@ public class JobService {
         return jobRepository.save(existingJob);
     }
 
+    /**
+     * Updates the status of an existing job.
+     *
+     * @param id     the ID of the job to update
+     * @param status the new {@link JobStatus}
+     * @return the updated {@link Job}
+     * @throws ResourceException if the job is not found
+     */
     @Transactional
     public Job updateJobStatus(Long id, JobStatus status) {
         Job existingJob = jobRepository.findById(id)
@@ -68,6 +107,13 @@ public class JobService {
         return jobRepository.save(existingJob);
     }
 
+    /**
+     * Deletes a job listing.
+     *
+     * @param id the ID of the job to delete
+     * @throws ResourceException       if the job is not found
+     * @throws ResponseStatusException if the job has existing applications
+     */
     public void deleteJob(Long id) {
         if (!jobRepository.existsById(id)) {
             throw new ResourceException("Job with id " + id + " was not found");

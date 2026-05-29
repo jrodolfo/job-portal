@@ -15,6 +15,11 @@ import java.security.Key;
 import java.util.Date;
 
 
+/**
+ * Utility class for handling JSON Web Tokens (JWT).
+ * Provides methods to generate, parse, and validate tokens.
+ * Supports standard application-issued tokens and basic parsing for Google ID tokens.
+ */
 @Component
 public class JwtUtil {
     @org.springframework.beans.factory.annotation.Value("${jwt.secret}")
@@ -26,7 +31,13 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
     }
 
-    // generate JWT Token for logged user
+    /**
+     * Generates a JWT token for a given email address.
+     * The token includes the email as the subject and has a predefined expiration time.
+     *
+     * @param email the email address to include in the token subject
+     * @return the generated JWT token string
+     */
     public String generateToken(String email) {
 
         System.out.println("generateToken() - JVM now: " + new Date());
@@ -38,7 +49,15 @@ public class JwtUtil {
                 .compact();
     }
 
-    // extract email from JWT Token
+    /**
+     * Extracts the email address (subject) from a JWT token.
+     * Handles both standard application tokens and Google tokens.
+     *
+     * @param token the JWT token string
+     * @return the email address extracted from the token
+     * @throws IllegalArgumentException if the token is null or empty
+     * @throws ResourceException         if an error occurs during token parsing
+     */
     public String extractEmail(String token) {
 
         if (token == null || token.trim().isEmpty()) {
@@ -102,7 +121,15 @@ public class JwtUtil {
         return null;
     }
 
-    // validate JWT Token
+    /**
+     * Validates a JWT token against a given email address.
+     * Checks if the token is correctly signed, matches the provided email, and has not expired.
+     * Special handling is included for tokens identified as coming from Google.
+     *
+     * @param token the JWT token string to validate
+     * @param email the email address to validate against
+     * @return {@code true} if the token is valid, {@code false} otherwise
+     */
     public boolean validateToken(String token, String email) {
 
         if (token != null) {
