@@ -12,6 +12,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * Tests for API security behavior, focusing on response statuses for unauthorized and forbidden requests.
+ * Ensures that the API returns appropriate HTTP status codes instead of redirecting to OAuth login pages.
+ */
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")

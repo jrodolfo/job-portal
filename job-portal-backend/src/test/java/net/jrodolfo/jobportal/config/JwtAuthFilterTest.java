@@ -19,6 +19,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.when;
 
+/**
+ * Unit tests for {@link JwtAuthFilter}.
+ * Verifies that the filter correctly processes JWT tokens and updates the security context.
+ */
 @ExtendWith(MockitoExtension.class)
 class JwtAuthFilterTest {
 

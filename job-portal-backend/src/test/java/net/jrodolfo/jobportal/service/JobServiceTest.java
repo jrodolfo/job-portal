@@ -22,6 +22,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.CONFLICT;
 
+/**
+ * Unit tests for {@link JobService}.
+ * Verifies the business logic for job management, including creation, updates, and deletion rules.
+ */
 @ExtendWith(MockitoExtension.class)
 class JobServiceTest {
 

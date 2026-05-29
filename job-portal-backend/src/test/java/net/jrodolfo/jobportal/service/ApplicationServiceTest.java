@@ -25,6 +25,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+/**
+ * Unit tests for {@link ApplicationService}.
+ * Verifies the business logic for job applications, including validation rules and status management.
+ */
 @ExtendWith(MockitoExtension.class)
 class ApplicationServiceTest {
 

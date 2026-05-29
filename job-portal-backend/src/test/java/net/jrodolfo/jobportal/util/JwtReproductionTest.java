@@ -5,6 +5,10 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * Test class for reproducing and verifying JWT extraction and validation logic,
+ * specifically with real-world Google ID tokens.
+ */
 public class JwtReproductionTest {
 
     private JwtUtil createJwtUtil() {
@@ -20,6 +24,9 @@ public class JwtReproductionTest {
         return jwtUtil;
     }
 
+    /**
+     * Tests the extraction of the email claim from a real-world Google ID token.
+     */
     @Test
     public void testExtractionWithGoogleToken() {
         JwtUtil jwtUtil = createJwtUtil();
@@ -29,6 +36,9 @@ public class JwtReproductionTest {
         assertEquals("jrodolfo@gmail.com", email);
     }
 
+    /**
+     * Tests the validation of a real-world Google ID token against a matching email.
+     */
     @Test
     public void testValidationWithGoogleToken() {
         JwtUtil jwtUtil = createJwtUtil();

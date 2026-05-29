@@ -13,6 +13,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * Unit tests for {@link JwtUtil}.
+ * Verifies JWT generation, email extraction, and token validation for both standard and Google-like tokens.
+ */
 class JwtUtilTest {
 
     private JwtUtil jwtUtil;

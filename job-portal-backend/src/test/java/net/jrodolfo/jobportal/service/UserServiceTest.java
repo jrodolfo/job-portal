@@ -18,6 +18,10 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+/**
+ * Unit tests for {@link UserService}.
+ * Verifies the business logic for user management, including creation, retrieval, and updates.
+ */
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
 
