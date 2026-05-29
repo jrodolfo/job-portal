@@ -10,6 +10,10 @@ import io.swagger.v3.oas.annotations.security.SecuritySchemes;
 import io.swagger.v3.oas.annotations.servers.Server;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Configuration class for OpenAPI and Swagger UI documentation.
+ * It defines the API metadata, servers, and security schemes required for accessing the endpoints.
+ */
 @Configuration
 @OpenAPIDefinition(
         info = @Info(

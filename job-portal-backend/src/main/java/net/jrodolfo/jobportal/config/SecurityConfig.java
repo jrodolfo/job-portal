@@ -29,15 +29,31 @@ import static net.jrodolfo.jobportal.constant.Role.ADMIN;
 import static net.jrodolfo.jobportal.constant.Role.APPLICANT;
 
 
+/**
+ * Main security configuration class for the application.
+ * Defines the security filter chain, authentication mechanisms (HTTP Basic, JWT, OAuth2),
+ * CORS policy, and authorization rules for different API endpoints.
+ */
 @Configuration
 public class SecurityConfig {
 
+    /**
+     * The origins allowed to access the API via CORS, typically the frontend URL.
+     */
     @Value("${ALLOWED_ORIGINS:http://localhost:5173}")
     private String allowedOrigins;
 
+    /**
+     * The base URL of the frontend application, used for OAuth2 redirect flows.
+     */
     @Value("${FRONTEND_BASE_URL:http://localhost:5173}")
     private String frontendBaseUrl;
 
+    /**
+     * Configures in-memory users for development and basic authentication.
+     *
+     * @return a {@link UserDetailsService} with predefined admin and applicant users
+     */
     @Bean
     UserDetailsService userDetailsService() {
         UserDetails admin = User.withUsername("admin")
@@ -51,6 +67,25 @@ public class SecurityConfig {
         return new InMemoryUserDetailsManager(admin, applicant);
     }
 
+    /**
+     * Configures the {@link SecurityFilterChain} which defines the security behavior for HTTP requests.
+     * <p>
+     * This includes:
+     * <ul>
+     *     <li>Disabling CSRF (as the API uses JWT/stateless auth for some parts)</li>
+     *     <li>Defining authorization rules for endpoints based on roles</li>
+     *     <li>Setting up custom exception handling for authentication and access denial</li>
+     *     <li>Registering the {@link JwtAuthFilter} before the standard username/password filter</li>
+     *     <li>Configuring HTTP Basic and OAuth2 Login with custom success/failure handlers</li>
+     * </ul>
+     *
+     * @param http                        the {@link HttpSecurity} to configure
+     * @param jwtAuthFilter               the custom JWT filter
+     * @param apiAuthenticationEntryPoint the custom entry point for authentication failures
+     * @param apiAccessDeniedHandler      the custom handler for access denial failures
+     * @return the configured {@link SecurityFilterChain}
+     * @throws Exception if an error occurs during configuration
+     */
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http,
                                             JwtAuthFilter jwtAuthFilter,
@@ -120,6 +155,12 @@ public class SecurityConfig {
                 .build();
     }
 
+    /**
+     * Configures CORS (Cross-Origin Resource Sharing) settings.
+     * Defines allowed origins, methods, and headers for requests coming from the frontend.
+     *
+     * @return the {@link UrlBasedCorsConfigurationSource} with the CORS configuration applied
+     */
     @Bean
     UrlBasedCorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
