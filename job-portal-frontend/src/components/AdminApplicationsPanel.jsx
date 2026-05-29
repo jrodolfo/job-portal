@@ -54,20 +54,20 @@ const shouldShowLastUpdated = (createdAt, updatedAt) => {
 };
 
 const AdminApplicationsPanel = ({
-    applications,
-    applicationStatuses,
-    filterStatus,
-    formatStatus,
-    searchTerm,
-    sortOrder,
-    statusSelections,
-    updatingApplicationId,
-    onFilterStatusChange,
-    onStatusChange,
-    onSaveStatus,
-    onSearchTermChange,
-    onSortOrderChange
-}) => {
+                                    applications,
+                                    applicationStatuses,
+                                    filterStatus,
+                                    formatStatus,
+                                    searchTerm,
+                                    sortOrder,
+                                    statusSelections,
+                                    updatingApplicationId,
+                                    onFilterStatusChange,
+                                    onStatusChange,
+                                    onSaveStatus,
+                                    onSearchTermChange,
+                                    onSortOrderChange
+                                }) => {
     const [expandedSections, setExpandedSections] = useState(defaultExpandedSections);
 
     const toggleSection = (status) => {
@@ -135,8 +135,10 @@ const AdminApplicationsPanel = ({
                 <p className="body-text">No applications match the current filters.</p>
             ) : (
                 groupedApplications.map((group) => (
-                    <div className="mb-4" key={group.status} data-testid={`application-group-${group.status.toLowerCase()}`}>
-                        <div className="d-flex justify-content-between align-items-center mb-2 application-group-header">
+                    <div className="mb-4" key={group.status}
+                         data-testid={`application-group-${group.status.toLowerCase()}`}>
+                        <div
+                            className="d-flex justify-content-between align-items-center mb-2 application-group-header">
                             <h3 className="section-title mb-0">
                                 {formatStatus(group.status)} ({group.applications.length})
                             </h3>
@@ -153,29 +155,37 @@ const AdminApplicationsPanel = ({
                             <div className="row g-4">
                                 {group.applications.map((application) => (
                                     <div className="col-md-6" key={application.id}>
-                                        <div className={`card application-card ${getApplicationCardStatusClass(application.status)}`}>
+                                        <div
+                                            className={`card application-card ${getApplicationCardStatusClass(application.status)}`}>
                                             <div className="card-body">
                                                 <h4 className="heading-text">
-                                                    <span className="metadata-label">Applicant:</span> {application.user?.name || "Unknown user"}
+                                                    <span
+                                                        className="metadata-label">Applicant:</span> {application.user?.name || "Unknown user"}
                                                 </h4>
                                                 <p className="body-text">
-                                                    <span className="metadata-label">Job:</span> {application.job?.title || "Unknown job"}
+                                                    <span
+                                                        className="metadata-label">Job:</span> {application.job?.title || "Unknown job"}
                                                 </p>
                                                 <p className="body-text">
-                                                    <span className="metadata-label">Current Status:</span> {formatStatus(application.status)}
+                                                    <span
+                                                        className="metadata-label">Current Status:</span> {formatStatus(application.status)}
                                                 </p>
                                                 {formatApplicationTimestamp(application.createdAt) ? (
                                                     <p className="body-text muted-meta">
-                                                        <span className="metadata-label">Applied On:</span> {formatApplicationTimestamp(application.createdAt)}
+                                                        <span
+                                                            className="metadata-label">Applied On:</span> {formatApplicationTimestamp(application.createdAt)}
                                                     </p>
                                                 ) : null}
                                                 {shouldShowLastUpdated(application.createdAt, application.updatedAt) ? (
                                                     <p className="body-text muted-meta">
-                                                        <span className="metadata-label">Last Updated:</span> {formatApplicationTimestamp(application.updatedAt)}
+                                                        <span
+                                                            className="metadata-label">Last Updated:</span> {formatApplicationTimestamp(application.updatedAt)}
                                                     </p>
                                                 ) : null}
-                                                <div className="d-flex flex-column flex-md-row gap-2 align-items-md-center application-status-controls">
-                                                    <label className="body-text mb-0" htmlFor={`application-status-${application.id}`}>
+                                                <div
+                                                    className="d-flex flex-column flex-md-row gap-2 align-items-md-center application-status-controls">
+                                                    <label className="body-text mb-0"
+                                                           htmlFor={`application-status-${application.id}`}>
                                                         Status
                                                     </label>
                                                     <select

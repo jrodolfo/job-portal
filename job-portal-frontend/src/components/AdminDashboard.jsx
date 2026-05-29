@@ -379,7 +379,7 @@ const AdminDashboard = () => {
 
     return (
         <>
-            <Navbar />
+            <Navbar/>
             <div className="container dashboard-shell">
                 <div className="mb-4">
                     <h1 className="mb-1">Admin</h1>
@@ -458,7 +458,8 @@ const AdminDashboard = () => {
                     hidden={activeTab !== "jobs"}
                 >
                     <h2 className="section-title">Jobs</h2>
-                    <p className="body-text muted-meta admin-summary-text">Open: {openJobsCount} | Closed: {closedJobsCount}</p>
+                    <p className="body-text muted-meta admin-summary-text">Open: {openJobsCount} |
+                        Closed: {closedJobsCount}</p>
                     <div className="row g-2 mb-3 admin-filter-row">
                         <div className="col-md-5">
                             <label className="form-label body-text" htmlFor="job-search">Search Jobs</label>

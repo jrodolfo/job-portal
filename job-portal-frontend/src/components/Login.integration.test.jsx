@@ -1,9 +1,9 @@
-import { screen, waitFor } from '@testing-library/react';
+import {screen, waitFor} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { http, HttpResponse } from 'msw';
+import {http, HttpResponse} from 'msw';
 import Login from './Login';
-import { renderWithProviders } from '../test/test-utils';
-import { server } from '../test/mswServer';
+import {renderWithProviders} from '../test/test-utils';
+import {server} from '../test/mswServer';
 
 const mockNavigate = vi.fn();
 const api = 'http://localhost:8080';
@@ -28,17 +28,17 @@ describe('Login integration', () => {
 
     it('logs in through network handlers and navigates to the applicant dashboard', async () => {
         server.use(
-            http.post(`${api}/api/auth/login`, ({ request }) => {
+            http.post(`${api}/api/auth/login`, ({request}) => {
                 const authorization = request.headers.get('authorization');
                 if (!authorization?.startsWith('Basic ')) {
-                    return HttpResponse.json({ message: 'Missing credentials' }, { status: 401 });
+                    return HttpResponse.json({message: 'Missing credentials'}, {status: 401});
                 }
 
-                return HttpResponse.json({ token: 'jwt-123' });
+                return HttpResponse.json({token: 'jwt-123'});
             }),
-            http.get(`${api}/api/auth/details`, ({ request }) => {
+            http.get(`${api}/api/auth/details`, ({request}) => {
                 if (request.headers.get('authorization') !== 'Bearer jwt-123') {
-                    return HttpResponse.json({ message: 'Forbidden' }, { status: 403 });
+                    return HttpResponse.json({message: 'Forbidden'}, {status: 403});
                 }
 
                 return HttpResponse.json({
@@ -48,12 +48,12 @@ describe('Login integration', () => {
             })
         );
 
-        const { store } = renderWithProviders(<Login />);
+        const {store} = renderWithProviders(<Login/>);
         const user = userEvent.setup();
 
         await user.type(screen.getByPlaceholderText('Username'), 'alice');
         await user.type(screen.getByPlaceholderText('Password'), 'secret');
-        await user.click(screen.getByRole('button', { name: 'Login' }));
+        await user.click(screen.getByRole('button', {name: 'Login'}));
 
         await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/applicant-dashboard'));
         expect(localStorage.getItem('token')).toBe('jwt-123');
@@ -68,15 +68,15 @@ describe('Login integration', () => {
         vi.stubGlobal('alert', alertSpy);
 
         server.use(
-            http.post(`${api}/api/auth/login`, () => HttpResponse.json({ message: 'Internal Server Error' }, { status: 500 }))
+            http.post(`${api}/api/auth/login`, () => HttpResponse.json({message: 'Internal Server Error'}, {status: 500}))
         );
 
-        renderWithProviders(<Login />);
+        renderWithProviders(<Login/>);
         const user = userEvent.setup();
 
         await user.type(screen.getByPlaceholderText('Username'), 'alice');
         await user.type(screen.getByPlaceholderText('Password'), 'secret');
-        await user.click(screen.getByRole('button', { name: 'Login' }));
+        await user.click(screen.getByRole('button', {name: 'Login'}));
 
         await waitFor(() => expect(alertSpy).toHaveBeenCalledWith('Invalid credentials'));
         expect(mockNavigate).not.toHaveBeenCalled();

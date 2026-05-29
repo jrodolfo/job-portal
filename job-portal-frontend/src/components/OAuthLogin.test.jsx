@@ -1,7 +1,7 @@
-import { waitFor } from '@testing-library/react';
+import {waitFor} from '@testing-library/react';
 import axios from 'axios';
 import OAuthLogin from './OAuthLogin';
-import { renderWithProviders } from '../test/test-utils';
+import {renderWithProviders} from '../test/test-utils';
 
 const mockNavigate = vi.fn();
 
@@ -28,19 +28,19 @@ describe('OAuthLogin', () => {
 
     it('should exchange code, fetch user details, update store and navigate', async () => {
         axios.post.mockResolvedValueOnce({
-            data: { token: 'oauth-token' }
+            data: {token: 'oauth-token'}
         });
         axios.get.mockResolvedValueOnce({
-            data: { email: 'oauth.user@example.com' }
+            data: {email: 'oauth.user@example.com'}
         });
         window.history.pushState({}, '', '/oauthlogon?code=abc123');
 
-        const { store } = renderWithProviders(<OAuthLogin />);
+        const {store} = renderWithProviders(<OAuthLogin/>);
 
         await waitFor(() =>
             expect(axios.post).toHaveBeenCalledWith(
                 'http://localhost:8080/api/oauth/exchange-token',
-                { code: 'abc123' }
+                {code: 'abc123'}
             )
         );
 
@@ -64,7 +64,7 @@ describe('OAuthLogin', () => {
     });
 
     it('should not call exchange endpoint when code is missing', async () => {
-        renderWithProviders(<OAuthLogin />);
+        renderWithProviders(<OAuthLogin/>);
 
         await waitFor(() => expect(axios.post).not.toHaveBeenCalled());
         expect(mockNavigate).toHaveBeenCalledWith('/');

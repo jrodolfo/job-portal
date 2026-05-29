@@ -64,53 +64,53 @@ const Login = () => {
         <div className="page-shell d-flex align-items-center">
             <div className="container">
                 <div className="row justify-content-center">
-                {/* Empty space for centering */}
+                    {/* Empty space for centering */}
 
                     <div className="col-lg-7 col-xl-6">
-                    <div className="card login-panel p-4">
-                        {/* Header */}
-                        <div className="card-header login-header text-center">
-                            <h3 className="mb-0 login-title">Login to Job Portal</h3>
-                        </div>
+                        <div className="card login-panel p-4">
+                            {/* Header */}
+                            <div className="card-header login-header text-center">
+                                <h3 className="mb-0 login-title">Login to Job Portal</h3>
+                            </div>
 
-                        {/* Form */}
-                        <div className="card-body">
-                            <form onSubmit={(e) => {
-                                e.preventDefault();
-                                processLogin()
-                            }}>
-                                <div className="mb-3">
-                                    <input type="text" className="form-control"
-                                           placeholder="Username"
-                                           onChange={(e) => setUsername(e.target.value)}/>
-                                </div>
-                                <div className="mb-3">
-                                    <input type="password" className="form-control"
-                                           placeholder="Password"
-                                           onChange={(e) => setPassword(e.target.value)}/>
-                                </div>
-                                <div className="text-center">
-                                    <button type="submit" className="btn btn-accent-tertiary w-75">Login</button>
-                                </div>
-                            </form>
-                            <hr/>
-                            <h6 className="text-center body-text">Or</h6>
-                            <div className="text-center mt-3">
-                                <button
-                                    onClick={() => window.location.href = `${BACKEND_API_URL}/oauth2/authorization/google`}
-                                    className="btn btn-accent-primary w-75">
-                                    Sign in with Google
-                                </button>
+                            {/* Form */}
+                            <div className="card-body">
+                                <form onSubmit={(e) => {
+                                    e.preventDefault();
+                                    processLogin()
+                                }}>
+                                    <div className="mb-3">
+                                        <input type="text" className="form-control"
+                                               placeholder="Username"
+                                               onChange={(e) => setUsername(e.target.value)}/>
+                                    </div>
+                                    <div className="mb-3">
+                                        <input type="password" className="form-control"
+                                               placeholder="Password"
+                                               onChange={(e) => setPassword(e.target.value)}/>
+                                    </div>
+                                    <div className="text-center">
+                                        <button type="submit" className="btn btn-accent-tertiary w-75">Login</button>
+                                    </div>
+                                </form>
+                                <hr/>
+                                <h6 className="text-center body-text">Or</h6>
+                                <div className="text-center mt-3">
+                                    <button
+                                        onClick={() => window.location.href = `${BACKEND_API_URL}/oauth2/authorization/google`}
+                                        className="btn btn-accent-primary w-75">
+                                        Sign in with Google
+                                    </button>
 
+                                </div>
+                            </div>
+
+                            {/* Footer */}
+                            <div className="card-footer login-footer text-center">
+                                <small>Don't have an account? Sign up here </small>
                             </div>
                         </div>
-
-                        {/* Footer */}
-                        <div className="card-footer login-footer text-center">
-                            <small>Don't have an account? Sign up here </small>
-                        </div>
                     </div>
-                </div>
                 </div>
             </div>
         </div>

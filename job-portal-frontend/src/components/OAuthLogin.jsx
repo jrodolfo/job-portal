@@ -4,7 +4,7 @@ import axios from "axios";
 import {setUserDetails} from "../store/userActions";
 import {useDispatch} from "react-redux";
 
-import { BACKEND_API_URL } from "../config/backend";
+import {BACKEND_API_URL} from "../config/backend";
 
 const OAuthLogin = () => {
     const navigate = useNavigate();

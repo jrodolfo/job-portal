@@ -1,8 +1,8 @@
-import { screen, waitFor } from '@testing-library/react';
+import {screen, waitFor} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import axios from 'axios';
 import Login from './Login';
-import { renderWithProviders } from '../test/test-utils';
+import {renderWithProviders} from '../test/test-utils';
 
 const mockNavigate = vi.fn();
 
@@ -26,17 +26,17 @@ describe('Login', () => {
     });
 
     it('should login applicant, save token, set user details and navigate', async () => {
-        axios.post.mockResolvedValueOnce({ data: { token: 'jwt-123' } });
+        axios.post.mockResolvedValueOnce({data: {token: 'jwt-123'}});
         axios.get.mockResolvedValueOnce({
-            data: { roles: ['ROLE_APPLICANT'], username: 'alice' }
+            data: {roles: ['ROLE_APPLICANT'], username: 'alice'}
         });
 
-        const { store } = renderWithProviders(<Login />);
+        const {store} = renderWithProviders(<Login/>);
         const user = userEvent.setup();
 
         await user.type(screen.getByPlaceholderText('Username'), 'alice');
         await user.type(screen.getByPlaceholderText('Password'), 'secret');
-        await user.click(screen.getByRole('button', { name: 'Login' }));
+        await user.click(screen.getByRole('button', {name: 'Login'}));
 
         await waitFor(() =>
             expect(axios.post).toHaveBeenCalledWith(
@@ -63,12 +63,12 @@ describe('Login', () => {
         vi.stubGlobal('alert', alertSpy);
         axios.post.mockRejectedValueOnce(new Error('unauthorized'));
 
-        renderWithProviders(<Login />);
+        renderWithProviders(<Login/>);
         const user = userEvent.setup();
 
         await user.type(screen.getByPlaceholderText('Username'), 'alice');
         await user.type(screen.getByPlaceholderText('Password'), 'bad');
-        await user.click(screen.getByRole('button', { name: 'Login' }));
+        await user.click(screen.getByRole('button', {name: 'Login'}));
 
         await waitFor(() => expect(alertSpy).toHaveBeenCalledWith('Invalid credentials'));
     });
@@ -85,12 +85,12 @@ describe('Login', () => {
             }
         });
 
-        const { store } = renderWithProviders(<Login />);
+        const {store} = renderWithProviders(<Login/>);
         const user = userEvent.setup();
 
         await user.type(screen.getByPlaceholderText('Username'), 'alice');
         await user.type(screen.getByPlaceholderText('Password'), 'secret');
-        await user.click(screen.getByRole('button', { name: 'Login' }));
+        await user.click(screen.getByRole('button', {name: 'Login'}));
 
         await waitFor(() => expect(alertSpy).toHaveBeenCalledWith('Invalid credentials'));
         expect(mockNavigate).not.toHaveBeenCalled();
@@ -103,15 +103,15 @@ describe('Login', () => {
     it('should alert when fetching user details fails after login succeeds', async () => {
         const alertSpy = vi.fn();
         vi.stubGlobal('alert', alertSpy);
-        axios.post.mockResolvedValueOnce({ data: { token: 'jwt-123' } });
+        axios.post.mockResolvedValueOnce({data: {token: 'jwt-123'}});
         axios.get.mockRejectedValueOnce(new Error('network error'));
 
-        const { store } = renderWithProviders(<Login />);
+        const {store} = renderWithProviders(<Login/>);
         const user = userEvent.setup();
 
         await user.type(screen.getByPlaceholderText('Username'), 'alice');
         await user.type(screen.getByPlaceholderText('Password'), 'secret');
-        await user.click(screen.getByRole('button', { name: 'Login' }));
+        await user.click(screen.getByRole('button', {name: 'Login'}));
 
         await waitFor(() => expect(alertSpy).toHaveBeenCalledWith('Invalid credentials'));
         expect(mockNavigate).not.toHaveBeenCalled();
@@ -122,10 +122,10 @@ describe('Login', () => {
     });
 
     it('should redirect to Google OAuth endpoint when Google button is clicked', async () => {
-        renderWithProviders(<Login />);
+        renderWithProviders(<Login/>);
         const user = userEvent.setup();
 
-        await user.click(screen.getByRole('button', { name: 'Sign in with Google' }));
+        await user.click(screen.getByRole('button', {name: 'Sign in with Google'}));
 
         expect(window.location.href).toContain('/oauth2/authorization/google');
     });

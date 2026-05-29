@@ -1,5 +1,4 @@
-import {screen, waitFor} from "@testing-library/react";
-import {within} from "@testing-library/react";
+import {screen, waitFor, within} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import axios from "axios";
 import AdminDashboard from "./AdminDashboard";
@@ -74,7 +73,7 @@ describe("AdminDashboard", () => {
                 ]
             });
 
-        renderWithProviders(<AdminDashboard />);
+        renderWithProviders(<AdminDashboard/>);
 
         await waitFor(() => expect(axios.get).toHaveBeenCalledWith("http://localhost:8080/api/jobs/admin", {
             headers: {
@@ -127,7 +126,7 @@ describe("AdminDashboard", () => {
                 ]
             });
 
-        renderWithProviders(<AdminDashboard />);
+        renderWithProviders(<AdminDashboard/>);
         const user = userEvent.setup();
 
         await waitFor(() => expect(screen.getByText(byTextContent("Java Developer"))).toBeInTheDocument());
@@ -161,7 +160,7 @@ describe("AdminDashboard", () => {
             })
             .mockResolvedValueOnce({data: []});
 
-        renderWithProviders(<AdminDashboard />);
+        renderWithProviders(<AdminDashboard/>);
 
         const expectedDateTime = jobDateTimeFormatter.format(new Date(createdAt));
         await waitFor(() => expect(screen.getByText(byTextContent(`Posted Date: ${expectedDateTime}`))).toBeInTheDocument());
@@ -183,7 +182,7 @@ describe("AdminDashboard", () => {
             }
         });
 
-        renderWithProviders(<AdminDashboard />);
+        renderWithProviders(<AdminDashboard/>);
         const user = userEvent.setup();
 
         await openAddJobTab(user);
@@ -240,7 +239,7 @@ describe("AdminDashboard", () => {
             }
         });
 
-        renderWithProviders(<AdminDashboard />);
+        renderWithProviders(<AdminDashboard/>);
         const user = userEvent.setup();
 
         await waitFor(() => expect(screen.getByRole("button", {name: "Edit"})).toBeInTheDocument());
@@ -295,7 +294,7 @@ describe("AdminDashboard", () => {
             })
             .mockResolvedValueOnce({data: []});
 
-        renderWithProviders(<AdminDashboard />);
+        renderWithProviders(<AdminDashboard/>);
         const user = userEvent.setup();
 
         await waitFor(() => expect(screen.getByRole("button", {name: "Edit"})).toBeInTheDocument());
@@ -323,7 +322,7 @@ describe("AdminDashboard", () => {
             }
         });
 
-        renderWithProviders(<AdminDashboard />);
+        renderWithProviders(<AdminDashboard/>);
         const user = userEvent.setup();
 
         await openAddJobTab(user);
@@ -360,7 +359,7 @@ describe("AdminDashboard", () => {
             }
         });
 
-        renderWithProviders(<AdminDashboard />);
+        renderWithProviders(<AdminDashboard/>);
         const user = userEvent.setup();
 
         await waitFor(() => expect(screen.getByRole("button", {name: "Edit"})).toBeInTheDocument());
@@ -389,7 +388,7 @@ describe("AdminDashboard", () => {
             .mockResolvedValueOnce({data: []});
         axios.delete.mockResolvedValueOnce({});
 
-        renderWithProviders(<AdminDashboard />);
+        renderWithProviders(<AdminDashboard/>);
         const user = userEvent.setup();
 
         await waitFor(() => expect(screen.getByRole("button", {name: "Delete"})).toBeInTheDocument());
@@ -436,7 +435,7 @@ describe("AdminDashboard", () => {
             }
         });
 
-        renderWithProviders(<AdminDashboard />);
+        renderWithProviders(<AdminDashboard/>);
         const user = userEvent.setup();
 
         await waitFor(() => expect(screen.getByRole("button", {name: "Delete"})).toBeInTheDocument());
@@ -484,7 +483,7 @@ describe("AdminDashboard", () => {
                 }
             });
 
-        renderWithProviders(<AdminDashboard />);
+        renderWithProviders(<AdminDashboard/>);
         const user = userEvent.setup();
 
         await waitFor(() => expect(screen.getByRole("button", {name: "Close"})).toBeInTheDocument());
@@ -561,7 +560,7 @@ describe("AdminDashboard", () => {
             })
             .mockResolvedValueOnce({data: []});
 
-        renderWithProviders(<AdminDashboard />);
+        renderWithProviders(<AdminDashboard/>);
         const user = userEvent.setup();
 
         await waitFor(() => expect(screen.getByLabelText("Job Status")).toBeInTheDocument());
@@ -596,7 +595,7 @@ describe("AdminDashboard", () => {
             })
             .mockResolvedValueOnce({data: []});
 
-        renderWithProviders(<AdminDashboard />);
+        renderWithProviders(<AdminDashboard/>);
         const user = userEvent.setup();
 
         await waitFor(() => expect(screen.getByLabelText("Search Jobs")).toBeInTheDocument());
@@ -631,7 +630,7 @@ describe("AdminDashboard", () => {
             })
             .mockResolvedValueOnce({data: []});
 
-        renderWithProviders(<AdminDashboard />);
+        renderWithProviders(<AdminDashboard/>);
         const user = userEvent.setup();
 
         await waitFor(() => expect(screen.getByLabelText("Job Sort")).toBeInTheDocument());
@@ -659,7 +658,7 @@ describe("AdminDashboard", () => {
             })
             .mockResolvedValueOnce({data: []});
 
-        renderWithProviders(<AdminDashboard />);
+        renderWithProviders(<AdminDashboard/>);
         const user = userEvent.setup();
 
         await waitFor(() => expect(screen.getByLabelText("Search Jobs")).toBeInTheDocument());
@@ -706,7 +705,7 @@ describe("AdminDashboard", () => {
             }
         });
 
-        renderWithProviders(<AdminDashboard />);
+        renderWithProviders(<AdminDashboard/>);
         const user = userEvent.setup();
 
         await openApplicationsTab(user);
@@ -758,7 +757,7 @@ describe("AdminDashboard", () => {
                 ]
             });
 
-        renderWithProviders(<AdminDashboard />);
+        renderWithProviders(<AdminDashboard/>);
         const user = userEvent.setup();
 
         await openApplicationsTab(user);
@@ -793,7 +792,7 @@ describe("AdminDashboard", () => {
                 ]
             });
 
-        renderWithProviders(<AdminDashboard />);
+        renderWithProviders(<AdminDashboard/>);
         const user = userEvent.setup();
 
         await openApplicationsTab(user);
@@ -821,7 +820,7 @@ describe("AdminDashboard", () => {
                 ]
             });
 
-        renderWithProviders(<AdminDashboard />);
+        renderWithProviders(<AdminDashboard/>);
         const user = userEvent.setup();
 
         await openApplicationsTab(user);
@@ -859,7 +858,7 @@ describe("AdminDashboard", () => {
                 ]
             });
 
-        renderWithProviders(<AdminDashboard />);
+        renderWithProviders(<AdminDashboard/>);
         const user = userEvent.setup();
 
         await openApplicationsTab(user);
@@ -893,7 +892,7 @@ describe("AdminDashboard", () => {
                 ]
             });
 
-        renderWithProviders(<AdminDashboard />);
+        renderWithProviders(<AdminDashboard/>);
         const user = userEvent.setup();
 
         await openApplicationsTab(user);
@@ -918,7 +917,7 @@ describe("AdminDashboard", () => {
                 ]
             });
 
-        renderWithProviders(<AdminDashboard />);
+        renderWithProviders(<AdminDashboard/>);
         const user = userEvent.setup();
 
         await openApplicationsTab(user);
@@ -952,7 +951,7 @@ describe("AdminDashboard", () => {
             }
         });
 
-        renderWithProviders(<AdminDashboard />);
+        renderWithProviders(<AdminDashboard/>);
         const user = userEvent.setup();
 
         await openApplicationsTab(user);
@@ -989,7 +988,7 @@ describe("AdminDashboard", () => {
                 ]
             });
 
-        renderWithProviders(<AdminDashboard />);
+        renderWithProviders(<AdminDashboard/>);
         const user = userEvent.setup();
 
         await openApplicationsTab(user);
@@ -1043,7 +1042,7 @@ describe("AdminDashboard", () => {
                 ]
             });
 
-        renderWithProviders(<AdminDashboard />);
+        renderWithProviders(<AdminDashboard/>);
         const user = userEvent.setup();
 
         await waitFor(() => expect(screen.getByText(byTextContent("Newer Job"))).toBeInTheDocument());

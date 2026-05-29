@@ -26,15 +26,15 @@ const getJobCardStatusClass = (jobStatus) => {
 };
 
 const AdminJobList = ({
-    jobs,
-    deletingJobId,
-    formatStatus,
-    getApplicationCount,
-    onEdit,
-    onDelete,
-    onUpdateJobStatus,
-    updatingJobStatusId
-}) => {
+                          jobs,
+                          deletingJobId,
+                          formatStatus,
+                          getApplicationCount,
+                          onEdit,
+                          onDelete,
+                          onUpdateJobStatus,
+                          updatingJobStatusId
+                      }) => {
     if (jobs.length === 0) {
         return <p className="body-text">No jobs match the current filters.</p>;
     }
@@ -43,7 +43,7 @@ const AdminJobList = ({
         <div className="row g-4">
             {jobs.map((job, index) => (
                 <div className="col-md-6" key={job.id ?? `${job.title}-${index}`}>
-                        <div className={`card job-card ${getJobCardStatusClass(job.status)}`}>
+                    <div className={`card job-card ${getJobCardStatusClass(job.status)}`}>
                         <div className="card-body">
                             <h4 className="heading-text">{job.title}</h4>
                             <p className="body-text">

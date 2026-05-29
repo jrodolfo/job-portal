@@ -1,8 +1,8 @@
-import { screen, waitFor } from '@testing-library/react';
+import {screen, waitFor} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import axios from 'axios';
 import ApplicantDashboard from './ApplicantDashboard';
-import { renderWithProviders } from '../test/test-utils';
+import {renderWithProviders} from '../test/test-utils';
 
 vi.mock('axios');
 vi.mock('./Navbar', () => ({
@@ -43,9 +43,9 @@ describe('ApplicantDashboard', () => {
                     }
                 ]
             })
-            .mockResolvedValueOnce({ data: [] });
+            .mockResolvedValueOnce({data: []});
 
-        renderWithProviders(<ApplicantDashboard />);
+        renderWithProviders(<ApplicantDashboard/>);
 
         await waitFor(() => expect(axios.get).toHaveBeenCalledWith('http://localhost:8080/api/jobs'));
         expect(axios.get).toHaveBeenCalledWith('http://localhost:8080/api/applications', {
@@ -71,7 +71,7 @@ describe('ApplicantDashboard', () => {
                     }
                 ]
             })
-            .mockResolvedValueOnce({ data: [] });
+            .mockResolvedValueOnce({data: []});
         axios.post.mockResolvedValueOnce({
             data: {
                 id: 50,
@@ -82,11 +82,11 @@ describe('ApplicantDashboard', () => {
             }
         });
 
-        renderWithProviders(<ApplicantDashboard />);
+        renderWithProviders(<ApplicantDashboard/>);
         const user = userEvent.setup();
 
-        await waitFor(() => expect(screen.getByRole('button', { name: 'Apply' })).toBeInTheDocument());
-        await user.click(screen.getByRole('button', { name: 'Apply' }));
+        await waitFor(() => expect(screen.getByRole('button', {name: 'Apply'})).toBeInTheDocument());
+        await user.click(screen.getByRole('button', {name: 'Apply'}));
 
         await waitFor(() =>
             expect(axios.post).toHaveBeenCalledWith(
@@ -102,7 +102,7 @@ describe('ApplicantDashboard', () => {
         expect(await screen.findByText('Application submitted successfully.')).toBeInTheDocument();
         expect(screen.getByText(byTextContent('Application Status: Applied'))).toBeInTheDocument();
         expect(screen.getByText('Your application has been submitted and is waiting for review.')).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: 'Withdraw' })).toBeInTheDocument();
+        expect(screen.getByRole('button', {name: 'Withdraw'})).toBeInTheDocument();
     });
 
     it('should show inline message when apply request fails', async () => {
@@ -118,7 +118,7 @@ describe('ApplicantDashboard', () => {
                     }
                 ]
             })
-            .mockResolvedValueOnce({ data: [] });
+            .mockResolvedValueOnce({data: []});
         axios.post.mockRejectedValueOnce({
             response: {
                 status: 500,
@@ -128,11 +128,11 @@ describe('ApplicantDashboard', () => {
             }
         });
 
-        renderWithProviders(<ApplicantDashboard />);
+        renderWithProviders(<ApplicantDashboard/>);
         const user = userEvent.setup();
 
-        await waitFor(() => expect(screen.getByRole('button', { name: 'Apply' })).toBeInTheDocument());
-        await user.click(screen.getByRole('button', { name: 'Apply' }));
+        await waitFor(() => expect(screen.getByRole('button', {name: 'Apply'})).toBeInTheDocument());
+        await user.click(screen.getByRole('button', {name: 'Apply'}));
 
         expect(await screen.findByText('A server error occurred while processing your request.')).toBeInTheDocument();
     });
@@ -166,13 +166,13 @@ describe('ApplicantDashboard', () => {
                 ]
             });
 
-        renderWithProviders(<ApplicantDashboard />);
+        renderWithProviders(<ApplicantDashboard/>);
 
         expect(await screen.findByText(byTextContent('Application Status: Applied'))).toBeInTheDocument();
         expect(screen.getByText(byTextContent(`Applied On: ${applicationDateTimeFormatter.format(new Date(createdAt))}`))).toBeInTheDocument();
         expect(screen.queryByText(/Last Updated:/)).not.toBeInTheDocument();
         expect(screen.getByText('Your application has been submitted and is waiting for review.')).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: 'Withdraw' })).toBeInTheDocument();
+        expect(screen.getByRole('button', {name: 'Withdraw'})).toBeInTheDocument();
         expect(axios.post).not.toHaveBeenCalled();
     });
 
@@ -214,11 +214,11 @@ describe('ApplicantDashboard', () => {
             }
         });
 
-        renderWithProviders(<ApplicantDashboard />);
+        renderWithProviders(<ApplicantDashboard/>);
         const user = userEvent.setup();
 
-        await waitFor(() => expect(screen.getByRole('button', { name: 'Withdraw' })).toBeInTheDocument());
-        await user.click(screen.getByRole('button', { name: 'Withdraw' }));
+        await waitFor(() => expect(screen.getByRole('button', {name: 'Withdraw'})).toBeInTheDocument());
+        await user.click(screen.getByRole('button', {name: 'Withdraw'}));
 
         await waitFor(() =>
             expect(axios.put).toHaveBeenCalledWith(
@@ -240,7 +240,7 @@ describe('ApplicantDashboard', () => {
         expect(screen.getByText(byTextContent(`Applied On: ${applicationDateTimeFormatter.format(new Date(createdAt))}`))).toBeInTheDocument();
         expect(screen.getByText(byTextContent(`Last Updated: ${applicationDateTimeFormatter.format(new Date(updatedAt))}`))).toBeInTheDocument();
         expect(screen.getByText('You withdrew this application and can apply again.')).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: 'Apply Again' })).toBeInTheDocument();
+        expect(screen.getByRole('button', {name: 'Apply Again'})).toBeInTheDocument();
     });
 
     it('should show backend message when withdraw request fails', async () => {
@@ -276,11 +276,11 @@ describe('ApplicantDashboard', () => {
             }
         });
 
-        renderWithProviders(<ApplicantDashboard />);
+        renderWithProviders(<ApplicantDashboard/>);
         const user = userEvent.setup();
 
-        await waitFor(() => expect(screen.getByRole('button', { name: 'Withdraw' })).toBeInTheDocument());
-        await user.click(screen.getByRole('button', { name: 'Withdraw' }));
+        await waitFor(() => expect(screen.getByRole('button', {name: 'Withdraw'})).toBeInTheDocument());
+        await user.click(screen.getByRole('button', {name: 'Withdraw'}));
 
         expect(await screen.findByText('Applicants can only set application status to WITHDRAWN')).toBeInTheDocument();
     });
@@ -310,7 +310,7 @@ describe('ApplicantDashboard', () => {
                 ]
             });
 
-        renderWithProviders(<ApplicantDashboard />);
+        renderWithProviders(<ApplicantDashboard/>);
 
         expect(await screen.findByText(byTextContent('Application Status: Reviewing'))).toBeInTheDocument();
         expect(screen.getByText('Your application is currently under review.')).toBeInTheDocument();
@@ -341,7 +341,7 @@ describe('ApplicantDashboard', () => {
                 ]
             });
 
-        renderWithProviders(<ApplicantDashboard />);
+        renderWithProviders(<ApplicantDashboard/>);
 
         expect(await screen.findByText(byTextContent('Application Status: Accepted'))).toBeInTheDocument();
         expect(screen.getByText('Your application has been accepted.')).toBeInTheDocument();
@@ -372,7 +372,7 @@ describe('ApplicantDashboard', () => {
                 ]
             });
 
-        renderWithProviders(<ApplicantDashboard />);
+        renderWithProviders(<ApplicantDashboard/>);
 
         expect(await screen.findByText(byTextContent('Application Status: Rejected'))).toBeInTheDocument();
         expect(screen.getByText('Your application was not selected.')).toBeInTheDocument();

@@ -1,11 +1,11 @@
 const AdminJobForm = ({
-    form,
-    editingJobId,
-    isSubmitting,
-    onChange,
-    onSubmit,
-    onCancelEdit
-}) => {
+                          form,
+                          editingJobId,
+                          isSubmitting,
+                          onChange,
+                          onSubmit,
+                          onCancelEdit
+                      }) => {
     return (
         <div className="card login-panel p-4">
             <div className="card-header login-header text-center">

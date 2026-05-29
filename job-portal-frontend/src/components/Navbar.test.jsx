@@ -1,7 +1,7 @@
-import { screen, waitFor } from '@testing-library/react';
+import {screen, waitFor} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Navbar from './Navbar';
-import { renderWithProviders } from '../test/test-utils';
+import {renderWithProviders} from '../test/test-utils';
 
 const mockNavigate = vi.fn();
 
@@ -20,7 +20,7 @@ describe('Navbar', () => {
     });
 
     it('should render username from store', () => {
-        renderWithProviders(<Navbar />, {
+        renderWithProviders(<Navbar/>, {
             preloadedState: {
                 user: {
                     username: 'alice',
@@ -35,7 +35,7 @@ describe('Navbar', () => {
     it('should clear storage, reset user, and navigate on logout', async () => {
         localStorage.setItem('token', 'jwt-123');
 
-        const { store } = renderWithProviders(<Navbar />, {
+        const {store} = renderWithProviders(<Navbar/>, {
             preloadedState: {
                 user: {
                     username: 'alice',
@@ -45,7 +45,7 @@ describe('Navbar', () => {
         });
 
         const user = userEvent.setup();
-        await user.click(screen.getByRole('button', { name: 'Logout' }));
+        await user.click(screen.getByRole('button', {name: 'Logout'}));
 
         expect(localStorage.getItem('token')).toBeNull();
         await waitFor(() => {

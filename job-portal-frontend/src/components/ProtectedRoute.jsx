@@ -67,7 +67,7 @@ const ProtectedRoute = ({children, requiredRole}) => {
     }, [dispatch, token, user.role]);
 
     if (!token) {
-        return <Navigate to="/" replace />;
+        return <Navigate to="/" replace/>;
     }
 
     if (!authResolved) {
@@ -75,12 +75,12 @@ const ProtectedRoute = ({children, requiredRole}) => {
     }
 
     if (!user.role) {
-        return <Navigate to="/" replace />;
+        return <Navigate to="/" replace/>;
     }
 
     if (requiredRole && user.role !== requiredRole) {
         const fallback = user.role === "ROLE_APPLICANT" ? "/applicant-dashboard" : "/";
-        return <Navigate to={fallback} replace />;
+        return <Navigate to={fallback} replace/>;
     }
 
     return children;

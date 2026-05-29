@@ -1,5 +1,5 @@
 import {screen, waitFor} from "@testing-library/react";
-import {Routes, Route} from "react-router-dom";
+import {Route, Routes} from "react-router-dom";
 import axios from "axios";
 import ProtectedRoute from "./ProtectedRoute";
 import {renderWithProviders} from "../test/test-utils";
@@ -9,7 +9,7 @@ vi.mock("axios");
 const renderProtectedRoute = ({route = "/admin-dashboard", preloadedState} = {}) =>
     renderWithProviders(
         <Routes>
-            <Route path="/" element={<div>Login Screen</div>} />
+            <Route path="/" element={<div>Login Screen</div>}/>
             <Route
                 path="/applicant-dashboard"
                 element={<div>Applicant Screen</div>}

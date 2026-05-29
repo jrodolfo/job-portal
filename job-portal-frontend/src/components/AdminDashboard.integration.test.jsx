@@ -1,9 +1,9 @@
-import { screen, waitFor, within } from '@testing-library/react';
+import {screen, waitFor, within} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { http, HttpResponse } from 'msw';
+import {http, HttpResponse} from 'msw';
 import AdminDashboard from './AdminDashboard';
-import { renderWithProviders } from '../test/test-utils';
-import { server } from '../test/mswServer';
+import {renderWithProviders} from '../test/test-utils';
+import {server} from '../test/mswServer';
 
 vi.mock('./Navbar', () => ({
     default: () => <div data-testid="navbar-mock">Navbar</div>
@@ -36,16 +36,16 @@ describe('AdminDashboard integration', () => {
                     status: 'APPLIED',
                     createdAt: '2026-05-26T11:00:00Z',
                     updatedAt: '2026-05-26T11:00:00Z',
-                    user: { name: 'Maya Patel' },
-                    job: { id: 1, title: 'Platform Engineer' }
+                    user: {name: 'Maya Patel'},
+                    job: {id: 1, title: 'Platform Engineer'}
                 }
             ]))
         );
 
-        renderWithProviders(<AdminDashboard />);
+        renderWithProviders(<AdminDashboard/>);
 
         await waitFor(() => expect(screen.getByText(byTextContent('Platform Engineer'))).toBeInTheDocument());
-        expect(screen.getByRole('tab', { name: /^Jobs \(\d+\)$/ })).toHaveAttribute('aria-selected', 'true');
+        expect(screen.getByRole('tab', {name: /^Jobs \(\d+\)$/})).toHaveAttribute('aria-selected', 'true');
         expect(within(screen.getByText('Total Jobs').closest('.admin-overview-card')).getByText('1')).toBeInTheDocument();
         const applicationsOverviewCard = screen
             .getAllByText('Applications')
@@ -76,23 +76,23 @@ describe('AdminDashboard integration', () => {
                     status: 'APPLIED',
                     createdAt: '2026-05-26T11:00:00Z',
                     updatedAt: '2026-05-26T11:00:00Z',
-                    user: { name: 'Maya Patel' },
-                    job: { id: 1, title: 'Platform Engineer' }
+                    user: {name: 'Maya Patel'},
+                    job: {id: 1, title: 'Platform Engineer'}
                 }
             ])),
             http.put(`${api}/api/applications/10`, async () => HttpResponse.json({
                 id: 10,
                 status: 'REVIEWING',
                 updatedAt: '2026-05-26T12:30:00Z',
-                user: { name: 'Maya Patel' },
-                job: { id: 1, title: 'Platform Engineer' }
+                user: {name: 'Maya Patel'},
+                job: {id: 1, title: 'Platform Engineer'}
             }))
         );
 
-        renderWithProviders(<AdminDashboard />);
+        renderWithProviders(<AdminDashboard/>);
         const user = userEvent.setup();
 
-        await user.click(screen.getByRole('tab', { name: /^Applications \(\d+\)$/ }));
+        await user.click(screen.getByRole('tab', {name: /^Applications \(\d+\)$/}));
         await waitFor(() => expect(screen.getByLabelText('Status')).toBeInTheDocument());
 
         const applicationCard = screen.getByText(byTextContent('Applicant: Maya Patel')).closest('.application-card');
@@ -100,7 +100,7 @@ describe('AdminDashboard integration', () => {
         expect(within(applicationCard).queryByText(/Last Updated:/)).not.toBeInTheDocument();
 
         await user.selectOptions(screen.getByLabelText('Status'), 'REVIEWING');
-        await user.click(screen.getByRole('button', { name: 'Save' }));
+        await user.click(screen.getByRole('button', {name: 'Save'}));
 
         expect(await screen.findByText('Application status updated successfully.')).toBeInTheDocument();
         const updatedApplicationCard = screen.getByText(byTextContent('Applicant: Maya Patel')).closest('.application-card');

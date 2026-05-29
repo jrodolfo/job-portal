@@ -231,47 +231,50 @@ const ApplicantDashboard = () => {
                                     : null;
 
                                 return (
-                            <div className="col-sm-4" key={index}>
-                                <div className={`card mb-4 job-card accent-${(index % 3) + 1}`}>
-                                    <div className="card-body">
-                                        <h4 className="heading-text">{job.title}</h4>
-                                        <p className="body-text">
-                                            <span className="metadata-label">Details:</span> {job.description}
-                                        </p>
-                                        <p className="body-text">
-                                            <span className="metadata-label">Company:</span> {job.company}
-                                        </p>
-                                        <p className="body-text muted-meta">
-                                            <span className="metadata-label">Posted Date:</span> {job.postedDate}
-                                        </p>
-                                        <p className="body-text">
-                                            <span className="metadata-label">Application Status:</span> {formatStatus(applicationsByJobId[job.id]?.status)}
-                                        </p>
-                                        {appliedOn ? (
-                                            <p className="body-text muted-meta">
-                                                <span className="metadata-label">Applied On:</span> {appliedOn}
-                                            </p>
-                                        ) : null}
-                                        {lastUpdated ? (
-                                            <p className="body-text muted-meta">
-                                                <span className="metadata-label">Last Updated:</span> {lastUpdated}
-                                            </p>
-                                        ) : null}
-                                        <p className="body-text muted-meta">
-                                            {getStatusHelperText(application?.status)}
-                                        </p>
-                                        <div>
-                                            <button
-                                                className="btn btn-accent-secondary"
-                                                disabled={!actionAllowed || isSubmitting}
-                                                onClick={() => canWithdraw(application) ? withdraw(job.id) : apply(job.id)}
-                                            >
-                                                {getActionLabel(application, isSubmitting)}
-                                            </button>
+                                    <div className="col-sm-4" key={index}>
+                                        <div className={`card mb-4 job-card accent-${(index % 3) + 1}`}>
+                                            <div className="card-body">
+                                                <h4 className="heading-text">{job.title}</h4>
+                                                <p className="body-text">
+                                                    <span className="metadata-label">Details:</span> {job.description}
+                                                </p>
+                                                <p className="body-text">
+                                                    <span className="metadata-label">Company:</span> {job.company}
+                                                </p>
+                                                <p className="body-text muted-meta">
+                                                    <span
+                                                        className="metadata-label">Posted Date:</span> {job.postedDate}
+                                                </p>
+                                                <p className="body-text">
+                                                    <span
+                                                        className="metadata-label">Application Status:</span> {formatStatus(applicationsByJobId[job.id]?.status)}
+                                                </p>
+                                                {appliedOn ? (
+                                                    <p className="body-text muted-meta">
+                                                        <span className="metadata-label">Applied On:</span> {appliedOn}
+                                                    </p>
+                                                ) : null}
+                                                {lastUpdated ? (
+                                                    <p className="body-text muted-meta">
+                                                        <span
+                                                            className="metadata-label">Last Updated:</span> {lastUpdated}
+                                                    </p>
+                                                ) : null}
+                                                <p className="body-text muted-meta">
+                                                    {getStatusHelperText(application?.status)}
+                                                </p>
+                                                <div>
+                                                    <button
+                                                        className="btn btn-accent-secondary"
+                                                        disabled={!actionAllowed || isSubmitting}
+                                                        onClick={() => canWithdraw(application) ? withdraw(job.id) : apply(job.id)}
+                                                    >
+                                                        {getActionLabel(application, isSubmitting)}
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
                                 );
                             })()
                         ))
