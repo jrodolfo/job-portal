@@ -11,21 +11,21 @@ bash "${SCRIPT_DIR}/start.sh"
 echo "Loading demo seed data..."
 seed_succeeded=false
 for attempt in 1 2 3 4 5; do
-    if bash "${SCRIPT_DIR}/seed-demo-data.sh"; then
-        seed_succeeded=true
-        break
-    fi
+  if bash "${SCRIPT_DIR}/seed-demo-data.sh"; then
+    seed_succeeded=true
+    break
+  fi
 
-    echo "Demo seed attempt ${attempt} failed. Waiting for MySQL to become ready..."
-    sleep 5
+  echo "Demo seed attempt ${attempt} failed. Waiting for MySQL to become ready..."
+  sleep 5
 done
 
 if [ "${seed_succeeded}" != "true" ]; then
-    echo "Unable to load demo seed data after multiple attempts."
-    echo "Check the backend and MySQL containers with:"
-    echo "  docker compose ps"
-    echo "  docker compose logs -f backend"
-    exit 1
+  echo "Unable to load demo seed data after multiple attempts."
+  echo "Check the backend and MySQL containers with:"
+  echo "  docker compose ps"
+  echo "  docker compose logs -f backend"
+  exit 1
 fi
 
 cat <<'EOF'
