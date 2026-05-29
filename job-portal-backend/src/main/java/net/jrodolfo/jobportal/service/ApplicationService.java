@@ -1,20 +1,19 @@
 package net.jrodolfo.jobportal.service;
 
-import net.jrodolfo.jobportal.constant.AuthProvider;
 import net.jrodolfo.jobportal.constant.ApplicationStatus;
+import net.jrodolfo.jobportal.constant.AuthProvider;
 import net.jrodolfo.jobportal.constant.JobStatus;
 import net.jrodolfo.jobportal.constant.Role;
 import net.jrodolfo.jobportal.exception.ResourceException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import net.jrodolfo.jobportal.model.Application;
 import net.jrodolfo.jobportal.model.Job;
 import net.jrodolfo.jobportal.model.User;
 import net.jrodolfo.jobportal.repository.ApplicationRepository;
 import net.jrodolfo.jobportal.repository.JobRepository;
 import net.jrodolfo.jobportal.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;

@@ -1,23 +1,22 @@
 package net.jrodolfo.jobportal.service;
 
-import java.util.List;
-
 import net.jrodolfo.jobportal.constant.JobStatus;
 import net.jrodolfo.jobportal.exception.ResourceException;
+import net.jrodolfo.jobportal.model.Job;
 import net.jrodolfo.jobportal.repository.ApplicationRepository;
+import net.jrodolfo.jobportal.repository.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-import net.jrodolfo.jobportal.model.Job;
-import net.jrodolfo.jobportal.repository.JobRepository;
+import java.util.List;
 
 @Service
 public class JobService {
 
-	@Autowired
+    @Autowired
     private JobRepository jobRepository;
 
     @Autowired
@@ -28,7 +27,7 @@ public class JobService {
         job.setStatus(JobStatus.OPEN);
         return jobRepository.save(job); // save(T) method from JPA Repository
     }
-    
+
     // Get jobs visible to applicants/public
     public List<Job> getOpenJobs() {
         return jobRepository.findByStatusOrderByCreatedAtDesc(JobStatus.OPEN);

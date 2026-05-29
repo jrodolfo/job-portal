@@ -1,4 +1,5 @@
 package net.jrodolfo.jobportal.exception;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Schema(description = "Standard error payload.")
 public class ErrorResponse {
-    
+
     @Schema(description = "HTTP status code.", example = "404")
     private int status;
     @Schema(description = "Error message.", example = "Resource not found")

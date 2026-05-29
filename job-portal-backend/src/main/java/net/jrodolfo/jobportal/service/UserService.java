@@ -11,14 +11,14 @@ import java.util.List;
 @Service
 public class UserService {
 
-	@Autowired
+    @Autowired
     private UserRepository userRepository;
 
     // Create a new User
     public User createUser(User user) {
         return userRepository.save(user); // save(T) method from JPA Repository
     }
-    
+
     // Get all users
     public List<User> getAllUsers() {
         return userRepository.findAll(); // findAll() method from JPA Repository

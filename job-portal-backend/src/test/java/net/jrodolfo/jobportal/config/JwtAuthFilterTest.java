@@ -1,7 +1,7 @@
 package net.jrodolfo.jobportal.config;
 
-import net.jrodolfo.jobportal.util.JwtUtil;
 import jakarta.servlet.FilterChain;
+import net.jrodolfo.jobportal.util.JwtUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,7 +38,8 @@ class JwtAuthFilterTest {
         JwtAuthFilter filter = new JwtAuthFilter(jwtUtil, userDetailsService);
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
-        FilterChain chain = (req, res) -> { };
+        FilterChain chain = (req, res) -> {
+        };
 
         filter.doFilter(request, response, chain);
 
@@ -51,7 +52,8 @@ class JwtAuthFilterTest {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.addHeader("Authorization", "Bearer test-token");
         MockHttpServletResponse response = new MockHttpServletResponse();
-        FilterChain chain = (req, res) -> { };
+        FilterChain chain = (req, res) -> {
+        };
 
         when(jwtUtil.extractEmail("test-token")).thenReturn("user@example.com");
         when(userDetailsService.loadUserByUsername("user@example.com"))
@@ -70,7 +72,8 @@ class JwtAuthFilterTest {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.addHeader("Authorization", "Bearer google-token");
         MockHttpServletResponse response = new MockHttpServletResponse();
-        FilterChain chain = (req, res) -> { };
+        FilterChain chain = (req, res) -> {
+        };
 
         when(jwtUtil.extractEmail("google-token")).thenReturn("google@example.com");
         when(userDetailsService.loadUserByUsername("google@example.com"))
@@ -89,7 +92,8 @@ class JwtAuthFilterTest {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.addHeader("Authorization", "Bearer broken-token");
         MockHttpServletResponse response = new MockHttpServletResponse();
-        FilterChain chain = (req, res) -> { };
+        FilterChain chain = (req, res) -> {
+        };
 
         when(jwtUtil.extractEmail("broken-token")).thenThrow(new RuntimeException("bad token"));
 
