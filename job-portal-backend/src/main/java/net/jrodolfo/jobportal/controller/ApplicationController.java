@@ -29,19 +29,41 @@ import org.springframework.web.server.ResponseStatusException;
 import java.security.Principal;
 import java.util.List;
 
+/**
+ * REST controller for managing job applications.
+ * <p>
+ * Provides endpoints for creating, retrieving, updating, and deleting {@link Application} entities.
+ * Access is restricted based on the user's role (Applicant or Admin).
+ */
 @RestController
 @RequestMapping("/api/applications")
 @Tag(name = "Applications", description = "Application CRUD operations")
 public class ApplicationController {
 
+    /**
+     * Service for application-related business logic.
+     */
     final ApplicationService applicationService;
 
+    /**
+     * Constructs an {@code ApplicationController} with the specified {@link ApplicationService}.
+     *
+     * @param applicationService the service to be used for application operations
+     */
     @Autowired
     public ApplicationController(ApplicationService applicationService) {
         this.applicationService = applicationService;
     }
 
-    // Apply for a job - must be called only by logged users
+    /**
+     * Creates a new application for a specific job.
+     * <p>
+     * This endpoint must be called only by authenticated users.
+     *
+     * @param principal the authenticated user making the request
+     * @param jobId     the ID of the job to apply for
+     * @return a {@link ResponseEntity} containing the created {@link Application}
+     */
     @PostMapping("/{jobId}") // Path variable correctly mapped
     @Operation(summary = "Create application for a job", security = @SecurityRequirement(name = "basicAuth"))
     @ApiResponses({
@@ -53,6 +75,14 @@ public class ApplicationController {
         return ResponseEntity.status(HttpStatus.CREATED).body(applicationService.applyForJob(username, jobId));
     }
 
+    /**
+     * Retrieves a list of applications.
+     * <p>
+     * Admins receive all applications in the system, while applicants receive only their own applications.
+     *
+     * @param authentication the authentication object containing user roles and details
+     * @return a {@link ResponseEntity} containing a list of {@link Application} objects
+     */
     @GetMapping
     @Operation(summary = "Get applications", description = "Admins get all applications; applicants get only their own.", security = @SecurityRequirement(name = "basicAuth"))
     @ApiResponse(responseCode = "200", description = "Applications returned")
@@ -63,6 +93,16 @@ public class ApplicationController {
         return ResponseEntity.ok(applicationService.getApplicationsByUsername(authentication.getName()));
     }
 
+    /**
+     * Retrieves a specific application by its ID.
+     * <p>
+     * Access is restricted: admins can access any application, but applicants can only access their own.
+     *
+     * @param id             the ID of the application to retrieve
+     * @param authentication the authentication object for authorization check
+     * @return a {@link ResponseEntity} containing the requested {@link Application}
+     * @throws ResponseStatusException if the application is not found or the user is not authorized
+     */
     @GetMapping("/{id}")
     @Operation(summary = "Get application by id", security = @SecurityRequirement(name = "basicAuth"))
     @ApiResponses({
@@ -74,6 +114,18 @@ public class ApplicationController {
         return ResponseEntity.ok(application);
     }
 
+    /**
+     * Updates the status of an existing application.
+     * <p>
+     * Applicants are only permitted to change the status of their own applications to {@link ApplicationStatus#WITHDRAWN}.
+     * Admins have full authority to update the status to any valid {@link ApplicationStatus}.
+     *
+     * @param id             the ID of the application to update
+     * @param status         the new {@link ApplicationStatus} to set
+     * @param authentication the authentication object for authorization check
+     * @return a {@link ResponseEntity} containing the updated {@link Application}
+     * @throws ResponseStatusException if the application is not found, or if an applicant tries to set a status other than WITHDRAWN
+     */
     @PutMapping("/{id}")
     @Operation(summary = "Update application status", security = @SecurityRequirement(name = "basicAuth"))
     @ApiResponses({
@@ -94,6 +146,16 @@ public class ApplicationController {
         return ResponseEntity.ok(updatedApplication);
     }
 
+    /**
+     * Deletes a specific application.
+     * <p>
+     * Access is restricted: admins can delete any application, but applicants can only delete their own.
+     *
+     * @param id             the ID of the application to delete
+     * @param authentication the authentication object for authorization check
+     * @return a {@link ResponseEntity} with no content upon successful deletion
+     * @throws ResponseStatusException if the application is not found or the user is not authorized
+     */
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete application", security = @SecurityRequirement(name = "basicAuth"))
     @ApiResponses({

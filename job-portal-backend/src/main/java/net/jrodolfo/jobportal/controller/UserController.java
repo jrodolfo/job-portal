@@ -27,15 +27,31 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * REST controller for managing users.
+ * <p>
+ * Provides endpoints for creating, retrieving, updating, and deleting {@link User} entities.
+ * Most operations are restricted to administrators.
+ */
 @RestController
 @RequestMapping("/api/users")
 @Tag(name = "Users", description = "User CRUD operations")
 public class UserController {
 
+    /**
+     * Service for user-related business logic.
+     */
     @Autowired
     private UserService userService;
 
-    // Create a new user, Allowed user: ADMIN
+    /**
+     * Creates a new user.
+     * <p>
+     * Access is typically restricted to users with the ADMIN role.
+     *
+     * @param user the {@link User} entity to create
+     * @return a {@link ResponseEntity} containing the created {@link User}
+     */
     @PostMapping
     @Operation(summary = "Create user", security = @SecurityRequirement(name = "basicAuth"))
     @ApiResponses({
@@ -46,7 +62,11 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(user));
     }
 
-    // Get all users
+    /**
+     * Retrieves a list of all users.
+     *
+     * @return a {@link ResponseEntity} containing a list of all {@link User} objects
+     */
     @GetMapping
     @Operation(summary = "Get all users", security = @SecurityRequirement(name = "basicAuth"))
     @ApiResponse(responseCode = "200", description = "Users returned")
@@ -54,6 +74,13 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
+    /**
+     * Retrieves a specific user by their ID.
+     *
+     * @param id the ID of the user to retrieve, must be at least 1
+     * @return a {@link ResponseEntity} containing the requested {@link User}
+     * @throws ResourceException if no user is found with the given ID
+     */
     @Operation(summary = "Get a user by id", description = "Retrieve a user by id")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "User returned"),
@@ -72,6 +99,14 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
+    /**
+     * Updates an existing user's information.
+     *
+     * @param id   the ID of the user to update, must be at least 1
+     * @param user the updated {@link User} entity
+     * @return a {@link ResponseEntity} containing the updated {@link User}
+     * @throws ResourceException if no user is found with the given ID
+     */
     @PutMapping("/{id}")
     @Operation(summary = "Update user", security = @SecurityRequirement(name = "basicAuth"))
     @ApiResponses({
@@ -86,6 +121,13 @@ public class UserController {
         }
     }
 
+    /**
+     * Deletes a specific user.
+     *
+     * @param id the ID of the user to delete, must be at least 1
+     * @return a {@link ResponseEntity} with no content upon successful deletion
+     * @throws ResourceException if no user is found with the given ID
+     */
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete user", security = @SecurityRequirement(name = "basicAuth"))
     @ApiResponses({

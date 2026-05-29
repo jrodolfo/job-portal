@@ -25,15 +25,32 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * REST controller for handling authentication and user identity details.
+ * <p>
+ * Provides endpoints for user login, JWT token generation, and retrieving authenticated user information.
+ */
 @RestController
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = "http://localhost:5173")
 @Tag(name = "Auth", description = "Authentication and user identity endpoints")
 public class LoginController {
 
+    /**
+     * Utility for generating and validating JSON Web Tokens (JWT).
+     */
     @Autowired
     private JwtUtil jwtUtil;
 
+    /**
+     * Authenticates a user and generates a JWT token.
+     * <p>
+     * This endpoint relies on Spring Security's basic authentication to verify the user's credentials
+     * provided in the request before generating the token.
+     *
+     * @param principal the authenticated principal representing the logged-in user
+     * @return a {@link Map} containing the generated "token"
+     */
     @PostMapping("/login")
     @Operation(summary = "Login and get JWT token", security = @SecurityRequirement(name = "basicAuth"))
     @ApiResponses({
@@ -54,6 +71,14 @@ public class LoginController {
         return response;
     }
 
+    /**
+     * Retrieves the details of the currently authenticated user.
+     * <p>
+     * Returns the username and assigned roles (authorities) from the security context.
+     *
+     * @param principal the authenticated principal
+     * @return a {@link Map} containing user details such as "username" and "roles", or an "error" message if not authenticated
+     */
     @GetMapping("/details")
     @Operation(summary = "Get authenticated user details", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponse(responseCode = "200", description = "User details returned", content = @Content(schema = @Schema(implementation = Map.class)))

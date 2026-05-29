@@ -29,15 +29,31 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * REST controller for managing job postings.
+ * <p>
+ * Provides endpoints for creating, retrieving, updating, and deleting {@link Job} entities.
+ * Some operations are restricted to administrators, while others are public.
+ */
 @RestController
 @RequestMapping("/api/jobs")
 @Tag(name = "Jobs", description = "Job CRUD operations")
 public class JobController {
 
+    /**
+     * Service for job-related business logic.
+     */
     @Autowired
     private JobService jobService;
 
-    // Create a new job, Allowed user: ADMIN
+    /**
+     * Creates a new job posting.
+     * <p>
+     * Only users with ADMIN role are permitted to create jobs.
+     *
+     * @param job the {@link Job} entity to create, validated against constraints
+     * @return a {@link ResponseEntity} containing the created {@link Job}
+     */
     @PostMapping
     @Operation(summary = "Create job", security = @SecurityRequirement(name = "basicAuth"))
     @ApiResponses({
@@ -49,7 +65,13 @@ public class JobController {
         return ResponseEntity.status(HttpStatus.CREATED).body(job);
     }
 
-    // Get all jobs
+    /**
+     * Retrieves all jobs that are currently open.
+     * <p>
+     * This is a public endpoint accessible without authentication.
+     *
+     * @return a {@link ResponseEntity} containing a list of open {@link Job} objects
+     */
     @GetMapping
     @Operation(summary = "Get all jobs", description = "Public endpoint.")
     @ApiResponse(responseCode = "200", description = "Jobs returned")
@@ -57,6 +79,13 @@ public class JobController {
         return ResponseEntity.ok(jobService.getOpenJobs());
     }
 
+    /**
+     * Retrieves all jobs in the system, regardless of their status.
+     * <p>
+     * Intended for administrative review.
+     *
+     * @return a {@link ResponseEntity} containing a list of all {@link Job} objects
+     */
     @GetMapping("/admin")
     @Operation(summary = "Get all jobs for admin review", security = @SecurityRequirement(name = "basicAuth"))
     @ApiResponse(responseCode = "200", description = "Jobs returned")
@@ -64,6 +93,12 @@ public class JobController {
         return ResponseEntity.ok(jobService.getAllJobs());
     }
 
+    /**
+     * Retrieves a specific job by its ID.
+     *
+     * @param id the ID of the job to retrieve, must be at least 1
+     * @return a {@link ResponseEntity} containing the requested {@link Job}
+     */
     @Operation(summary = "Get a job by id", description = "Retrieve a job by id")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Job returned"),
@@ -75,6 +110,13 @@ public class JobController {
         return ResponseEntity.ok(jobService.getJobById(id));
     }
 
+    /**
+     * Updates an existing job posting.
+     *
+     * @param id  the ID of the job to update, must be at least 1
+     * @param job the updated {@link Job} entity
+     * @return a {@link ResponseEntity} containing the updated {@link Job}
+     */
     @PutMapping("/{id}")
     @Operation(summary = "Update job", security = @SecurityRequirement(name = "basicAuth"))
     @ApiResponses({
@@ -85,6 +127,13 @@ public class JobController {
         return ResponseEntity.ok(jobService.updateJob(id, job));
     }
 
+    /**
+     * Updates the status of a specific job.
+     *
+     * @param id     the ID of the job to update
+     * @param status the new {@link JobStatus} to set
+     * @return a {@link ResponseEntity} containing the updated {@link Job}
+     */
     @PutMapping("/{id}/status")
     @Operation(summary = "Update job status", security = @SecurityRequirement(name = "basicAuth"))
     @ApiResponses({
@@ -96,6 +145,14 @@ public class JobController {
         return ResponseEntity.ok(jobService.updateJobStatus(id, status));
     }
 
+    /**
+     * Deletes a specific job.
+     * <p>
+     * Deletion may be prevented if there are existing applications for the job.
+     *
+     * @param id the ID of the job to delete
+     * @return a {@link ResponseEntity} with no content upon successful deletion
+     */
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete job", security = @SecurityRequirement(name = "basicAuth"))
     @ApiResponses({

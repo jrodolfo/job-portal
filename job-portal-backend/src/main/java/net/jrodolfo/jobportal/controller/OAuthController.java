@@ -23,6 +23,12 @@ import org.springframework.web.client.RestTemplate;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * REST controller for Google OAuth2 integration and token management.
+ * <p>
+ * Provides endpoints for retrieving authenticated OAuth user information, obtaining ID tokens,
+ * and exchanging authorization codes for tokens using Google's OAuth2 services.
+ */
 @RestController
 @RequestMapping("/api/oauth")
 @CrossOrigin(origins = "http://localhost:5173")
@@ -35,6 +41,13 @@ public class OAuthController {
     @Value("${spring.security.oauth2.client.registration.google.client-secret}")
     private String clientSecret;
 
+    /**
+     * Retrieves the attributes of the currently authenticated OAuth2 user.
+     *
+     * @param authentication the OAuth2 authentication token containing user details
+     * @return a {@link Map} of user attributes (e.g., email, name, picture)
+     * @throws IllegalStateException if the user is not authenticated
+     */
     @GetMapping("/user")
     @Operation(summary = "Get OAuth authenticated user attributes", security = @SecurityRequirement(name = "basicAuth"))
     @ApiResponse(responseCode = "200", description = "OAuth user attributes returned")
@@ -47,6 +60,12 @@ public class OAuthController {
         return user.getAttributes();
     }
 
+    /**
+     * Retrieves the Google ID token for the currently authenticated OAuth2 user.
+     *
+     * @param authentication the OAuth2 authentication token
+     * @return the raw ID token value as a {@link String}
+     */
     @GetMapping("/token")
     @Operation(summary = "Get Google ID token for authenticated OAuth user", security = @SecurityRequirement(name = "basicAuth"))
     @ApiResponse(responseCode = "200", description = "Google token returned")
@@ -55,6 +74,15 @@ public class OAuthController {
         return user.getIdToken().getTokenValue(); //Access token from google
     }
 
+    /**
+     * Exchanges a Google OAuth2 authorization code for an ID token.
+     * <p>
+     * Communicates directly with Google's token endpoint ({@code https://oauth2.googleapis.com/token})
+     * using a {@link RestTemplate} to perform the exchange.
+     *
+     * @param body a {@link Map} containing the "code" received from Google
+     * @return a {@link Map} containing the exchanged "token" (ID token)
+     */
     @PostMapping("/exchange-token")
     @Operation(summary = "Exchange OAuth authorization code for token")
     @ApiResponse(responseCode = "200", description = "Exchanged token returned")
@@ -87,6 +115,14 @@ public class OAuthController {
         return result;
     }
 
+    /**
+     * Retrieves user details from Google using a provided ID token.
+     * <p>
+     * Validates the token by calling Google's tokeninfo endpoint.
+     *
+     * @param token the Bearer token (ID token) provided in the {@code Authorization} header
+     * @return a {@link Map} of user details as returned by Google's verification service
+     */
     @GetMapping("/user-details")
     @Operation(summary = "Get user details from Google token", security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponse(responseCode = "200", description = "Google user details returned")
@@ -108,5 +144,4 @@ public class OAuthController {
         Map<String, Object> body = response.getBody();
         return body;
     }
-
 }
