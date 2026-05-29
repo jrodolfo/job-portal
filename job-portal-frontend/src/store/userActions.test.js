@@ -1,4 +1,4 @@
-import { setUserDetails } from './userActions';
+import {setUserDetails} from './userActions';
 
 describe('userActions', () => {
     it('should dispatch SET_USER_DETAILS with provided payload', () => {

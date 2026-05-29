@@ -2,7 +2,7 @@ import userReducer from './userReducer';
 
 describe('userReducer', () => {
     it('should return initial state when action is unknown', () => {
-        const state = userReducer(undefined, { type: 'UNKNOWN' });
+        const state = userReducer(undefined, {type: 'UNKNOWN'});
 
         expect(state).toEqual({
             username: '',

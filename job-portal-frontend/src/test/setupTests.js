@@ -1,9 +1,9 @@
 import '@testing-library/jest-dom/vitest';
-import { afterAll, afterEach, beforeAll } from 'vitest';
-import { server } from './mswServer';
+import {afterAll, afterEach, beforeAll} from 'vitest';
+import {server} from './mswServer';
 
 beforeAll(() => {
-    server.listen({ onUnhandledRequest: 'bypass' });
+    server.listen({onUnhandledRequest: 'bypass'});
 });
 
 afterEach(() => {

@@ -1,8 +1,8 @@
 import React from 'react';
-import { render } from '@testing-library/react';
-import { configureStore } from '@reduxjs/toolkit';
-import { Provider } from 'react-redux';
-import { MemoryRouter } from 'react-router-dom';
+import {render} from '@testing-library/react';
+import {configureStore} from '@reduxjs/toolkit';
+import {Provider} from 'react-redux';
+import {MemoryRouter} from 'react-router-dom';
 import userReducer from '../store/userReducer';
 
 export function createTestStore(preloadedState) {
@@ -17,12 +17,12 @@ export function createTestStore(preloadedState) {
 export function renderWithProviders(
     ui,
     {
-        preloadedState = { user: { username: '', role: '' } },
+        preloadedState = {user: {username: '', role: ''}},
         store = createTestStore(preloadedState),
         route = '/'
     } = {}
 ) {
-    const Wrapper = ({ children }) => (
+    const Wrapper = ({children}) => (
         <Provider store={store}>
             <MemoryRouter initialEntries={[route]}>{children}</MemoryRouter>
         </Provider>
@@ -30,6 +30,6 @@ export function renderWithProviders(
 
     return {
         store,
-        ...render(ui, { wrapper: Wrapper })
+        ...render(ui, {wrapper: Wrapper})
     };
 }
