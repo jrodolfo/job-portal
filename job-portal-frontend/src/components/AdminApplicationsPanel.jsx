@@ -1,5 +1,8 @@
 import {useState} from "react";
 
+/**
+ * Default expanded state for application status sections.
+ */
 const defaultExpandedSections = {
     APPLIED: true,
     REVIEWING: true,
@@ -8,6 +11,12 @@ const defaultExpandedSections = {
     WITHDRAWN: false
 };
 
+/**
+ * Returns the CSS class name for an application card based on its status.
+ *
+ * @param {string} status - The status of the application.
+ * @returns {string} The CSS class name.
+ */
 const getApplicationCardStatusClass = (status) => {
     switch (status) {
         case "REVIEWING":
@@ -24,6 +33,9 @@ const getApplicationCardStatusClass = (status) => {
     }
 };
 
+/**
+ * Formatter for application date and time.
+ */
 const applicationDateTimeFormatter = new Intl.DateTimeFormat(undefined, {
     year: "numeric",
     month: "short",
@@ -32,6 +44,12 @@ const applicationDateTimeFormatter = new Intl.DateTimeFormat(undefined, {
     minute: "2-digit"
 });
 
+/**
+ * Formats an application timestamp into a human-readable string.
+ *
+ * @param {string|number|Date} timestamp - The timestamp to format.
+ * @returns {string|null} The formatted date string, the original timestamp if invalid, or null if timestamp is missing.
+ */
 const formatApplicationTimestamp = (timestamp) => {
     if (!timestamp) {
         return null;
@@ -45,6 +63,14 @@ const formatApplicationTimestamp = (timestamp) => {
     return applicationDateTimeFormatter.format(parsedDate);
 };
 
+/**
+ * Determines if the "Last Updated" timestamp should be displayed.
+ * Returns true if the created and updated timestamps are different.
+ *
+ * @param {string|number|Date} createdAt - The creation timestamp.
+ * @param {string|number|Date} updatedAt - The last update timestamp.
+ * @returns {boolean} True if the timestamps are different, false otherwise.
+ */
 const shouldShowLastUpdated = (createdAt, updatedAt) => {
     if (!createdAt || !updatedAt) {
         return false;
@@ -53,6 +79,26 @@ const shouldShowLastUpdated = (createdAt, updatedAt) => {
     return new Date(createdAt).getTime() !== new Date(updatedAt).getTime();
 };
 
+/**
+ * AdminApplicationsPanel component displays a list of job applications grouped by status.
+ * It provides filtering, searching, sorting, and the ability to update application statuses.
+ *
+ * @param {Object} props - The component props.
+ * @param {Array<Object>} props.applications - List of application objects.
+ * @param {Array<string>} props.applicationStatuses - List of possible application statuses.
+ * @param {string} props.filterStatus - Currently selected status filter.
+ * @param {Function} props.formatStatus - Function to format status strings for display.
+ * @param {string} props.searchTerm - Current search term.
+ * @param {string} props.sortOrder - Current sort order.
+ * @param {Object} props.statusSelections - Map of application IDs to their selected status in the UI.
+ * @param {string|number|null} props.updatingApplicationId - ID of the application currently being updated.
+ * @param {Function} props.onFilterStatusChange - Callback when the status filter changes.
+ * @param {Function} props.onStatusChange - Callback when an individual application's status selection changes.
+ * @param {Function} props.onSaveStatus - Callback to save the status change for an application.
+ * @param {Function} props.onSearchTermChange - Callback when the search term changes.
+ * @param {Function} props.onSortOrderChange - Callback when the sort order changes.
+ * @returns {JSX.Element} The rendered component.
+ */
 const AdminApplicationsPanel = ({
                                     applications,
                                     applicationStatuses,

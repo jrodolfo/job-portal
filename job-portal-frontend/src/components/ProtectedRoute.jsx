@@ -6,11 +6,23 @@ import {selectUser} from "../store/userSelectors";
 import {setUserDetails} from "../store/userActions";
 import {BACKEND_API_URL} from "../config/backend";
 
+/**
+ * Initial empty state for the user details.
+ */
 const initialUserState = {
     username: "",
     role: ""
 };
 
+/**
+ * ProtectedRoute component wraps other components to ensure the user is authenticated
+ * and has the required role to access the route.
+ *
+ * @param {Object} props - The component props.
+ * @param {React.ReactNode} props.children - The child components to render if authorized.
+ * @param {string} [props.requiredRole] - The optional role required to access this route.
+ * @returns {JSX.Element|null} The children if authorized, a redirect component if not, or null while authenticating.
+ */
 const ProtectedRoute = ({children, requiredRole}) => {
     const user = useSelector(selectUser);
     const dispatch = useDispatch();

@@ -6,6 +6,13 @@ import {useDispatch} from "react-redux";
 
 import {BACKEND_API_URL} from "../config/backend";
 
+/**
+ * OAuthLogin component handles the redirect callback from an OAuth2 provider (e.g., Google).
+ * It extracts the token or authorization code from the URL, exchanges it if necessary,
+ * fetches user details, and redirects the user to the applicant dashboard.
+ *
+ * @returns {JSX.Element} The rendered component, typically a loading state.
+ */
 const OAuthLogin = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();

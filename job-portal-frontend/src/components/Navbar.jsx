@@ -3,6 +3,11 @@ import {Link, useNavigate} from "react-router-dom";
 import {selectUser} from "../store/userSelectors";
 import {setUserDetails} from "../store/userActions";
 
+/**
+ * Navbar component displays the application brand and user information, including a logout button.
+ *
+ * @returns {JSX.Element} The rendered Navbar component.
+ */
 const Navbar = () => {
     const user = useSelector(selectUser);
     const dispatch = useDispatch();

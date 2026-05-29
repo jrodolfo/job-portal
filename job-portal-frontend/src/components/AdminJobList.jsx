@@ -1,3 +1,6 @@
+/**
+ * Formatter for job date and time.
+ */
 const jobDateTimeFormatter = new Intl.DateTimeFormat(undefined, {
     year: "numeric",
     month: "short",
@@ -6,6 +9,12 @@ const jobDateTimeFormatter = new Intl.DateTimeFormat(undefined, {
     minute: "2-digit"
 });
 
+/**
+ * Formats the job's posted date for display.
+ *
+ * @param {Object} job - The job object.
+ * @returns {string} The formatted date string.
+ */
 const formatJobPostedAt = (job) => {
     const timestamp = job.createdAt || job.postedDate;
 
@@ -21,10 +30,30 @@ const formatJobPostedAt = (job) => {
     return jobDateTimeFormatter.format(parsedDate);
 };
 
+/**
+ * Returns the CSS class name for a job card based on its status.
+ *
+ * @param {string} jobStatus - The status of the job (e.g., "OPEN", "CLOSED").
+ * @returns {string} The CSS class name.
+ */
 const getJobCardStatusClass = (jobStatus) => {
     return jobStatus === "CLOSED" ? "job-card-closed" : "job-card-open";
 };
 
+/**
+ * AdminJobList component displays a list of jobs with administrative actions.
+ *
+ * @param {Object} props - The component props.
+ * @param {Array<Object>} props.jobs - List of job objects to display.
+ * @param {string|number|null} props.deletingJobId - ID of the job currently being deleted.
+ * @param {Function} props.formatStatus - Function to format status strings for display.
+ * @param {Function} props.getApplicationCount - Function to get the number of applications for a job ID.
+ * @param {Function} props.onEdit - Callback when the Edit button is clicked.
+ * @param {Function} props.onDelete - Callback when the Delete button is clicked.
+ * @param {Function} props.onUpdateJobStatus - Callback when the status toggle button is clicked.
+ * @param {string|number|null} props.updatingJobStatusId - ID of the job currently being status-updated.
+ * @returns {JSX.Element} The rendered component.
+ */
 const AdminJobList = ({
                           jobs,
                           deletingJobId,

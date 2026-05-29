@@ -3,6 +3,9 @@ import Navbar from "./Navbar";
 import axios from "axios";
 import {BACKEND_API_URL} from '../config/backend'
 
+/**
+ * Formatter for application date and time.
+ */
 const applicationDateTimeFormatter = new Intl.DateTimeFormat(undefined, {
     year: "numeric",
     month: "short",
@@ -11,6 +14,12 @@ const applicationDateTimeFormatter = new Intl.DateTimeFormat(undefined, {
     minute: "2-digit"
 });
 
+/**
+ * Formats a status string for display.
+ *
+ * @param {string} status - The status string.
+ * @returns {string} The formatted status string.
+ */
 const formatStatus = (status) => {
     if (!status) {
         return "Not applied";
@@ -23,6 +32,12 @@ const formatStatus = (status) => {
         .join(" ");
 };
 
+/**
+ * Returns a helper text describing the current status of an application.
+ *
+ * @param {string} status - The application status.
+ * @returns {string} The helper text.
+ */
 const getStatusHelperText = (status) => {
     switch (status) {
         case "APPLIED":
@@ -40,6 +55,12 @@ const getStatusHelperText = (status) => {
     }
 };
 
+/**
+ * Formats an application timestamp into a human-readable string.
+ *
+ * @param {string|number|Date} timestamp - The timestamp to format.
+ * @returns {string|null} The formatted date string, the original timestamp if invalid, or null if timestamp is missing.
+ */
 const formatApplicationTimestamp = (timestamp) => {
     if (!timestamp) {
         return null;
@@ -53,6 +74,13 @@ const formatApplicationTimestamp = (timestamp) => {
     return applicationDateTimeFormatter.format(parsedDate);
 };
 
+/**
+ * Determines if the "Last Updated" timestamp should be displayed.
+ *
+ * @param {string|number|Date} createdAt - The creation timestamp.
+ * @param {string|number|Date} updatedAt - The last update timestamp.
+ * @returns {boolean} True if the timestamps are different.
+ */
 const shouldShowLastUpdated = (createdAt, updatedAt) => {
     if (!createdAt || !updatedAt) {
         return false;
@@ -61,12 +89,38 @@ const shouldShowLastUpdated = (createdAt, updatedAt) => {
     return new Date(createdAt).getTime() !== new Date(updatedAt).getTime();
 };
 
+/**
+ * Helper to get the application associated with a specific job ID.
+ *
+ * @param {Object} applicationsByJobId - Lookup map of applications.
+ * @param {string|number} jobId - The ID of the job.
+ * @returns {Object|undefined} The application object if found.
+ */
 const getJobApplication = (applicationsByJobId, jobId) => applicationsByJobId[jobId];
 
+/**
+ * Checks if an application can be withdrawn.
+ *
+ * @param {Object} application - The application object.
+ * @returns {boolean} True if the status is "APPLIED".
+ */
 const canWithdraw = (application) => application?.status === "APPLIED";
 
+/**
+ * Checks if a user can apply for a job.
+ *
+ * @param {Object} application - The existing application object, if any.
+ * @returns {boolean} True if no application exists or if it was withdrawn.
+ */
 const canApply = (application) => !application || application.status === "WITHDRAWN";
 
+/**
+ * Returns the appropriate button label for a job action.
+ *
+ * @param {Object} application - The application object.
+ * @param {boolean} isSubmitting - Whether an action is currently in progress.
+ * @returns {string} The label for the action button.
+ */
 const getActionLabel = (application, isSubmitting) => {
     if (isSubmitting) {
         return canWithdraw(application) ? "Withdrawing..." : "Applying...";
@@ -87,6 +141,11 @@ const getActionLabel = (application, isSubmitting) => {
     return formatStatus(application.status);
 };
 
+/**
+ * ApplicantDashboard component allows applicants to view available jobs and manage their applications.
+ *
+ * @returns {JSX.Element} The rendered component.
+ */
 const ApplicantDashboard = () => {
 
     const [jobs, setJobs] = useState([]);

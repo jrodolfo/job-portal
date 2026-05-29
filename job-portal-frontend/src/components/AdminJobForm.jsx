@@ -1,3 +1,15 @@
+/**
+ * AdminJobForm component provides a form to create or edit a job posting.
+ *
+ * @param {Object} props - The component props.
+ * @param {Object} props.form - The form state object containing title, company, and description.
+ * @param {string|number|null} props.editingJobId - The ID of the job being edited, or null if creating a new job.
+ * @param {boolean} props.isSubmitting - Indicates if the form is currently being submitted.
+ * @param {Function} props.onChange - Callback function for input change events.
+ * @param {Function} props.onSubmit - Callback function for form submission.
+ * @param {Function} props.onCancelEdit - Callback function to cancel editing and reset the form.
+ * @returns {JSX.Element} The rendered component.
+ */
 const AdminJobForm = ({
                           form,
                           editingJobId,

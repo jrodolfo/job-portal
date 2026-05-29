@@ -6,20 +6,41 @@ import AdminJobForm from "./AdminJobForm";
 import AdminJobList from "./AdminJobList";
 import AdminApplicationsPanel from "./AdminApplicationsPanel";
 
+/**
+ * Initial empty state for the job form.
+ */
 const emptyForm = {
     title: "",
     description: "",
     company: ""
 };
 
+/**
+ * List of valid application statuses.
+ */
 const applicationStatuses = ["APPLIED", "REVIEWING", "ACCEPTED", "REJECTED", "WITHDRAWN"];
+
+/**
+ * List of valid job statuses.
+ */
 const jobStatuses = ["OPEN", "CLOSED"];
+
+/**
+ * Tabs available in the Admin Dashboard.
+ */
 const adminTabs = [
     {id: "jobs", label: "Jobs"},
     {id: "add-job", label: "Add Job"},
     {id: "applications", label: "Applications"}
 ];
 
+/**
+ * Extracts a user-friendly error message from an API error response.
+ *
+ * @param {Object} error - The error object from axios.
+ * @param {string} fallbackMessage - Message to return if no specific error can be identified.
+ * @returns {string} The error message.
+ */
 const getApiErrorMessage = (error, fallbackMessage) => {
     const status = error?.response?.status;
     const backendMessage = error?.response?.data?.message;
@@ -43,6 +64,12 @@ const getApiErrorMessage = (error, fallbackMessage) => {
     return backendMessage || fallbackMessage;
 };
 
+/**
+ * Formats a status string (e.g., "ROLE_ADMIN" to "Role Admin").
+ *
+ * @param {string} status - The status string to format.
+ * @returns {string} The formatted status string.
+ */
 const formatStatus = (status) => {
     if (!status) {
         return "Unknown";
@@ -55,6 +82,12 @@ const formatStatus = (status) => {
         .join(" ");
 };
 
+/**
+ * Parses a timestamp into a numerical value for sorting.
+ *
+ * @param {string|number} timestamp - The timestamp to parse.
+ * @returns {number} The time in milliseconds, or 0 if invalid.
+ */
 const parseSortableTimestamp = (timestamp) => {
     if (!timestamp) {
         return 0;
@@ -67,6 +100,12 @@ const parseSortableTimestamp = (timestamp) => {
     return Number.isNaN(parsedDate.getTime()) ? 0 : parsedDate.getTime();
 };
 
+/**
+ * AdminDashboard component serves as the main administrative interface.
+ * It allows admins to manage job postings and view/update job applications.
+ *
+ * @returns {JSX.Element} The rendered AdminDashboard component.
+ */
 const AdminDashboard = () => {
     const [jobs, setJobs] = useState([]);
     const [applications, setApplications] = useState([]);

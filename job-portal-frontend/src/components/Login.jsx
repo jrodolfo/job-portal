@@ -7,6 +7,12 @@ import {setUserDetails} from "../store/userActions";
 import {useNavigate} from "react-router-dom";
 import {BACKEND_API_URL} from '../config/backend'
 
+/**
+ * Login component provides a user interface for authenticating with username and password,
+ * or via Google OAuth2.
+ *
+ * @returns {JSX.Element} The rendered Login component.
+ */
 const Login = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
