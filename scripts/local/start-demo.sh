@@ -1,13 +1,22 @@
 #!/bin/bash
+# start-demo.sh
+# Purpose: Starts the local development environment and seeds it with demo data.
+# Usage: ./start-demo.sh
+# Tools: bash, docker, sleep
+# Output: Status messages, retry notifications, and a summary of access URLs and credentials.
+# Exit behavior: Exits with 0 on success, 1 if seeding fails after all retries.
 
 set -euo pipefail
 
+# Configuration: Set repository root relative to script location
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
+# Start the Docker stack
 echo "Starting local stack..."
 bash "${SCRIPT_DIR}/start.sh"
 
+# Seed the database with retries to account for MySQL startup time
 echo "Loading demo seed data..."
 seed_succeeded=false
 for attempt in 1 2 3 4 5; do
@@ -20,6 +29,7 @@ for attempt in 1 2 3 4 5; do
   sleep 5
 done
 
+# Handle seeding failure
 if [ "${seed_succeeded}" != "true" ]; then
   echo "Unable to load demo seed data after multiple attempts."
   echo "Check the backend and MySQL containers with:"
@@ -28,6 +38,7 @@ if [ "${seed_succeeded}" != "true" ]; then
   exit 1
 fi
 
+# Display access information
 cat <<'EOF'
 
 Demo environment is ready.

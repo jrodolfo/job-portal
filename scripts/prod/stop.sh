@@ -1,6 +1,14 @@
 #!/bin/bash
+# stop.sh
+# Purpose: Stops and removes the production Docker stack.
+# Usage: ./stop.sh
+# Tools: bash, docker, docker compose (or docker-compose)
+# Output: Status messages and Docker output.
+# Exit behavior: Exits with 0 on success, 1 if requirements are missing or commands fail.
+
 set -e
 
+# Configuration: Locate project root and compose files
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT=""
 COMPOSE_CMD=()
@@ -14,6 +22,7 @@ elif [ -f "$SCRIPT_DIR/docker-compose.yml" ] && [ -f "$SCRIPT_DIR/docker-compose
   PROJECT_ROOT="$SCRIPT_DIR"
 fi
 
+# Validation: Ensure project root is found
 if [ -z "$PROJECT_ROOT" ]; then
   echo "ERROR: Could not locate project root."
   echo "Expected docker-compose.yml and docker-compose.prod.yml either in:"
@@ -26,11 +35,13 @@ BASE_COMPOSE="$PROJECT_ROOT/docker-compose.yml"
 PROD_COMPOSE="$PROJECT_ROOT/docker-compose.prod.yml"
 ENV_FILE="$PROJECT_ROOT/.env"
 
+# Dependency Check: Verify docker installation
 if ! command -v docker >/dev/null 2>&1; then
   echo "ERROR: docker is not installed or not in PATH."
   exit 1
 fi
 
+# Dependency Check: Verify docker daemon connectivity
 if ! docker info >/dev/null 2>&1; then
   echo "ERROR: docker daemon is not reachable. Start docker and retry."
   echo "Try:"
@@ -42,6 +53,7 @@ if ! docker info >/dev/null 2>&1; then
   exit 1
 fi
 
+# Dependency Check: Locate docker compose or docker-compose
 if docker compose version >/dev/null 2>&1; then
   COMPOSE_CMD=(docker compose)
 elif command -v docker-compose >/dev/null 2>&1; then
@@ -55,6 +67,7 @@ else
   exit 1
 fi
 
+# Validation: Ensure compose files exist
 if [ ! -f "$BASE_COMPOSE" ]; then
   echo "ERROR: Missing compose file: $BASE_COMPOSE"
   exit 1
@@ -65,12 +78,13 @@ if [ ! -f "$PROD_COMPOSE" ]; then
   exit 1
 fi
 
-# Load variables from .env when present for consistency with start.sh.
+# Configuration: Load variables from .env when present
 if [ -f "$ENV_FILE" ]; then
   set -a
   . "$ENV_FILE"
   set +a
 fi
 
+# Execution: Stop and remove containers
 echo "Using compose command: ${COMPOSE_CMD[*]}"
 "${COMPOSE_CMD[@]}" -f "$BASE_COMPOSE" -f "$PROD_COMPOSE" down
