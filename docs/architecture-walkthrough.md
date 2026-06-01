@@ -185,14 +185,17 @@ In practice, that shows up in the UI as:
 
 - applicant job cards that surface application status plus `Applied On` and
   `Last Updated` when meaningful
-- an admin dashboard that separates `Jobs`, `Add Job`, and `Applications`
-  workflows
+- an admin dashboard that separates `Jobs`, `Add Job`, `Applications`, and
+  `Users` workflows
 - grouped admin application review sections with filtering, status updates, and
   lifecycle summaries
+- applicant-only admin user management, where admins can create applicants,
+  edit applicant name/email, and enable or disable applicant access
 
 Related ADR:
 
 - [ADR 0013](./adr/0013-define-job-and-application-lifecycle-rules.md)
+- [ADR 0014](./adr/0014-limit-admin-user-management-to-applicants.md)
 
 ### Backend-centric security model
 

@@ -18,6 +18,7 @@ reasoning is written down explicitly, for example:
 - why MySQL remains the primary application database
 - why local full-stack development is centered on Docker Compose
 - why Google OAuth2 is combined with local auth and JWT issuance
+- why admin user management is intentionally limited to applicant accounts
 - why OpenTelemetry uses a collector-centered setup for local and EC2 runs
 - why deployment and API exploration assets stay alongside the repository
 - why schema management now uses Flyway migrations plus Hibernate validation
@@ -79,3 +80,4 @@ Start new records from [template.md](template.md).
 - [0011-keep-the-backend-rest-openapi-first-and-reusable.md](0011-keep-the-backend-rest-openapi-first-and-reusable.md)
 - [0012-use-flyway-with-hibernate-validation-for-schema-management.md](0012-use-flyway-with-hibernate-validation-for-schema-management.md)
 - [0013-define-job-and-application-lifecycle-rules.md](0013-define-job-and-application-lifecycle-rules.md)
+- [0014-limit-admin-user-management-to-applicants.md](0014-limit-admin-user-management-to-applicants.md)

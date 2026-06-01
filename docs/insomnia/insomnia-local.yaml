@@ -270,6 +270,11 @@ collection:
                 headers:
                   - name: Content-Type
                     value: application/json
+                authentication:
+                  type: basic
+                  username: admin
+                  password: admin123
+                  disabled: false
                 scripts:
                   afterResponse: >
                     insomnia.test("Successful PUT request", function () {
@@ -406,6 +411,11 @@ collection:
                 headers:
                   - name: Content-Type
                     value: application/json
+                authentication:
+                  type: basic
+                  username: admin
+                  password: admin123
+                  disabled: false
                 scripts:
                   afterResponse: >
                     insomnia.test("Successful PUT request", function () {
@@ -507,8 +517,8 @@ collection:
               sortKey: -1771006270987
               description: ""
             children:
-              - url: "{{ local_api_base_url }}/api/users"
-                name: get all users
+              - url: "{{ local_api_base_url }}/api/users/admin"
+                name: get admin users
                 meta:
                   id: req_146941cb5ad249d9acba6052c23562dd
                   created: 1769732706021
@@ -581,8 +591,8 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: "{{ local_api_base_url }}/api/users"
-                name: add user
+              - url: "{{ local_api_base_url }}/api/users/admin/applicants"
+                name: create applicant user
                 meta:
                   id: req_fa9ae080aa6046168b71c082ad3751a2
                   created: 1769732706021
@@ -602,11 +612,9 @@ collection:
                   mimeType: application/json
                   text: |-
                     {
-                    	"name": "user",
-                      "email": "user@test.com",
-                      "password": "user123",
-                      "authProvider": "LOCAL",
-                      "role": "APPLICANT"
+                    	"name": "demo-applicant",
+                      "email": "demo.applicant@example.com",
+                      "password": "applicant123"
                     }
                 headers:
                   - name: Content-Type
@@ -629,8 +637,8 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: "{{ local_api_base_url }}/api/users/1"
-                name: update user
+              - url: "{{ local_api_base_url }}/api/users/admin/applicants/2"
+                name: update applicant user
                 meta:
                   id: req_ab432e5ca2704288965db73746f78c8a
                   created: 1769732706022
@@ -653,11 +661,8 @@ collection:
                   mimeType: application/json
                   text: |-
                     {
-                      "name": "Updated User",
-                      "email": "updated.user@test.com",
-                      "password": "updated123",
-                      "authProvider": "LOCAL",
-                      "role": "APPLICANT"
+                      "name": "Updated Applicant",
+                      "email": "updated.applicant@example.com"
                     }
                 headers:
                   - name: Content-Type
@@ -675,32 +680,31 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: "{{ local_api_base_url }}/api/users/1"
-                name: delete user
+              - url: "{{ local_api_base_url }}/api/users/admin/applicants/2/enabled"
+                name: disable applicant user
                 meta:
                   id: req_f2c017ee1b0943c59d02aec09b04cf64
                   created: 1769732706022
                   modified: 1771006287231
                   isPrivate: false
                   description: >-
-                    This is a DELETE request, and it is used to delete data that
-                    was previously created via a POST request. You typically
-                    identify the entity being updated by including an identifier
-                    in the URL (eg. `id=1`).
-
-
-                    A successful DELETE request typically returns a `200 OK`,
-                    `202 Accepted`, or `204 No Content` response code.
+                    This request disables an applicant user without deleting
+                    the account or its application history.
                   sortKey: -1771006287192
-                method: DELETE
-                parameters:
-                  - name: id
-                    value: "1"
-                    disabled: false
+                method: PUT
+                body:
+                  mimeType: application/json
+                  text: |-
+                    {
+                      "enabled": false
+                    }
+                headers:
+                  - name: Content-Type
+                    value: application/json
                 scripts:
                   afterResponse: >
-                    insomnia.test("Successful DELETE request", function () {
-                        insomnia.expect(insomnia.response.code).to.be.oneOf([200, 202, 204]);
+                    insomnia.test("Successful PUT request", function () {
+                        insomnia.expect(insomnia.response.code).to.be.oneOf([200, 201, 204]);
                     });
                 settings:
                   renderRequestBody: true
@@ -718,8 +722,8 @@ collection:
               sortKey: -1771006067304.5
               description: ""
             children:
-              - url: "{{ aws_api_base_url }}/api/users/1"
-                name: update user
+              - url: "{{ aws_api_base_url }}/api/users/admin/applicants/2"
+                name: update applicant user
                 meta:
                   id: req_474a20ea704945feb2f81cc317ec8f4b
                   created: 1771006312798
@@ -742,15 +746,17 @@ collection:
                   mimeType: application/json
                   text: |-
                     {
-                      "name": "Updated User",
-                      "email": "updated.user@test.com",
-                      "password": "updated123",
-                      "authProvider": "LOCAL",
-                      "role": "APPLICANT"
+                      "name": "Updated Applicant",
+                      "email": "updated.applicant@example.com"
                     }
                 headers:
                   - name: Content-Type
                     value: application/json
+                authentication:
+                  type: basic
+                  username: admin
+                  password: admin123
+                  disabled: false
                 scripts:
                   afterResponse: >
                     insomnia.test("Successful PUT request", function () {
@@ -764,8 +770,8 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: "{{ aws_api_base_url }}/api/users"
-                name: get all users
+              - url: "{{ aws_api_base_url }}/api/users/admin"
+                name: get admin users
                 meta:
                   id: req_8bc5de58983b40f2b642322779726d2b
                   created: 1771006312798
@@ -838,32 +844,36 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: "{{ aws_api_base_url }}/api/users/1"
-                name: delete user
+              - url: "{{ aws_api_base_url }}/api/users/admin/applicants/2/enabled"
+                name: disable applicant user
                 meta:
                   id: req_a37596be775f458fb21b418d7bf34227
                   created: 1771006312798
                   modified: 1771006312798
                   isPrivate: false
                   description: >-
-                    This is a DELETE request, and it is used to delete data that
-                    was previously created via a POST request. You typically
-                    identify the entity being updated by including an identifier
-                    in the URL (eg. `id=1`).
-
-
-                    A successful DELETE request typically returns a `200 OK`,
-                    `202 Accepted`, or `204 No Content` response code.
+                    This request disables an applicant user without deleting
+                    the account or its application history.
                   sortKey: -1771006287192
-                method: DELETE
-                parameters:
-                  - name: id
-                    value: "1"
-                    disabled: false
+                method: PUT
+                body:
+                  mimeType: application/json
+                  text: |-
+                    {
+                      "enabled": false
+                    }
+                headers:
+                  - name: Content-Type
+                    value: application/json
+                authentication:
+                  type: basic
+                  username: admin
+                  password: admin123
+                  disabled: false
                 scripts:
                   afterResponse: >
-                    insomnia.test("Successful DELETE request", function () {
-                        insomnia.expect(insomnia.response.code).to.be.oneOf([200, 202, 204]);
+                    insomnia.test("Successful PUT request", function () {
+                        insomnia.expect(insomnia.response.code).to.be.oneOf([200, 201, 204]);
                     });
                 settings:
                   renderRequestBody: true
@@ -873,8 +883,8 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: "{{ aws_api_base_url }}/api/users"
-                name: add user
+              - url: "{{ aws_api_base_url }}/api/users/admin/applicants"
+                name: create applicant user
                 meta:
                   id: req_fd75232ea252423b98588599ad3719e9
                   created: 1771006312798
@@ -894,11 +904,9 @@ collection:
                   mimeType: application/json
                   text: |-
                     {
-                      "name": "Donald Duck",
-                      "email": "user@test.com",
-                      "password": "donald123",
-                      "authProvider": "LOCAL",
-                      "role": "APPLICANT"
+                      "name": "demo-applicant",
+                      "email": "demo.applicant@example.com",
+                      "password": "applicant123"
                     }
                 headers:
                   - name: Content-Type

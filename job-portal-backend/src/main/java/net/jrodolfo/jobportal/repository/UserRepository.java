@@ -18,4 +18,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * @return an {@link Optional} containing the user if found
      */
     Optional<User> findByName(String username);
+
+    Optional<User> findByEmailIgnoreCase(String email);
+
+    boolean existsByName(String name);
 }

@@ -39,12 +39,17 @@ const openApplicationsTab = async (user) => {
     await openAdminTab(user, "Applications");
 };
 
+const openUsersTab = async (user) => {
+    await openAdminTab(user, "Users");
+};
+
 const byTextContent = (text) => (_, element) => element?.textContent === text;
 
 describe("AdminDashboard", () => {
     beforeEach(() => {
         vi.clearAllMocks();
         localStorage.clear();
+        axios.get.mockResolvedValue({data: []});
     });
 
     it("should fetch and render jobs on mount", async () => {
@@ -71,6 +76,24 @@ describe("AdminDashboard", () => {
                         job: {id: 1, title: "Java Developer"}
                     }
                 ]
+            })
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 1,
+                        name: "admin",
+                        email: "admin@local.test",
+                        role: "ADMIN",
+                        enabled: true
+                    },
+                    {
+                        id: 2,
+                        name: "user",
+                        email: "user@local.test",
+                        role: "APPLICANT",
+                        enabled: true
+                    }
+                ]
             });
 
         renderWithProviders(<AdminDashboard/>);
@@ -85,10 +108,16 @@ describe("AdminDashboard", () => {
                 Authorization: "Bearer jwt-admin"
             }
         });
+        expect(axios.get).toHaveBeenCalledWith("http://localhost:8080/api/users/admin", {
+            headers: {
+                Authorization: "Bearer jwt-admin"
+            }
+        });
         expect(screen.getByRole("heading", {name: "Admin"})).toBeInTheDocument();
         expect(screen.getByRole("tab", {name: tabNamePattern("Jobs")})).toHaveAttribute("aria-selected", "true");
         expect(screen.getByRole("tab", {name: "Add Job"})).toBeInTheDocument();
         expect(screen.getByRole("tab", {name: tabNamePattern("Applications")})).toBeInTheDocument();
+        expect(screen.getByRole("tab", {name: tabNamePattern("Users")})).toBeInTheDocument();
         expect(screen.getByText(byTextContent("Java Developer"))).toBeInTheDocument();
         expect(screen.getByText(byTextContent("Status: Open"))).toBeInTheDocument();
         expect(screen.getByText(byTextContent("Applications: 1"))).toBeInTheDocument();
@@ -96,6 +125,7 @@ describe("AdminDashboard", () => {
         expect(within(screen.getByText("Open Jobs").closest(".admin-overview-card")).getByText("1")).toBeInTheDocument();
         expect(within(screen.getByText("Closed Jobs").closest(".admin-overview-card")).getByText("0")).toBeInTheDocument();
         expect(within(screen.getAllByText("Applications")[0].closest(".admin-overview-card")).getByText("1")).toBeInTheDocument();
+        expect(within(screen.getAllByText("Users")[0].closest(".admin-overview-card")).getByText("2")).toBeInTheDocument();
         expect(screen.getByText("Open: 1 | Closed: 0")).toBeInTheDocument();
         expect(screen.getByText("Applied: 1 | Reviewing: 0 | Accepted: 0 | Rejected: 0 | Withdrawn: 0")).toBeInTheDocument();
     });
@@ -139,6 +169,167 @@ describe("AdminDashboard", () => {
         await openApplicationsTab(user);
         expect(screen.getByRole("heading", {name: "Applied (1)"})).toBeInTheDocument();
         expect(screen.getByText(byTextContent("Applicant: user"))).toBeInTheDocument();
+    });
+
+    it("should show admin users as read-only and applicant users as manageable", async () => {
+        localStorage.setItem("token", "jwt-admin");
+        axios.get
+            .mockResolvedValueOnce({data: []})
+            .mockResolvedValueOnce({data: []})
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 1,
+                        name: "admin",
+                        email: "admin@local.test",
+                        role: "ADMIN",
+                        enabled: true
+                    },
+                    {
+                        id: 2,
+                        name: "user",
+                        email: "user@local.test",
+                        role: "APPLICANT",
+                        enabled: true
+                    }
+                ]
+            });
+
+        renderWithProviders(<AdminDashboard/>);
+        const user = userEvent.setup();
+
+        await openUsersTab(user);
+
+        expect(screen.getByRole("heading", {name: "Create Applicant"})).toBeInTheDocument();
+        const adminCard = screen.getByText(byTextContent("admin")).closest(".user-card");
+        expect(within(adminCard).getByText("Admin users are read-only here.")).toBeInTheDocument();
+        expect(within(adminCard).getByRole("button", {name: "Edit"})).toBeDisabled();
+
+        const applicantCard = screen.getByText(byTextContent("user")).closest(".user-card");
+        expect(within(applicantCard).getByText(byTextContent("Role: Applicant"))).toBeInTheDocument();
+        expect(within(applicantCard).getByRole("button", {name: "Edit"})).toBeEnabled();
+        expect(within(applicantCard).getByRole("button", {name: "Disable"})).toBeEnabled();
+    });
+
+    it("should create applicant users from the users tab", async () => {
+        localStorage.setItem("token", "jwt-admin");
+        axios.get
+            .mockResolvedValueOnce({data: []})
+            .mockResolvedValueOnce({data: []})
+            .mockResolvedValueOnce({data: []});
+        axios.post.mockResolvedValueOnce({
+            data: {
+                id: 10,
+                name: "Alice Smith",
+                email: "alice@example.com",
+                role: "APPLICANT",
+                enabled: true
+            }
+        });
+
+        renderWithProviders(<AdminDashboard/>);
+        const user = userEvent.setup();
+
+        await openUsersTab(user);
+        await user.type(screen.getByLabelText("Name"), "Alice Smith");
+        await user.type(screen.getByLabelText("Email"), "alice@example.com");
+        await user.type(screen.getByLabelText("Password"), "alice123");
+        await user.click(screen.getByRole("button", {name: "Create Applicant"}));
+
+        await waitFor(() => expect(axios.post).toHaveBeenCalledWith(
+            "http://localhost:8080/api/users/admin/applicants",
+            {
+                name: "Alice Smith",
+                email: "alice@example.com",
+                password: "alice123"
+            },
+            {
+                headers: {
+                    Authorization: "Bearer jwt-admin"
+                }
+            }
+        ));
+        expect(await screen.findByText("Applicant user created successfully.")).toBeInTheDocument();
+        expect(screen.getByText(byTextContent("Alice Smith"))).toBeInTheDocument();
+    });
+
+    it("should edit and disable applicant users from the users tab", async () => {
+        localStorage.setItem("token", "jwt-admin");
+        axios.get
+            .mockResolvedValueOnce({data: []})
+            .mockResolvedValueOnce({data: []})
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 2,
+                        name: "user",
+                        email: "user@local.test",
+                        role: "APPLICANT",
+                        enabled: true
+                    }
+                ]
+            });
+        axios.put
+            .mockResolvedValueOnce({
+                data: {
+                    id: 2,
+                    name: "Applicant One",
+                    email: "applicant.one@example.com",
+                    role: "APPLICANT",
+                    enabled: true
+                }
+            })
+            .mockResolvedValueOnce({
+                data: {
+                    id: 2,
+                    name: "Applicant One",
+                    email: "applicant.one@example.com",
+                    role: "APPLICANT",
+                    enabled: false
+                }
+            });
+
+        renderWithProviders(<AdminDashboard/>);
+        const user = userEvent.setup();
+
+        await openUsersTab(user);
+        await user.click(screen.getByRole("button", {name: "Edit"}));
+
+        const nameInput = screen.getByLabelText("Name");
+        await user.clear(nameInput);
+        await user.type(nameInput, "Applicant One");
+        const emailInput = screen.getByLabelText("Email");
+        await user.clear(emailInput);
+        await user.type(emailInput, "applicant.one@example.com");
+        await user.click(screen.getByRole("button", {name: "Save User"}));
+
+        await waitFor(() => expect(axios.put).toHaveBeenCalledWith(
+            "http://localhost:8080/api/users/admin/applicants/2",
+            {
+                name: "Applicant One",
+                email: "applicant.one@example.com"
+            },
+            {
+                headers: {
+                    Authorization: "Bearer jwt-admin"
+                }
+            }
+        ));
+        expect(await screen.findByText("User updated successfully.")).toBeInTheDocument();
+
+        await user.click(screen.getByRole("button", {name: "Disable"}));
+        await waitFor(() => expect(axios.put).toHaveBeenCalledWith(
+            "http://localhost:8080/api/users/admin/applicants/2/enabled",
+            {enabled: false},
+            {
+                headers: {
+                    Authorization: "Bearer jwt-admin"
+                }
+            }
+        ));
+        expect(await screen.findByText("User disabled successfully.")).toBeInTheDocument();
+        expect(screen.getByText(byTextContent("Status: Disabled"))).toBeInTheDocument();
+        expect(screen.getByRole("button", {name: "Enable"})).toBeInTheDocument();
     });
 
     it("should show the posted date with time when a timestamp is available", async () => {

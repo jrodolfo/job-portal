@@ -1,10 +1,19 @@
 package net.jrodolfo.jobportal.service;
 
+import net.jrodolfo.jobportal.constant.AuthProvider;
+import net.jrodolfo.jobportal.constant.Role;
+import net.jrodolfo.jobportal.dto.AdminUserResponse;
+import net.jrodolfo.jobportal.dto.CreateApplicantUserRequest;
+import net.jrodolfo.jobportal.dto.UpdateApplicantUserRequest;
+import net.jrodolfo.jobportal.exception.ResourceException;
 import net.jrodolfo.jobportal.model.User;
 import net.jrodolfo.jobportal.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -17,6 +26,9 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     /**
      * Creates a new user in the system.
@@ -35,6 +47,17 @@ public class UserService {
      */
     public List<User> getAllUsers() {
         return userRepository.findAll(); // findAll() method from JPA Repository
+    }
+
+    public List<AdminUserResponse> getAdminUserList() {
+        return userRepository.findAll()
+                .stream()
+                .map(AdminUserResponse::from)
+                .toList();
+    }
+
+    public AdminUserResponse getAdminUserById(Long id) {
+        return AdminUserResponse.from(getUserById(id));
     }
 
     /**
@@ -80,5 +103,70 @@ public class UserService {
             throw new RuntimeException("User not found");
         }
         userRepository.deleteById(id);
+    }
+
+    @Transactional
+    public AdminUserResponse createApplicantUser(CreateApplicantUserRequest request) {
+        ensureNameAvailable(request.name(), null);
+        ensureEmailAvailable(request.email(), null);
+
+        User user = new User(
+                request.name().trim(),
+                request.email().trim(),
+                passwordEncoder.encode(request.password()),
+                AuthProvider.LOCAL,
+                Role.APPLICANT
+        );
+        user.setEnabled(true);
+
+        return AdminUserResponse.from(userRepository.save(user));
+    }
+
+    @Transactional
+    public AdminUserResponse updateApplicantUser(Long id, UpdateApplicantUserRequest request) {
+        User user = getManagedApplicant(id);
+        ensureNameAvailable(request.name(), id);
+        ensureEmailAvailable(request.email(), id);
+
+        user.setName(request.name().trim());
+        user.setEmail(request.email().trim());
+
+        return AdminUserResponse.from(userRepository.save(user));
+    }
+
+    @Transactional
+    public AdminUserResponse updateApplicantEnabled(Long id, boolean enabled) {
+        User user = getManagedApplicant(id);
+        user.setEnabled(enabled);
+        return AdminUserResponse.from(userRepository.save(user));
+    }
+
+    private User getManagedApplicant(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceException("User with id " + id + " was not found"));
+
+        if (user.getRole() != Role.APPLICANT) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Admins can only manage applicant users");
+        }
+
+        return user;
+    }
+
+    private void ensureNameAvailable(String name, Long currentUserId) {
+        String normalizedName = name.trim();
+        userRepository.findByName(normalizedName)
+                .filter(existing -> !existing.getId().equals(currentUserId))
+                .ifPresent(existing -> {
+                    throw new ResponseStatusException(HttpStatus.CONFLICT, "User name already exists");
+                });
+    }
+
+    private void ensureEmailAvailable(String email, Long currentUserId) {
+        String normalizedEmail = email.trim();
+        userRepository.findByEmailIgnoreCase(normalizedEmail)
+                .filter(existing -> !existing.getId().equals(currentUserId))
+                .ifPresent(existing -> {
+                    throw new ResponseStatusException(HttpStatus.CONFLICT, "User email already exists");
+                });
     }
 }

@@ -87,7 +87,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
 
             // check if the token is valid
-            if (userDetails != null && jwtUtil.validateToken(token, userDetails.getUsername())) {
+            if (userDetails != null && userDetails.isEnabled() && jwtUtil.validateToken(token, userDetails.getUsername())) {
                 // setting authentication in Spring Security context
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());

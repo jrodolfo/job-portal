@@ -85,7 +85,8 @@ Optional demo seed data:
 
 - Load [docs/database/demo-seed.sql](./docs/database/demo-seed.sql) if you want a fuller local UI with 20 jobs, 4 users, and 30 applications across mixed statuses.
 - This script resets the `jobs`, `users`, and `applications` tables for demo purposes.
-- It does not change the built-in login credentials above.
+- It seeds database-backed local login users for the default credentials above.
+- It also includes a disabled applicant user so the admin Users tab can show both enabled and disabled states.
 - Start the full stack and load demo data:
 
 ```bash
@@ -109,6 +110,8 @@ Current local role workflows:
 - Applicants can browse open jobs, apply, withdraw, and reapply.
 - Admins can create, edit, close, reopen, and delete jobs.
 - Admins can review applications, update application statuses, and filter/sort the application list.
+- Admins can list users, create applicant users, edit applicant name/email, and enable or disable applicant users.
+- Admin users are read-only from the admin UI and cannot be created, edited, deleted, or promoted through this feature.
 - Jobs with existing applications still cannot be deleted; they should be closed instead.
 
 If you prefer to run Docker Compose directly instead of using the helper script:
@@ -504,14 +507,13 @@ Google OAuth note:
 ### F. Steps for smoke test the backend API:
 
 1. **Load the Insomnia collection** (inside the folder `docs/insomnia`).
-2. **Execute the "add user" POST request** to add a new user:
+2. **Execute the "create applicant user" POST request** to add a new applicant user:
+   Use Basic Auth with `admin` / `admin123` (ROLE_ADMIN). Admins can create applicant users only; admin user creation and role promotion are intentionally not supported by this workflow.
    ```json
    {
-     "name": "user",
-     "email": "user@test.com",
-     "password": "user123",
-     "authProvider": "LOCAL",
-     "role": "APPLICANT"
+     "name": "demo-applicant",
+     "email": "demo.applicant@example.com",
+     "password": "applicant123"
    }
    ```
 3. **Execute the "add job" POST request** to add a new job:

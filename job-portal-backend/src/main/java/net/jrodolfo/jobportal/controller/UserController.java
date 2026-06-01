@@ -8,6 +8,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.Valid;
+import net.jrodolfo.jobportal.dto.AdminUserResponse;
+import net.jrodolfo.jobportal.dto.CreateApplicantUserRequest;
+import net.jrodolfo.jobportal.dto.UpdateApplicantUserRequest;
+import net.jrodolfo.jobportal.dto.UpdateUserEnabledRequest;
 import net.jrodolfo.jobportal.exception.ErrorResponse;
 import net.jrodolfo.jobportal.exception.ResourceException;
 import net.jrodolfo.jobportal.model.User;
@@ -24,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -59,7 +65,7 @@ public class UserController {
             @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     public ResponseEntity<User> createUser(@RequestBody User user) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(user));
+        throw new ResponseStatusException(HttpStatus.GONE, "Use /api/users/admin/applicants for user management");
     }
 
     /**
@@ -70,8 +76,52 @@ public class UserController {
     @GetMapping
     @Operation(summary = "Get all users", security = @SecurityRequirement(name = "basicAuth"))
     @ApiResponse(responseCode = "200", description = "Users returned")
-    public ResponseEntity<List<User>> getAllUsers() {
-        return ResponseEntity.ok(userService.getAllUsers());
+    public ResponseEntity<List<AdminUserResponse>> getAllUsers() {
+        return ResponseEntity.ok(userService.getAdminUserList());
+    }
+
+    @GetMapping("/admin")
+    @Operation(summary = "Get users for admin management", security = @SecurityRequirement(name = "basicAuth"))
+    @ApiResponse(responseCode = "200", description = "Admin user list returned")
+    public ResponseEntity<List<AdminUserResponse>> getAdminUsers() {
+        return ResponseEntity.ok(userService.getAdminUserList());
+    }
+
+    @PostMapping("/admin/applicants")
+    @Operation(summary = "Create applicant user", security = @SecurityRequirement(name = "basicAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Applicant user created"),
+            @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "409", description = "Duplicate user", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public ResponseEntity<AdminUserResponse> createApplicantUser(@Valid @RequestBody CreateApplicantUserRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createApplicantUser(request));
+    }
+
+    @PutMapping("/admin/applicants/{id}")
+    @Operation(summary = "Update applicant user", security = @SecurityRequirement(name = "basicAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Applicant user updated"),
+            @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "Not an applicant user", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "409", description = "Duplicate user", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public ResponseEntity<AdminUserResponse> updateApplicantUser(@PathVariable @Min(value = 1) long id,
+                                                                 @Valid @RequestBody UpdateApplicantUserRequest request) {
+        return ResponseEntity.ok(userService.updateApplicantUser(id, request));
+    }
+
+    @PutMapping("/admin/applicants/{id}/enabled")
+    @Operation(summary = "Enable or disable applicant user", security = @SecurityRequirement(name = "basicAuth"))
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Applicant enabled state updated"),
+            @ApiResponse(responseCode = "403", description = "Not an applicant user", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public ResponseEntity<AdminUserResponse> updateApplicantEnabled(@PathVariable @Min(value = 1) long id,
+                                                                    @Valid @RequestBody UpdateUserEnabledRequest request) {
+        return ResponseEntity.ok(userService.updateApplicantEnabled(id, request.enabled()));
     }
 
     /**
@@ -89,10 +139,10 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{id}")
     @SecurityRequirement(name = "basicAuth")
-    public ResponseEntity<User> getUserById(@io.swagger.v3.oas.annotations.Parameter(description = "id of the user to retrieve") @PathVariable @Min(value = 1) long id) {
-        User user;
+    public ResponseEntity<AdminUserResponse> getUserById(@io.swagger.v3.oas.annotations.Parameter(description = "id of the user to retrieve") @PathVariable @Min(value = 1) long id) {
+        AdminUserResponse user;
         try {
-            user = userService.getUserById(id);
+            user = userService.getAdminUserById(id);
         } catch (Exception e) {
             throw new ResourceException("User with id " + id + " was not found");
         }
@@ -114,11 +164,7 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     public ResponseEntity<User> updateUser(@PathVariable @Min(value = 1) long id, @RequestBody User user) {
-        try {
-            return ResponseEntity.ok(userService.updateUser(id, user));
-        } catch (Exception e) {
-            throw new ResourceException("User with id " + id + " was not found");
-        }
+        throw new ResponseStatusException(HttpStatus.GONE, "Use /api/users/admin/applicants/{id} for user management");
     }
 
     /**
@@ -135,11 +181,6 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     public ResponseEntity<Void> deleteUser(@PathVariable @Min(value = 1) long id) {
-        try {
-            userService.deleteUser(id);
-        } catch (Exception e) {
-            throw new ResourceException("User with id " + id + " was not found");
-        }
-        return ResponseEntity.noContent().build();
+        throw new ResponseStatusException(HttpStatus.GONE, "User hard delete is not supported");
     }
 }

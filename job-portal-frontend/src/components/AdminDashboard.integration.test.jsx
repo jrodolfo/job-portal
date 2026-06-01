@@ -39,6 +39,22 @@ describe('AdminDashboard integration', () => {
                     user: {name: 'Maya Patel'},
                     job: {id: 1, title: 'Platform Engineer'}
                 }
+            ])),
+            http.get(`${api}/api/users/admin`, () => HttpResponse.json([
+                {
+                    id: 1,
+                    name: 'admin',
+                    email: 'admin@local.test',
+                    role: 'ADMIN',
+                    enabled: true
+                },
+                {
+                    id: 2,
+                    name: 'user',
+                    email: 'user@local.test',
+                    role: 'APPLICANT',
+                    enabled: true
+                }
             ]))
         );
 
@@ -56,6 +72,7 @@ describe('AdminDashboard integration', () => {
         expect(screen.getByText('Open: 1 | Closed: 0')).toBeInTheDocument();
         expect(screen.getByText('Applied: 1 | Reviewing: 0 | Accepted: 0 | Rejected: 0 | Withdrawn: 0')).toBeInTheDocument();
         expect(screen.getByText(byTextContent('Applications: 1'))).toBeInTheDocument();
+        expect(screen.getByRole('tab', {name: /^Users \(\d+\)$/})).toBeInTheDocument();
     });
 
     it('preserves timestamps when the application status update response is partial', async () => {
@@ -78,6 +95,15 @@ describe('AdminDashboard integration', () => {
                     updatedAt: '2026-05-26T11:00:00Z',
                     user: {name: 'Maya Patel'},
                     job: {id: 1, title: 'Platform Engineer'}
+                }
+            ])),
+            http.get(`${api}/api/users/admin`, () => HttpResponse.json([
+                {
+                    id: 1,
+                    name: 'admin',
+                    email: 'admin@local.test',
+                    role: 'ADMIN',
+                    enabled: true
                 }
             ])),
             http.put(`${api}/api/applications/10`, async () => HttpResponse.json({
@@ -107,5 +133,59 @@ describe('AdminDashboard integration', () => {
         expect(within(updatedApplicationCard).getByText(byTextContent('Current Status: Reviewing'))).toBeInTheDocument();
         expect(within(updatedApplicationCard).getByText(/Applied On:/)).toBeInTheDocument();
         expect(within(updatedApplicationCard).getByText(/Last Updated:/)).toBeInTheDocument();
+    });
+
+    it('creates applicant users through the admin users network flow', async () => {
+        const createdUser = {
+            id: 20,
+            name: 'Sofia Ribeiro',
+            email: 'sofia.ribeiro@example.com',
+            role: 'APPLICANT',
+            enabled: true
+        };
+
+        server.use(
+            http.get(`${api}/api/jobs/admin`, () => HttpResponse.json([])),
+            http.get(`${api}/api/applications`, () => HttpResponse.json([])),
+            http.get(`${api}/api/users/admin`, () => HttpResponse.json([
+                {
+                    id: 1,
+                    name: 'admin',
+                    email: 'admin@local.test',
+                    role: 'ADMIN',
+                    enabled: true
+                }
+            ])),
+            http.post(`${api}/api/users/admin/applicants`, async ({request}) => {
+                const body = await request.json();
+
+                if (
+                    body.name !== 'Sofia Ribeiro' ||
+                    body.email !== 'sofia.ribeiro@example.com' ||
+                    body.password !== 'applicant123'
+                ) {
+                    return HttpResponse.json({message: 'Unexpected applicant payload'}, {status: 400});
+                }
+
+                return HttpResponse.json(createdUser, {status: 201});
+            })
+        );
+
+        renderWithProviders(<AdminDashboard/>);
+        const user = userEvent.setup();
+
+        await user.click(await screen.findByRole('tab', {name: /^Users \(\d+\)$/}));
+        await user.type(screen.getByLabelText('Name'), 'Sofia Ribeiro');
+        await user.type(screen.getByLabelText('Email'), 'sofia.ribeiro@example.com');
+        await user.type(screen.getByLabelText('Password'), 'applicant123');
+        await user.click(screen.getByRole('button', {name: 'Create Applicant'}));
+
+        expect(await screen.findByText('Applicant user created successfully.')).toBeInTheDocument();
+        expect(screen.getByRole('tab', {name: 'Users (2)'})).toBeInTheDocument();
+        const userCard = screen.getByText('Sofia Ribeiro').closest('.user-card');
+        expect(within(userCard).getByText('Email:')).toBeInTheDocument();
+        expect(within(userCard).getByText(/sofia\.ribeiro@example\.com/)).toBeInTheDocument();
+        expect(within(userCard).getByText('Status:')).toBeInTheDocument();
+        expect(within(userCard).getByText(/Enabled/)).toBeInTheDocument();
     });
 });

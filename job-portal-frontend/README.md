@@ -6,7 +6,7 @@ It provides the browser UI for:
 
 - login and OAuth-related flows
 - applicant job application flows
-- admin job and application management
+- admin job, application, and applicant user management
 - navigation and page composition
 - client-side state management
 - HTTP calls to the Spring Boot backend
@@ -22,10 +22,12 @@ Applicants can:
 
 Admins can:
 
-- use overview cards for total jobs, open jobs, closed jobs, and total applications
-- manage the dashboard through `Jobs`, `Add Job`, and `Applications` tabs
+- use overview cards for total jobs, open jobs, closed jobs, total applications, and users
+- manage the dashboard through `Jobs`, `Add Job`, `Applications`, and `Users` tabs
 - create, edit, close, reopen, and delete jobs
 - review applications, update statuses, and use grouped/filterable application views
+- create applicant users, edit applicant name/email, and enable or disable applicant users
+- view admin users as read-only records
 
 Current UI behavior:
 

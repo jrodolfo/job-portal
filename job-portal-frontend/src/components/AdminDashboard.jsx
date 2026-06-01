@@ -5,6 +5,7 @@ import {BACKEND_API_URL} from "../config/backend";
 import AdminJobForm from "./AdminJobForm";
 import AdminJobList from "./AdminJobList";
 import AdminApplicationsPanel from "./AdminApplicationsPanel";
+import AdminUsersPanel from "./AdminUsersPanel";
 
 /**
  * Initial empty state for the job form.
@@ -13,6 +14,12 @@ const emptyForm = {
     title: "",
     description: "",
     company: ""
+};
+
+const emptyUserForm = {
+    name: "",
+    email: "",
+    password: ""
 };
 
 /**
@@ -31,7 +38,8 @@ const jobStatuses = ["OPEN", "CLOSED"];
 const adminTabs = [
     {id: "jobs", label: "Jobs"},
     {id: "add-job", label: "Add Job"},
-    {id: "applications", label: "Applications"}
+    {id: "applications", label: "Applications"},
+    {id: "users", label: "Users"}
 ];
 
 /**
@@ -109,6 +117,7 @@ const parseSortableTimestamp = (timestamp) => {
 const AdminDashboard = () => {
     const [jobs, setJobs] = useState([]);
     const [applications, setApplications] = useState([]);
+    const [users, setUsers] = useState([]);
     const [jobSearchTerm, setJobSearchTerm] = useState("");
     const [jobFilterStatus, setJobFilterStatus] = useState("ALL");
     const [jobSortOrder, setJobSortOrder] = useState("newest");
@@ -118,11 +127,15 @@ const AdminDashboard = () => {
     const [statusSelections, setStatusSelections] = useState({});
     const [activeTab, setActiveTab] = useState("jobs");
     const [form, setForm] = useState(emptyForm);
+    const [userForm, setUserForm] = useState(emptyUserForm);
     const [editingJobId, setEditingJobId] = useState(null);
+    const [editingUserId, setEditingUserId] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isUserSubmitting, setIsUserSubmitting] = useState(false);
     const [deletingJobId, setDeletingJobId] = useState(null);
     const [updatingJobStatusId, setUpdatingJobStatusId] = useState(null);
     const [updatingApplicationId, setUpdatingApplicationId] = useState(null);
+    const [updatingUserId, setUpdatingUserId] = useState(null);
     const [statusMessage, setStatusMessage] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
 
@@ -144,15 +157,17 @@ const AdminDashboard = () => {
                     Authorization: "Bearer " + localStorage.getItem("token")
                 }
             };
-            const [jobsResponse, applicationsResponse] = await Promise.all([
+            const [jobsResponse, applicationsResponse, usersResponse] = await Promise.all([
                 axios.get(BACKEND_API_URL + "/api/jobs/admin", requestConfig),
-                axios.get(BACKEND_API_URL + "/api/applications", requestConfig)
+                axios.get(BACKEND_API_URL + "/api/applications", requestConfig),
+                axios.get(BACKEND_API_URL + "/api/users/admin", requestConfig)
             ]);
             setJobs(jobsResponse.data);
             setApplications(applicationsResponse.data);
+            setUsers(usersResponse.data);
             setStatusSelections(buildStatusSelections(applicationsResponse.data));
         } catch (error) {
-            setErrorMessage("We couldn't load jobs and applications right now. Please refresh and try again.");
+            setErrorMessage("We couldn't load admin data right now. Please refresh and try again.");
         }
     };
 
@@ -169,6 +184,10 @@ const AdminDashboard = () => {
 
         if (tab.id === "applications") {
             return `${tab.label} (${applications.length})`;
+        }
+
+        if (tab.id === "users") {
+            return `${tab.label} (${users.length})`;
         }
 
         return tab.label;
@@ -227,6 +246,11 @@ const AdminDashboard = () => {
         setForm((prev) => ({...prev, [name]: value}));
     };
 
+    const handleUserChange = (event) => {
+        const {name, value} = event.target;
+        setUserForm((prev) => ({...prev, [name]: value}));
+    };
+
     const handleApplicationStatusChange = (applicationId, status) => {
         setStatusSelections((prev) => ({
             ...prev,
@@ -239,9 +263,18 @@ const AdminDashboard = () => {
         setEditingJobId(null);
     };
 
+    const resetUserForm = () => {
+        setUserForm(emptyUserForm);
+        setEditingUserId(null);
+    };
+
     const cancelEdit = () => {
         resetForm();
         setActiveTab("jobs");
+    };
+
+    const cancelUserEdit = () => {
+        resetUserForm();
     };
 
     const showRequestError = (error, fallbackMessage) => {
@@ -416,13 +449,104 @@ const AdminDashboard = () => {
         }
     };
 
+    const saveUser = async (event) => {
+        event.preventDefault();
+        if (isUserSubmitting) {
+            return;
+        }
+
+        setIsUserSubmitting(true);
+        setErrorMessage("");
+        setStatusMessage("");
+
+        try {
+            const requestConfig = {
+                headers: {
+                    Authorization: "Bearer " + localStorage.getItem("token")
+                }
+            };
+
+            if (editingUserId) {
+                const response = await axios.put(
+                    `${BACKEND_API_URL}/api/users/admin/applicants/${editingUserId}`,
+                    {
+                        name: userForm.name,
+                        email: userForm.email
+                    },
+                    requestConfig
+                );
+                setUsers((prev) => prev.map((user) => user.id === editingUserId ? response.data : user));
+                setStatusMessage("User updated successfully.");
+            } else {
+                const response = await axios.post(
+                    `${BACKEND_API_URL}/api/users/admin/applicants`,
+                    userForm,
+                    requestConfig
+                );
+                setUsers((prev) => [response.data, ...prev]);
+                setStatusMessage("Applicant user created successfully.");
+            }
+
+            resetUserForm();
+        } catch (error) {
+            showRequestError(error, editingUserId
+                ? "We couldn't update the user right now. Please try again."
+                : "We couldn't create the user right now. Please try again.");
+        } finally {
+            setIsUserSubmitting(false);
+        }
+    };
+
+    const startUserEdit = (user) => {
+        if (user.role !== "APPLICANT") {
+            return;
+        }
+
+        setErrorMessage("");
+        setStatusMessage("");
+        setEditingUserId(user.id);
+        setUserForm({
+            name: user.name,
+            email: user.email,
+            password: ""
+        });
+    };
+
+    const updateUserEnabled = async (userId, enabled) => {
+        if (updatingUserId) {
+            return;
+        }
+
+        setUpdatingUserId(userId);
+        setErrorMessage("");
+        setStatusMessage("");
+
+        try {
+            const response = await axios.put(
+                `${BACKEND_API_URL}/api/users/admin/applicants/${userId}/enabled`,
+                {enabled},
+                {
+                    headers: {
+                        Authorization: "Bearer " + localStorage.getItem("token")
+                    }
+                }
+            );
+            setUsers((prev) => prev.map((user) => user.id === userId ? response.data : user));
+            setStatusMessage(enabled ? "User enabled successfully." : "User disabled successfully.");
+        } catch (error) {
+            showRequestError(error, "We couldn't update the user status right now. Please try again.");
+        } finally {
+            setUpdatingUserId(null);
+        }
+    };
+
     return (
         <>
             <Navbar/>
             <div className="container dashboard-shell">
                 <div className="mb-4">
                     <h1 className="mb-1">Admin</h1>
-                    <p className="body-text mb-0">Manage jobs and applications.</p>
+                    <p className="body-text mb-0">Manage jobs, applications, and applicant users.</p>
                 </div>
 
                 <div className="row g-3 admin-overview-grid mb-4">
@@ -455,6 +579,14 @@ const AdminDashboard = () => {
                             <div className="card-body">
                                 <p className="admin-overview-label mb-1">Applications</p>
                                 <p className="admin-overview-value mb-0">{applications.length}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="col-sm-6 col-xl-3">
+                        <div className="card admin-overview-card admin-overview-card-users">
+                            <div className="card-body">
+                                <p className="admin-overview-label mb-1">Users</p>
+                                <p className="admin-overview-value mb-0">{users.length}</p>
                             </div>
                         </div>
                     </div>
@@ -593,6 +725,31 @@ const AdminDashboard = () => {
                         onSaveStatus={updateApplicationStatus}
                         onSearchTermChange={setApplicationSearchTerm}
                         onSortOrderChange={setApplicationSortOrder}
+                    />
+                </div>
+
+                <div
+                    id="admin-tab-panel-users"
+                    role="tabpanel"
+                    aria-labelledby="admin-tab-users"
+                    hidden={activeTab !== "users"}
+                >
+                    <h2 className="section-title">Users</h2>
+                    <p className="body-text muted-meta admin-summary-text">
+                        Admins are read-only here. Applicant users can be created, edited, enabled, or disabled.
+                    </p>
+                    <AdminUsersPanel
+                        users={users}
+                        form={userForm}
+                        editingUserId={editingUserId}
+                        isSubmitting={isUserSubmitting}
+                        updatingUserId={updatingUserId}
+                        formatStatus={formatStatus}
+                        onChange={handleUserChange}
+                        onSubmit={saveUser}
+                        onEdit={startUserEdit}
+                        onCancelEdit={cancelUserEdit}
+                        onUpdateEnabled={updateUserEnabled}
                     />
                 </div>
             </div>

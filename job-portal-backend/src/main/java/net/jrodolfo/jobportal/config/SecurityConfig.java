@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -13,21 +14,19 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import net.jrodolfo.jobportal.repository.UserRepository;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
-
-import static net.jrodolfo.jobportal.constant.Role.ADMIN;
-import static net.jrodolfo.jobportal.constant.Role.APPLICANT;
-
 
 /**
  * Main security configuration class for the application.
@@ -49,22 +48,26 @@ public class SecurityConfig {
     @Value("${FRONTEND_BASE_URL:http://localhost:5173}")
     private String frontendBaseUrl;
 
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
+
     /**
-     * Configures in-memory users for development and basic authentication.
+     * Loads local users from the database for Basic authentication and JWT validation.
      *
-     * @return a {@link UserDetailsService} with predefined admin and applicant users
+     * @param userRepository repository used to resolve local users by their login name
+     * @return a {@link UserDetailsService} backed by the users table
      */
     @Bean
-    UserDetailsService userDetailsService() {
-        UserDetails admin = User.withUsername("admin")
-                .password("{noop}admin123")
-                .roles(ADMIN.getValue())
-                .build();
-        UserDetails applicant = User.withUsername("user")
-                .password("{noop}user123")
-                .roles(APPLICANT.getValue())
-                .build();
-        return new InMemoryUserDetailsManager(admin, applicant);
+    UserDetailsService userDetailsService(UserRepository userRepository) {
+        return username -> userRepository.findByName(username)
+                .map(user -> User.withUsername(user.getName())
+                        .password(user.getPassword() == null ? "" : user.getPassword())
+                        .roles(user.getRole().getValue())
+                        .disabled(!user.isEnabled())
+                        .build())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
     }
 
     /**

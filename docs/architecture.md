@@ -135,6 +135,7 @@ Its main responsibilities are:
 - applicant-side application lifecycle behavior such as apply, withdraw, and
   reapply
 - admin-side job and application review workflows
+- admin-side applicant user management workflows
 - client-side state through Redux Toolkit
 - backend API consumption through HTTP
 
@@ -142,10 +143,12 @@ In the current UI, those responsibilities surface as:
 
 - applicant job cards that show open jobs, application status, and application
   timestamps when available
-- an admin dashboard with overview cards plus `Jobs`, `Add Job`, and
-  `Applications` tabs
+- an admin dashboard with overview cards plus `Jobs`, `Add Job`,
+  `Applications`, and `Users` tabs
 - grouped admin application review views with search, status filtering, and
   status-update actions
+- admin user management limited to applicant accounts, with admin records shown
+  as read-only
 
 Relevant files:
 
@@ -243,12 +246,18 @@ Representative persistence files:
 
 The project uses a hybrid authentication model:
 
-- local username/password support for application and development flows
+- database-backed local username/password support for application and
+  development flows
 - Google OAuth2 / OpenID Connect support through Spring Security
 - JWT-based backend access after authentication where appropriate
 
 This keeps the project useful both as a runnable application and as an example
 of more realistic auth integration.
+
+Local default accounts are bootstrapped when missing. Admin user management is
+intentionally scoped to applicant accounts: admins can create applicants, edit
+applicant name/email, and enable or disable applicant access. Admin accounts are
+not created, deleted, promoted, or edited through this dashboard flow.
 
 Representative authentication files:
 
@@ -307,15 +316,21 @@ Admins can:
 - see application counts per job
 - review applications in grouped admin views
 - update application states such as `REVIEWING`, `ACCEPTED`, and `REJECTED`
+- create applicant users
+- edit applicant name/email
+- enable or disable applicant users
 
 The visibility rule is intentionally asymmetric:
 
 - applicants only see `OPEN` jobs
 - admins can see both `OPEN` and `CLOSED` jobs through the authenticated admin view
+- admin users are visible but read-only in the user-management UI
 
 This lifecycle is not just UI behavior. It is enforced jointly by backend
 services and frontend dashboards, and the durable rules are captured in
 [ADR 0013](./adr/0013-define-job-and-application-lifecycle-rules.md).
+The admin user-management boundary is captured in
+[ADR 0014](./adr/0014-limit-admin-user-management-to-applicants.md).
 
 Relevant files:
 

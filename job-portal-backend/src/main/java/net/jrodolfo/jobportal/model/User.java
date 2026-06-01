@@ -78,6 +78,13 @@ public class User {
     private Role role;
 
     /**
+     * Whether this user can authenticate and use the application.
+     */
+    @Column(nullable = false)
+    @Schema(description = "Whether the user account is enabled.", example = "true")
+    private boolean enabled = true;
+
+    /**
      * The timestamp when the user record was created.
      */
     @Column(name = "created_at", nullable = false)
@@ -106,6 +113,7 @@ public class User {
         this.password = password;
         this.authProvider = provider;
         this.role = role;
+        this.enabled = true;
     }
 
     /**
@@ -122,6 +130,7 @@ public class User {
         this.password = null; // Google Users Don't Have Passwords
         this.authProvider = provider;
         this.role = role;
+        this.enabled = true;
     }
 
     /**

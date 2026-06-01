@@ -4,12 +4,14 @@
 --   - 4 users
 --   - 30 applications with mixed lifecycle statuses
 --
--- Local login still uses the built-in Spring Security credentials:
+-- Local login uses database-backed users with these demo credentials:
 --   - admin / admin123
 --   - user / user123
+--   - Maya Patel / applicant123
 --
 -- The seeded `user` row below is intentionally named `user` so the
 -- default applicant login can see seeded application history.
+-- Daniel Kim is seeded as disabled so the admin Users tab can show that state.
 
 START TRANSACTION;
 
@@ -24,13 +26,14 @@ INSERT INTO users (
     password,
     auth_provider,
     role,
+    enabled,
     created_at,
     updated_at
 ) VALUES
-    (1, 'admin', 'admin@local.test', 'seed-only-not-used', 'LOCAL', 'ADMIN', '2026-05-01 09:00:00', '2026-05-01 09:00:00'),
-    (2, 'user', 'user@local.test', 'seed-only-not-used', 'LOCAL', 'APPLICANT', '2026-05-01 09:05:00', '2026-05-01 09:05:00'),
-    (3, 'Maya Patel', 'maya.patel@example.com', 'seed-only-not-used', 'LOCAL', 'APPLICANT', '2026-05-01 09:10:00', '2026-05-01 09:10:00'),
-    (4, 'Daniel Kim', 'daniel.kim@example.com', 'seed-only-not-used', 'LOCAL', 'APPLICANT', '2026-05-01 09:15:00', '2026-05-01 09:15:00');
+    (1, 'admin', 'admin@local.test', '{noop}admin123', 'LOCAL', 'ADMIN', TRUE, '2026-05-01 09:00:00', '2026-05-01 09:00:00'),
+    (2, 'user', 'user@local.test', '{noop}user123', 'LOCAL', 'APPLICANT', TRUE, '2026-05-01 09:05:00', '2026-05-01 09:05:00'),
+    (3, 'Maya Patel', 'maya.patel@example.com', '{noop}applicant123', 'LOCAL', 'APPLICANT', TRUE, '2026-05-01 09:10:00', '2026-05-01 09:10:00'),
+    (4, 'Daniel Kim', 'daniel.kim@example.com', '{noop}applicant123', 'LOCAL', 'APPLICANT', FALSE, '2026-05-01 09:15:00', '2026-05-01 09:15:00');
 
 INSERT INTO jobs (
     id,
