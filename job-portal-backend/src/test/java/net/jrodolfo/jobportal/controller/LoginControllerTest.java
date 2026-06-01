@@ -53,6 +53,7 @@ class LoginControllerTest {
                         .with(httpBasic("user@local.test", "user123")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username").value("user@local.test"))
+                .andExpect(jsonPath("$.displayName").value("user"))
                 .andExpect(jsonPath("$.roles[0]").value("ROLE_APPLICANT"));
     }
 }

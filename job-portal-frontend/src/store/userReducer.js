@@ -2,11 +2,13 @@
 
 /**
  * Initial state for the user reducer.
- * @property {string} username - The username of the logged-in user.
+ * @property {string} username - The login email of the logged-in user.
+ * @property {string} displayName - The display name shown in the UI.
  * @property {string} role - The role of the logged-in user (e.g., ADMIN, USER).
  */
 const initialState = {
     username: "",
+    displayName: "",
     role: ""
 };
 
@@ -25,6 +27,7 @@ const userReducer = (state = initialState, action) => {
             return {
                 ...state,
                 username: action.payload.username,
+                displayName: action.payload.displayName || action.payload.username,
                 role: action.payload.role
             };
         default:

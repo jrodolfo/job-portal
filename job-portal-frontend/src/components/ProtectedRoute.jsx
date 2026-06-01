@@ -11,6 +11,7 @@ import {BACKEND_API_URL} from "../config/backend";
  */
 const initialUserState = {
     username: "",
+    displayName: "",
     role: ""
 };
 
@@ -52,6 +53,7 @@ const ProtectedRoute = ({children, requiredRole}) => {
                 if (response.data?.username && response.data?.roles?.[0]) {
                     setUserDetails(dispatch)({
                         username: response.data.username,
+                        displayName: response.data.displayName,
                         role: response.data.roles[0]
                     });
                 } else {

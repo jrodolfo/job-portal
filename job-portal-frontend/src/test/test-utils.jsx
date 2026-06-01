@@ -34,7 +34,7 @@ export function createTestStore(preloadedState) {
 export function renderWithProviders(
     ui,
     {
-        preloadedState = {user: {username: '', role: ''}},
+        preloadedState = {user: {username: '', displayName: '', role: ''}},
         store = createTestStore(preloadedState),
         route = '/'
     } = {}

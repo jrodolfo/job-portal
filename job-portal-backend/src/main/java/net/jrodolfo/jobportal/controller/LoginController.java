@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import net.jrodolfo.jobportal.repository.UserRepository;
 import net.jrodolfo.jobportal.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -42,6 +43,9 @@ public class LoginController {
     @Autowired
     private JwtUtil jwtUtil;
 
+    @Autowired
+    private UserRepository userRepository;
+
     /**
      * Authenticates a user and generates a JWT token.
      * <p>
@@ -74,10 +78,10 @@ public class LoginController {
     /**
      * Retrieves the details of the currently authenticated user.
      * <p>
-     * Returns the username and assigned roles (authorities) from the security context.
+     * Returns the user's login email, display name, and assigned roles from the security context.
      *
      * @param principal the authenticated principal
-     * @return a {@link Map} containing user details such as "username" and "roles", or an "error" message if not authenticated
+     * @return a {@link Map} containing user details such as "username", "displayName", and "roles", or an "error" message if not authenticated
      */
     @GetMapping("/details")
     @Operation(summary = "Get authenticated user details", security = @SecurityRequirement(name = "bearerAuth"))
@@ -88,7 +92,13 @@ public class LoginController {
         Map<String, Object> response = new HashMap<>();
 
         if (authentication != null && authentication.getPrincipal() instanceof UserDetails userDetails) {
-            response.put("username", userDetails.getUsername());
+            String email = userDetails.getUsername();
+            String displayName = userRepository.findByEmailIgnoreCase(email)
+                    .map(user -> user.getName() == null || user.getName().isBlank() ? email : user.getName())
+                    .orElse(email);
+
+            response.put("username", email);
+            response.put("displayName", displayName);
             response.put("roles", userDetails.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
                     .collect(Collectors.toList()));

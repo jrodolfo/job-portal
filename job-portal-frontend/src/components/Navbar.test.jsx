@@ -19,17 +19,32 @@ describe('Navbar', () => {
         localStorage.clear();
     });
 
-    it('should render username from store', () => {
+    it('should render display name from store', () => {
         renderWithProviders(<Navbar/>, {
             preloadedState: {
                 user: {
-                    username: 'alice',
+                    username: 'alice@example.com',
+                    displayName: 'Alice Smith',
                     role: 'ROLE_APPLICANT'
                 }
             }
         });
 
-        expect(screen.getByText('Welcome, alice')).toBeInTheDocument();
+        expect(screen.getByText('Welcome, Alice Smith')).toBeInTheDocument();
+    });
+
+    it('should fall back to username when display name is missing', () => {
+        renderWithProviders(<Navbar/>, {
+            preloadedState: {
+                user: {
+                    username: 'alice@example.com',
+                    displayName: '',
+                    role: 'ROLE_APPLICANT'
+                }
+            }
+        });
+
+        expect(screen.getByText('Welcome, alice@example.com')).toBeInTheDocument();
     });
 
     it('should clear storage, reset user, and navigate on logout', async () => {
@@ -38,7 +53,8 @@ describe('Navbar', () => {
         const {store} = renderWithProviders(<Navbar/>, {
             preloadedState: {
                 user: {
-                    username: 'alice',
+                    username: 'alice@example.com',
+                    displayName: 'Alice Smith',
                     role: 'ROLE_APPLICANT'
                 }
             }
@@ -51,6 +67,7 @@ describe('Navbar', () => {
         await waitFor(() => {
             expect(store.getState().user).toEqual({
                 username: '',
+                displayName: '',
                 role: ''
             });
         });

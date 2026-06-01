@@ -17,6 +17,7 @@ const Navbar = () => {
         localStorage.clear();
         let initialuserState = {
             username: "",
+            displayName: "",
             role: ""
         }
         setUserDetails(dispatch)(initialuserState)
@@ -34,7 +35,7 @@ const Navbar = () => {
                     <div className="collapse navbar-collapse" id="navbarNav">
                         <ul className="navbar-nav ms-auto">
                             <li className="nav-item">
-                                <span className="nav-link welcome-text body-text">Welcome, {user.username}</span>
+                                <span className="nav-link welcome-text body-text">Welcome, {user.displayName || user.username}</span>
                             </li>
                             <li className="nav-item">
                                 <button className="btn btn-accent-primary ms-3" onClick={handleLogout}>

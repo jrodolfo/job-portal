@@ -34,7 +34,8 @@ const OAuthLogin = () => {
                     console.log("User Details:", response.data);
                     const user = {
                         role: "ROLE_APPLICANT",
-                        username: response.data.email
+                        username: response.data.email,
+                        displayName: response.data.name || response.data.email
                     };
                     setUserDetails(dispatch)(user);
                     navigate("/applicant-dashboard");

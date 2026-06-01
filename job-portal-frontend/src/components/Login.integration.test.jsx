@@ -39,7 +39,8 @@ describe('Login integration', () => {
 
                 return HttpResponse.json({
                     roles: ['ROLE_APPLICANT'],
-                    username: 'alice@example.com'
+                    username: 'alice@example.com',
+                    displayName: 'Alice Smith'
                 });
             })
         );
@@ -55,6 +56,7 @@ describe('Login integration', () => {
         expect(localStorage.getItem('token')).toBe('jwt-123');
         expect(store.getState().user).toEqual({
             username: 'alice@example.com',
+            displayName: 'Alice Smith',
             role: 'ROLE_APPLICANT'
         });
     });

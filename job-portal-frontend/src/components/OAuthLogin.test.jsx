@@ -31,7 +31,7 @@ describe('OAuthLogin', () => {
             data: {token: 'oauth-token'}
         });
         axios.get.mockResolvedValueOnce({
-            data: {email: 'oauth.user@example.com'}
+            data: {email: 'oauth.user@example.com', name: 'OAuth User'}
         });
         window.history.pushState({}, '', '/oauthlogon?code=abc123');
 
@@ -58,6 +58,7 @@ describe('OAuthLogin', () => {
         expect(localStorage.getItem('token')).toBe('oauth-token');
         expect(store.getState().user).toEqual({
             username: 'oauth.user@example.com',
+            displayName: 'OAuth User',
             role: 'ROLE_APPLICANT'
         });
         expect(mockNavigate).toHaveBeenCalledWith('/applicant-dashboard');

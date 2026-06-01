@@ -41,7 +41,8 @@ describe("ProtectedRoute", () => {
         localStorage.setItem("token", "jwt-admin");
         axios.get.mockResolvedValueOnce({
             data: {
-                username: "admin",
+                username: "admin@local.test",
+                displayName: "Admin User",
                 roles: ["ROLE_ADMIN"]
             }
         });
@@ -65,7 +66,8 @@ describe("ProtectedRoute", () => {
         localStorage.setItem("token", "jwt-user");
         axios.get.mockResolvedValueOnce({
             data: {
-                username: "user",
+                username: "user@local.test",
+                displayName: "Applicant User",
                 roles: ["ROLE_APPLICANT"]
             }
         });

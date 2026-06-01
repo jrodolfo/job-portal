@@ -44,7 +44,8 @@ const Login = () => {
             console.log(resp.data)
             let user = {
                 role: resp.data.roles[0],
-                username: resp.data.username
+                username: resp.data.username,
+                displayName: resp.data.displayName
             }
             console.log(user)
             // call action function to dispatch user details to redux store

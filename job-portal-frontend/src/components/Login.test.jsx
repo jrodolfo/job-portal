@@ -24,7 +24,7 @@ describe('Login', () => {
     it('should login applicant, save token, set user details and navigate', async () => {
         axios.post.mockResolvedValueOnce({data: {token: 'jwt-123'}});
         axios.get.mockResolvedValueOnce({
-            data: {roles: ['ROLE_APPLICANT'], username: 'alice@example.com'}
+            data: {roles: ['ROLE_APPLICANT'], username: 'alice@example.com', displayName: 'Alice Smith'}
         });
 
         const {store} = renderWithProviders(<Login/>);
@@ -51,6 +51,7 @@ describe('Login', () => {
         expect(localStorage.getItem('token')).toBe('jwt-123');
         expect(store.getState().user).toEqual({
             username: 'alice@example.com',
+            displayName: 'Alice Smith',
             role: 'ROLE_APPLICANT'
         });
         expect(mockNavigate).toHaveBeenCalledWith('/applicant-dashboard');
@@ -90,6 +91,7 @@ describe('Login', () => {
         expect(mockNavigate).not.toHaveBeenCalled();
         expect(store.getState().user).toEqual({
             username: '',
+            displayName: '',
             role: ''
         });
     });
@@ -109,6 +111,7 @@ describe('Login', () => {
         expect(mockNavigate).not.toHaveBeenCalled();
         expect(store.getState().user).toEqual({
             username: '',
+            displayName: '',
             role: ''
         });
     });
