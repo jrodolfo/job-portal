@@ -111,7 +111,7 @@ bash scripts/local/start.sh
 If you want the fuller seeded demo environment first, use:
 
 ```bash
-bash scripts/local/start-demo.sh
+bash scripts/local/start-with-demo-data.sh
 ```
 
 Or run coverage with:

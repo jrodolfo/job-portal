@@ -33,7 +33,7 @@ Local demo bootstrap:
 - For a full local demo with seeded jobs, users, and applications, use the root helper:
 
 ```bash
-bash scripts/local/start-demo.sh
+bash scripts/local/start-with-demo-data.sh
 ```
 
 - That flow lives at the repository root because it starts the full stack and loads demo data into MySQL.

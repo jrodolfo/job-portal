@@ -1,14 +1,14 @@
 #!/bin/bash
-# start-demo.sh
+# start-with-demo-data.sh
 # Purpose: Starts the local development environment and seeds it with demo data.
-# Usage: ./start-demo.sh
+# Usage: ./start-with-demo-data.sh
 # Tools: bash, docker, sleep
 # Output: Status messages, retry notifications, and a summary of access URLs and credentials.
 # Exit behavior: Exits with 0 on success, 1 if seeding fails after all retries.
 
 set -euo pipefail
 
-# Configuration: Set repository root relative to script location
+# Configuration: Set repository root relative to script location.
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 

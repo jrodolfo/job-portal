@@ -50,7 +50,7 @@ If you want a fuller local demo with preloaded jobs, users, and applications,
 use:
 
 ```bash
-bash scripts/local/start-demo.sh
+bash scripts/local/start-with-demo-data.sh
 ```
 
 What this starts:
@@ -86,14 +86,13 @@ Optional demo seed data:
 - Load [docs/database/demo-seed.sql](./docs/database/demo-seed.sql) if you want a fuller local UI with 20 jobs, 4 users, and 30 applications across mixed statuses.
 - This script resets the `jobs`, `users`, and `applications` tables for demo purposes.
 - It does not change the built-in login credentials above.
-- Preferred local helper script:
-- One-command demo bootstrap:
+- Start the full stack and load demo data:
 
 ```bash
-bash scripts/local/start-demo.sh
+bash scripts/local/start-with-demo-data.sh
 ```
 
-- Seed-only helper script:
+- Reload demo data into an already running stack:
 
 ```bash
 bash scripts/local/seed-demo-data.sh
@@ -549,15 +548,18 @@ Scripts are organized by environment:
 Recommended usage from the repository root:
 
 - Start: `bash scripts/local/start.sh`
+- Start with demo data: `bash scripts/local/start-with-demo-data.sh`
 - Stop: `bash scripts/local/stop.sh`
 
 If you first change directory into `scripts/local`, then use:
 
 - Start: `./start.sh`
+- Start with demo data: `./start-with-demo-data.sh`
 - Stop: `./stop.sh`
 
 - macOS/Linux:
   - Start: `bash scripts/local/start.sh`
+  - Start with demo data: `bash scripts/local/start-with-demo-data.sh`
   - Stop: `bash scripts/local/stop.sh`
 - Windows CMD:
   - Start: `scripts\local\start.bat`
