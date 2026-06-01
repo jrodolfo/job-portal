@@ -22,6 +22,7 @@ const AdminUsersPanel = ({
                             <input
                                 id="admin-user-name"
                                 name="name"
+                                autoComplete="off"
                                 className="form-control"
                                 value={form.name}
                                 onChange={onChange}
@@ -34,6 +35,7 @@ const AdminUsersPanel = ({
                                 id="admin-user-email"
                                 name="email"
                                 type="email"
+                                autoComplete="off"
                                 className="form-control"
                                 value={form.email}
                                 onChange={onChange}
@@ -41,19 +43,36 @@ const AdminUsersPanel = ({
                             />
                         </div>
                         {!editingUserId ? (
-                            <div className="mb-3">
-                                <label className="form-label body-text" htmlFor="admin-user-password">Password</label>
-                                <input
-                                    id="admin-user-password"
-                                    name="password"
-                                    type="password"
-                                    className="form-control"
-                                    value={form.password}
-                                    onChange={onChange}
-                                    required
-                                    minLength={6}
-                                />
-                            </div>
+                            <>
+                                <div className="mb-3">
+                                    <label className="form-label body-text" htmlFor="admin-user-password">Password</label>
+                                    <input
+                                        id="admin-user-password"
+                                        name="password"
+                                        type="password"
+                                        autoComplete="new-password"
+                                        className="form-control"
+                                        value={form.password}
+                                        onChange={onChange}
+                                        required
+                                        minLength={6}
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label className="form-label body-text" htmlFor="admin-user-confirm-password">Confirm Password</label>
+                                    <input
+                                        id="admin-user-confirm-password"
+                                        name="confirmPassword"
+                                        type="password"
+                                        autoComplete="new-password"
+                                        className="form-control"
+                                        value={form.confirmPassword}
+                                        onChange={onChange}
+                                        required
+                                        minLength={6}
+                                    />
+                                </div>
+                            </>
                         ) : null}
                         <div className="d-flex flex-wrap gap-2">
                             <button type="submit" className="btn btn-accent-primary" disabled={isSubmitting}>

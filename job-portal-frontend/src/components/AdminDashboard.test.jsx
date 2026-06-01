@@ -231,9 +231,20 @@ describe("AdminDashboard", () => {
         const user = userEvent.setup();
 
         await openUsersTab(user);
-        await user.type(screen.getByLabelText("Name"), "Alice Smith");
-        await user.type(screen.getByLabelText("Email"), "alice@example.com");
-        await user.type(screen.getByLabelText("Password"), "alice123");
+        const nameInput = screen.getByLabelText("Name");
+        const emailInput = screen.getByLabelText("Email");
+        const passwordInput = screen.getByLabelText("Password");
+        const confirmPasswordInput = screen.getByLabelText("Confirm Password");
+
+        expect(nameInput).toHaveAttribute("autocomplete", "off");
+        expect(emailInput).toHaveAttribute("autocomplete", "off");
+        expect(passwordInput).toHaveAttribute("autocomplete", "new-password");
+        expect(confirmPasswordInput).toHaveAttribute("autocomplete", "new-password");
+
+        await user.type(nameInput, "Alice Smith");
+        await user.type(emailInput, "alice@example.com");
+        await user.type(passwordInput, "alice123");
+        await user.type(confirmPasswordInput, "alice123");
         await user.click(screen.getByRole("button", {name: "Create Applicant"}));
 
         await waitFor(() => expect(axios.post).toHaveBeenCalledWith(
@@ -251,6 +262,31 @@ describe("AdminDashboard", () => {
         ));
         expect(await screen.findByText("Applicant user created successfully.")).toBeInTheDocument();
         expect(screen.getByText(byTextContent("Alice Smith"))).toBeInTheDocument();
+    });
+
+    it("should block applicant creation when passwords do not match", async () => {
+        localStorage.setItem("token", "jwt-admin");
+        axios.get
+            .mockResolvedValueOnce({data: []})
+            .mockResolvedValueOnce({data: []})
+            .mockResolvedValueOnce({data: []});
+
+        renderWithProviders(<AdminDashboard/>);
+        const user = userEvent.setup();
+
+        await openUsersTab(user);
+        await user.type(screen.getByLabelText("Name"), "Alice Smith");
+        await user.type(screen.getByLabelText("Email"), "alice@example.com");
+        await user.type(screen.getByLabelText("Password"), "alice123");
+        await user.type(screen.getByLabelText("Confirm Password"), "different123");
+        await user.click(screen.getByRole("button", {name: "Create Applicant"}));
+
+        expect(await screen.findByRole("alert")).toHaveTextContent("Passwords do not match.");
+        expect(axios.post).not.toHaveBeenCalledWith(
+            "http://localhost:8080/api/users/admin/applicants",
+            expect.anything(),
+            expect.anything()
+        );
     });
 
     it("should edit and disable applicant users from the users tab", async () => {

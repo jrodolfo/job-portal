@@ -19,7 +19,8 @@ const emptyForm = {
 const emptyUserForm = {
     name: "",
     email: "",
-    password: ""
+    password: "",
+    confirmPassword: ""
 };
 
 /**
@@ -478,9 +479,18 @@ const AdminDashboard = () => {
                 setUsers((prev) => prev.map((user) => user.id === editingUserId ? response.data : user));
                 setStatusMessage("User updated successfully.");
             } else {
+                if (userForm.password !== userForm.confirmPassword) {
+                    setErrorMessage("Passwords do not match.");
+                    return;
+                }
+
                 const response = await axios.post(
                     `${BACKEND_API_URL}/api/users/admin/applicants`,
-                    userForm,
+                    {
+                        name: userForm.name,
+                        email: userForm.email,
+                        password: userForm.password
+                    },
                     requestConfig
                 );
                 setUsers((prev) => [response.data, ...prev]);
@@ -508,7 +518,8 @@ const AdminDashboard = () => {
         setUserForm({
             name: user.name,
             email: user.email,
-            password: ""
+            password: "",
+            confirmPassword: ""
         });
     };
 

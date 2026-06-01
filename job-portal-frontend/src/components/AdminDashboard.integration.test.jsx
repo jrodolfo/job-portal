@@ -162,7 +162,8 @@ describe('AdminDashboard integration', () => {
                 if (
                     body.name !== 'Sofia Ribeiro' ||
                     body.email !== 'sofia.ribeiro@example.com' ||
-                    body.password !== 'applicant123'
+                    body.password !== 'applicant123' ||
+                    Object.hasOwn(body, 'confirmPassword')
                 ) {
                     return HttpResponse.json({message: 'Unexpected applicant payload'}, {status: 400});
                 }
@@ -178,6 +179,7 @@ describe('AdminDashboard integration', () => {
         await user.type(screen.getByLabelText('Name'), 'Sofia Ribeiro');
         await user.type(screen.getByLabelText('Email'), 'sofia.ribeiro@example.com');
         await user.type(screen.getByLabelText('Password'), 'applicant123');
+        await user.type(screen.getByLabelText('Confirm Password'), 'applicant123');
         await user.click(screen.getByRole('button', {name: 'Create Applicant'}));
 
         expect(await screen.findByText('Applicant user created successfully.')).toBeInTheDocument();
