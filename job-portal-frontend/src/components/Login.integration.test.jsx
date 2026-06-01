@@ -22,10 +22,6 @@ describe('Login integration', () => {
         localStorage.clear();
     });
 
-    afterEach(() => {
-        vi.unstubAllGlobals();
-    });
-
     it('logs in through network handlers and navigates to the applicant dashboard', async () => {
         server.use(
             http.post(`${api}/api/auth/login`, ({request}) => {
@@ -51,8 +47,8 @@ describe('Login integration', () => {
         const {store} = renderWithProviders(<Login/>);
         const user = userEvent.setup();
 
-        await user.type(screen.getByPlaceholderText('Username'), 'alice');
-        await user.type(screen.getByPlaceholderText('Password'), 'secret');
+        await user.type(screen.getByLabelText('Account Name'), 'alice');
+        await user.type(screen.getByLabelText('Password'), 'secret');
         await user.click(screen.getByRole('button', {name: 'Login'}));
 
         await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/applicant-dashboard'));
@@ -63,10 +59,7 @@ describe('Login integration', () => {
         });
     });
 
-    it('alerts the user when the login request fails at the network layer', async () => {
-        const alertSpy = vi.fn();
-        vi.stubGlobal('alert', alertSpy);
-
+    it('shows an inline error when the login request fails at the network layer', async () => {
         server.use(
             http.post(`${api}/api/auth/login`, () => HttpResponse.json({message: 'Internal Server Error'}, {status: 500}))
         );
@@ -74,11 +67,11 @@ describe('Login integration', () => {
         renderWithProviders(<Login/>);
         const user = userEvent.setup();
 
-        await user.type(screen.getByPlaceholderText('Username'), 'alice');
-        await user.type(screen.getByPlaceholderText('Password'), 'secret');
+        await user.type(screen.getByLabelText('Account Name'), 'alice');
+        await user.type(screen.getByLabelText('Password'), 'secret');
         await user.click(screen.getByRole('button', {name: 'Login'}));
 
-        await waitFor(() => expect(alertSpy).toHaveBeenCalledWith('Invalid credentials'));
+        expect(await screen.findByRole('alert')).toHaveTextContent('Invalid account name or password.');
         expect(mockNavigate).not.toHaveBeenCalled();
     });
 });

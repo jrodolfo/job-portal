@@ -16,10 +16,13 @@ import {BACKEND_API_URL} from '../config/backend'
 const Login = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const processLogin = async () => {
+        setErrorMessage("");
+
         try {
             const response = await axios.post(BACKEND_API_URL + '/api/auth/login', {},
                 {
@@ -61,7 +64,7 @@ const Login = () => {
             }
 
         } catch (error) {
-            alert('Invalid credentials')
+            setErrorMessage('Invalid account name or password.')
         }
     }
 
@@ -81,19 +84,47 @@ const Login = () => {
 
                             {/* Form */}
                             <div className="card-body">
+                                {errorMessage ? (
+                                    <div className="alert alert-danger" role="alert">
+                                        {errorMessage}
+                                    </div>
+                                ) : null}
                                 <form onSubmit={(e) => {
                                     e.preventDefault();
                                     processLogin()
                                 }}>
                                     <div className="mb-3">
-                                        <input type="text" className="form-control"
-                                               placeholder="Username"
-                                               onChange={(e) => setUsername(e.target.value)}/>
+                                        <label className="form-label body-text" htmlFor="login-account-name">
+                                            Account Name
+                                        </label>
+                                        <input
+                                            id="login-account-name"
+                                            type="text"
+                                            className="form-control"
+                                            placeholder="Account name"
+                                            autoComplete="username"
+                                            value={username}
+                                            onChange={(e) => setUsername(e.target.value)}
+                                            required
+                                        />
+                                        <div className="form-text body-text">
+                                            Use the account name, for example admin, user, or Rod Oliveira.
+                                        </div>
                                     </div>
                                     <div className="mb-3">
-                                        <input type="password" className="form-control"
-                                               placeholder="Password"
-                                               onChange={(e) => setPassword(e.target.value)}/>
+                                        <label className="form-label body-text" htmlFor="login-password">
+                                            Password
+                                        </label>
+                                        <input
+                                            id="login-password"
+                                            type="password"
+                                            className="form-control"
+                                            placeholder="Password"
+                                            autoComplete="current-password"
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            required
+                                        />
                                     </div>
                                     <div className="text-center">
                                         <button type="submit" className="btn btn-accent-tertiary w-75">Login</button>

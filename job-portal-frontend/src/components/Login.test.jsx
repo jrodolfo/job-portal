@@ -21,10 +21,6 @@ describe('Login', () => {
         localStorage.clear();
     });
 
-    afterEach(() => {
-        vi.unstubAllGlobals();
-    });
-
     it('should login applicant, save token, set user details and navigate', async () => {
         axios.post.mockResolvedValueOnce({data: {token: 'jwt-123'}});
         axios.get.mockResolvedValueOnce({
@@ -34,8 +30,10 @@ describe('Login', () => {
         const {store} = renderWithProviders(<Login/>);
         const user = userEvent.setup();
 
-        await user.type(screen.getByPlaceholderText('Username'), 'alice');
-        await user.type(screen.getByPlaceholderText('Password'), 'secret');
+        expect(screen.getByText('Use the account name, for example admin, user, or Rod Oliveira.')).toBeInTheDocument();
+
+        await user.type(screen.getByLabelText('Account Name'), 'alice');
+        await user.type(screen.getByLabelText('Password'), 'secret');
         await user.click(screen.getByRole('button', {name: 'Login'}));
 
         await waitFor(() =>
@@ -58,24 +56,20 @@ describe('Login', () => {
         expect(mockNavigate).toHaveBeenCalledWith('/applicant-dashboard');
     });
 
-    it('should alert on invalid credentials', async () => {
-        const alertSpy = vi.fn();
-        vi.stubGlobal('alert', alertSpy);
+    it('should show an inline error on invalid credentials', async () => {
         axios.post.mockRejectedValueOnce(new Error('unauthorized'));
 
         renderWithProviders(<Login/>);
         const user = userEvent.setup();
 
-        await user.type(screen.getByPlaceholderText('Username'), 'alice');
-        await user.type(screen.getByPlaceholderText('Password'), 'bad');
+        await user.type(screen.getByLabelText('Account Name'), 'alice');
+        await user.type(screen.getByLabelText('Password'), 'bad');
         await user.click(screen.getByRole('button', {name: 'Login'}));
 
-        await waitFor(() => expect(alertSpy).toHaveBeenCalledWith('Invalid credentials'));
+        expect(await screen.findByRole('alert')).toHaveTextContent('Invalid account name or password.');
     });
 
-    it('should alert when the login request fails with a server error', async () => {
-        const alertSpy = vi.fn();
-        vi.stubGlobal('alert', alertSpy);
+    it('should show an inline error when the login request fails with a server error', async () => {
         axios.post.mockRejectedValueOnce({
             response: {
                 status: 500,
@@ -88,11 +82,11 @@ describe('Login', () => {
         const {store} = renderWithProviders(<Login/>);
         const user = userEvent.setup();
 
-        await user.type(screen.getByPlaceholderText('Username'), 'alice');
-        await user.type(screen.getByPlaceholderText('Password'), 'secret');
+        await user.type(screen.getByLabelText('Account Name'), 'alice');
+        await user.type(screen.getByLabelText('Password'), 'secret');
         await user.click(screen.getByRole('button', {name: 'Login'}));
 
-        await waitFor(() => expect(alertSpy).toHaveBeenCalledWith('Invalid credentials'));
+        expect(await screen.findByRole('alert')).toHaveTextContent('Invalid account name or password.');
         expect(mockNavigate).not.toHaveBeenCalled();
         expect(store.getState().user).toEqual({
             username: '',
@@ -100,20 +94,18 @@ describe('Login', () => {
         });
     });
 
-    it('should alert when fetching user details fails after login succeeds', async () => {
-        const alertSpy = vi.fn();
-        vi.stubGlobal('alert', alertSpy);
+    it('should show an inline error when fetching user details fails after login succeeds', async () => {
         axios.post.mockResolvedValueOnce({data: {token: 'jwt-123'}});
         axios.get.mockRejectedValueOnce(new Error('network error'));
 
         const {store} = renderWithProviders(<Login/>);
         const user = userEvent.setup();
 
-        await user.type(screen.getByPlaceholderText('Username'), 'alice');
-        await user.type(screen.getByPlaceholderText('Password'), 'secret');
+        await user.type(screen.getByLabelText('Account Name'), 'alice');
+        await user.type(screen.getByLabelText('Password'), 'secret');
         await user.click(screen.getByRole('button', {name: 'Login'}));
 
-        await waitFor(() => expect(alertSpy).toHaveBeenCalledWith('Invalid credentials'));
+        expect(await screen.findByRole('alert')).toHaveTextContent('Invalid account name or password.');
         expect(mockNavigate).not.toHaveBeenCalled();
         expect(store.getState().user).toEqual({
             username: '',
