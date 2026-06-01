@@ -58,28 +58,27 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         final String authHeader = request.getHeader("Authorization");
 
         String token = null;
-        String username = null;
+        String email = null;
 
         // read token from Bearer header
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
             try {
-                // extract the username and email
-                username = jwtUtil.extractEmail(token);
+                email = jwtUtil.extractEmail(token);
             } catch (Exception e) {
                 System.out.println("Invalid token: " + e.getMessage());
             }
         }
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = null;
             try {
-                userDetails = userDetailsService.loadUserByUsername(username);
+                userDetails = userDetailsService.loadUserByUsername(email);
             } catch (Exception e) {
                 // If user not found in UserDetailsService (e.g. Google user not yet in memory)
                 // we can create a temporary UserDetails if the token is a valid Google token
-                if (jwtUtil.validateToken(token, username)) {
-                    userDetails = org.springframework.security.core.userdetails.User.withUsername(username)
+                if (jwtUtil.validateToken(token, email)) {
+                    userDetails = org.springframework.security.core.userdetails.User.withUsername(email)
                             .password("")
                             .authorities("ROLE_APPLICANT")
                             .build();

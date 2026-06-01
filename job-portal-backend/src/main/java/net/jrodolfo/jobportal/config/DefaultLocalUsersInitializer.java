@@ -27,7 +27,7 @@ public class DefaultLocalUsersInitializer implements ApplicationRunner {
     }
 
     private void createIfMissing(String name, String email, String password, Role role) {
-        if (userRepository.existsByName(name)) {
+        if (userRepository.existsByEmailIgnoreCase(email)) {
             return;
         }
 

@@ -48,14 +48,14 @@ public class ApplicationService {
     /**
      * Creates a new application or restores a withdrawn one for a user applying to a specific job.
      *
-     * @param username the name of the user applying for the job
+     * @param email the email of the user applying for the job
      * @param jobId    the ID of the job to apply for
      * @return the saved {@link Application}
      * @throws ResourceException       if the job is not found
      * @throws ResponseStatusException if the job is closed or if an active application already exists
      */
-    public Application applyForJob(String username, Long jobId) {
-        User user = resolveApplicantUser(username);
+    public Application applyForJob(String email, Long jobId) {
+        User user = resolveApplicantUser(email);
         Job job = jobRepository.findById(jobId)
                 .orElseThrow(() -> new ResourceException("Job with id " + jobId + " was not found"));
 
@@ -76,14 +76,13 @@ public class ApplicationService {
         return applicationRepository.save(application);
     }
 
-    private User resolveApplicantUser(String username) {
-        return userRepository.findByName(username)
-                .orElseGet(() -> userRepository.save(createLocalApplicantUser(username)));
+    private User resolveApplicantUser(String email) {
+        return userRepository.findByEmailIgnoreCase(email)
+                .orElseGet(() -> userRepository.save(createLocalApplicantUser(email)));
     }
 
-    private User createLocalApplicantUser(String username) {
-        String email = username.contains("@") ? username : username + "@local.test";
-        return new User(username, email, null, AuthProvider.LOCAL, Role.APPLICANT);
+    private User createLocalApplicantUser(String email) {
+        return new User(email, email, null, AuthProvider.LOCAL, Role.APPLICANT);
     }
 
     /**
@@ -98,11 +97,11 @@ public class ApplicationService {
     /**
      * Retrieves all applications submitted by a specific user.
      *
-     * @param username the name of the user
+     * @param email the email of the user
      * @return a list of {@link Application} entities associated with the user
      */
-    public List<Application> getApplicationsByUsername(String username) {
-        return applicationRepository.findByUser_Name(username);
+    public List<Application> getApplicationsByEmail(String email) {
+        return applicationRepository.findByUser_EmailIgnoreCase(email);
     }
 
     /**

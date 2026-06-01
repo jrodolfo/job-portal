@@ -114,7 +114,7 @@ collection:
                 authentication:
                   type: basic
                   useISO88591: false
-                  username: admin
+                  username: admin@local.test
                   password: admin123
                   disabled: false
                 scripts:
@@ -151,7 +151,7 @@ collection:
                 method: GET
                 authentication:
                   type: basic
-                  username: admin
+                  username: admin@local.test
                   password: admin123
                   disabled: false
                 scripts:
@@ -188,7 +188,7 @@ collection:
                 method: GET
                 authentication:
                   type: basic
-                  username: admin
+                  username: admin@local.test
                   password: admin123
                   disabled: false
                 scripts:
@@ -272,7 +272,7 @@ collection:
                     value: application/json
                 authentication:
                   type: basic
-                  username: admin
+                  username: admin@local.test
                   password: admin123
                   disabled: false
                 scripts:
@@ -327,7 +327,7 @@ collection:
                 authentication:
                   type: basic
                   useISO88591: false
-                  username: admin
+                  username: admin@local.test
                   password: admin123
                   disabled: false
                 scripts:
@@ -364,7 +364,7 @@ collection:
                 method: GET
                 authentication:
                   type: basic
-                  username: admin
+                  username: admin@local.test
                   password: admin123
                   disabled: false
                 scripts:
@@ -413,7 +413,7 @@ collection:
                     value: application/json
                 authentication:
                   type: basic
-                  username: admin
+                  username: admin@local.test
                   password: admin123
                   disabled: false
                 scripts:
@@ -450,7 +450,7 @@ collection:
                 method: GET
                 authentication:
                   type: basic
-                  username: admin
+                  username: admin@local.test
                   password: admin123
                   disabled: false
                 scripts:
@@ -538,7 +538,7 @@ collection:
                 method: GET
                 authentication:
                   type: basic
-                  username: admin
+                  username: admin@local.test
                   password: admin123
                   disabled: false
                 scripts:
@@ -575,7 +575,7 @@ collection:
                 method: GET
                 authentication:
                   type: basic
-                  username: admin
+                  username: admin@local.test
                   password: admin123
                   disabled: false
                 scripts:
@@ -621,7 +621,7 @@ collection:
                     value: application/json
                 authentication:
                   type: basic
-                  username: admin
+                  username: admin@local.test
                   password: admin123
                   disabled: false
                 scripts:
@@ -754,7 +754,7 @@ collection:
                     value: application/json
                 authentication:
                   type: basic
-                  username: admin
+                  username: admin@local.test
                   password: admin123
                   disabled: false
                 scripts:
@@ -791,7 +791,7 @@ collection:
                 method: GET
                 authentication:
                   type: basic
-                  username: admin
+                  username: admin@local.test
                   password: admin123
                   disabled: false
                 scripts:
@@ -828,7 +828,7 @@ collection:
                 method: GET
                 authentication:
                   type: basic
-                  username: admin
+                  username: admin@local.test
                   password: admin123
                   disabled: false
                 scripts:
@@ -867,7 +867,7 @@ collection:
                     value: application/json
                 authentication:
                   type: basic
-                  username: admin
+                  username: admin@local.test
                   password: admin123
                   disabled: false
                 scripts:
@@ -913,7 +913,7 @@ collection:
                     value: application/json
                 authentication:
                   type: basic
-                  username: admin
+                  username: admin@local.test
                   password: admin123
                   disabled: false
                 scripts:
@@ -975,7 +975,7 @@ collection:
                     value: application/json
                 authentication:
                   type: basic
-                  username: user
+                  username: user@local.test
                   password: user123
                   disabled: false
                 scripts:
@@ -1003,7 +1003,7 @@ collection:
                 method: GET
                 authentication:
                   type: basic
-                  username: admin
+                  username: admin@local.test
                   password: admin123
                   disabled: false
                 settings:
@@ -1026,7 +1026,7 @@ collection:
                 method: GET
                 authentication:
                   type: basic
-                  username: admin
+                  username: admin@local.test
                   password: admin123
                   disabled: false
                 settings:
@@ -1049,7 +1049,7 @@ collection:
                 method: PUT
                 authentication:
                   type: basic
-                  username: user
+                  username: user@local.test
                   password: user123
                   disabled: false
                 settings:
@@ -1072,7 +1072,7 @@ collection:
                 method: DELETE
                 authentication:
                   type: basic
-                  username: user
+                  username: user@local.test
                   password: user123
                   disabled: false
                 settings:
@@ -1121,7 +1121,7 @@ collection:
                     value: application/json
                 authentication:
                   type: basic
-                  username: user
+                  username: user@local.test
                   password: user123
                   disabled: false
                 scripts:
@@ -1149,7 +1149,7 @@ collection:
                 method: GET
                 authentication:
                   type: basic
-                  username: admin
+                  username: admin@local.test
                   password: admin123
                   disabled: false
                 settings:
@@ -1172,7 +1172,7 @@ collection:
                 method: GET
                 authentication:
                   type: basic
-                  username: admin
+                  username: admin@local.test
                   password: admin123
                   disabled: false
                 settings:
@@ -1195,7 +1195,7 @@ collection:
                 method: PUT
                 authentication:
                   type: basic
-                  username: user
+                  username: user@local.test
                   password: user123
                   disabled: false
                 settings:
@@ -1218,7 +1218,7 @@ collection:
                 method: DELETE
                 authentication:
                   type: basic
-                  username: user
+                  username: user@local.test
                   password: user123
                   disabled: false
                 settings:
@@ -1264,7 +1264,7 @@ collection:
                 method: POST
                 authentication:
                   type: basic
-                  username: admin
+                  username: admin@local.test
                   password: admin123
                   disabled: false
                 scripts:
@@ -1342,7 +1342,7 @@ collection:
                 method: POST
                 authentication:
                   type: basic
-                  username: admin
+                  username: admin@local.test
                   password: admin123
                   disabled: false
                 scripts:

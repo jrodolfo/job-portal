@@ -48,6 +48,7 @@ class ApplicationServiceTest {
     void applyForJobShouldSaveApplicationWhenUserAndJobExist() {
         User user = new User();
         user.setName("user");
+        user.setEmail("user@local.test");
         Job job = new Job();
         job.setId(10L);
         job.setStatus(JobStatus.OPEN);
@@ -55,12 +56,12 @@ class ApplicationServiceTest {
         Application saved = new Application(user, job);
         saved.setId(99L);
 
-        when(userRepository.findByName("user")).thenReturn(Optional.of(user));
+        when(userRepository.findByEmailIgnoreCase("user@local.test")).thenReturn(Optional.of(user));
         when(jobRepository.findById(10L)).thenReturn(Optional.of(job));
         when(applicationRepository.findByUserAndJob(user, job)).thenReturn(Optional.empty());
         when(applicationRepository.save(org.mockito.ArgumentMatchers.any(Application.class))).thenReturn(saved);
 
-        Application result = applicationService.applyForJob("user", 10L);
+        Application result = applicationService.applyForJob("user@local.test", 10L);
 
         assertSame(saved, result);
         ArgumentCaptor<Application> captor = ArgumentCaptor.forClass(Application.class);
@@ -75,15 +76,15 @@ class ApplicationServiceTest {
         job.setId(10L);
         job.setStatus(JobStatus.OPEN);
         Application saved = new Application();
-        User persistedUser = new User("missing", "missing@local.test", null, net.jrodolfo.jobportal.constant.AuthProvider.LOCAL, net.jrodolfo.jobportal.constant.Role.APPLICANT);
+        User persistedUser = new User("missing@local.test", "missing@local.test", null, net.jrodolfo.jobportal.constant.AuthProvider.LOCAL, net.jrodolfo.jobportal.constant.Role.APPLICANT);
 
-        when(userRepository.findByName("missing")).thenReturn(Optional.empty());
+        when(userRepository.findByEmailIgnoreCase("missing@local.test")).thenReturn(Optional.empty());
         when(userRepository.save(org.mockito.ArgumentMatchers.any(User.class))).thenReturn(persistedUser);
         when(jobRepository.findById(10L)).thenReturn(Optional.of(job));
         when(applicationRepository.findByUserAndJob(persistedUser, job)).thenReturn(Optional.empty());
         when(applicationRepository.save(org.mockito.ArgumentMatchers.any(Application.class))).thenReturn(saved);
 
-        Application result = applicationService.applyForJob("missing", 10L);
+        Application result = applicationService.applyForJob("missing@local.test", 10L);
 
         assertSame(saved, result);
         verify(userRepository).save(org.mockito.ArgumentMatchers.any(User.class));
@@ -93,12 +94,13 @@ class ApplicationServiceTest {
     void applyForJobShouldThrowWhenJobMissing() {
         User user = new User();
         user.setName("user");
-        when(userRepository.findByName("user")).thenReturn(Optional.of(user));
+        user.setEmail("user@local.test");
+        when(userRepository.findByEmailIgnoreCase("user@local.test")).thenReturn(Optional.of(user));
         when(jobRepository.findById(404L)).thenReturn(Optional.empty());
 
         RuntimeException exception = assertThrows(
                 RuntimeException.class,
-                () -> applicationService.applyForJob("user", 404L)
+                () -> applicationService.applyForJob("user@local.test", 404L)
         );
 
         assertEquals("Job with id 404 was not found", exception.getMessage());
@@ -108,17 +110,18 @@ class ApplicationServiceTest {
     void applyForJobShouldThrowConflictWhenAlreadyExists() {
         User user = new User();
         user.setName("user");
+        user.setEmail("user@local.test");
         Job job = new Job();
         job.setId(10L);
         job.setStatus(JobStatus.OPEN);
 
-        when(userRepository.findByName("user")).thenReturn(Optional.of(user));
+        when(userRepository.findByEmailIgnoreCase("user@local.test")).thenReturn(Optional.of(user));
         when(jobRepository.findById(10L)).thenReturn(Optional.of(job));
         when(applicationRepository.findByUserAndJob(user, job)).thenReturn(Optional.of(new Application(user, job)));
 
         ResponseStatusException ex = assertThrows(
                 ResponseStatusException.class,
-                () -> applicationService.applyForJob("user", 10L)
+                () -> applicationService.applyForJob("user@local.test", 10L)
         );
 
         assertEquals(409, ex.getStatusCode().value());
@@ -128,6 +131,7 @@ class ApplicationServiceTest {
     void applyForJobShouldReactivateWithdrawnApplication() {
         User user = new User();
         user.setName("user");
+        user.setEmail("user@local.test");
         Job job = new Job();
         job.setId(10L);
         job.setStatus(JobStatus.OPEN);
@@ -135,12 +139,12 @@ class ApplicationServiceTest {
         withdrawn.setId(77L);
         withdrawn.setStatus(ApplicationStatus.WITHDRAWN);
 
-        when(userRepository.findByName("user")).thenReturn(Optional.of(user));
+        when(userRepository.findByEmailIgnoreCase("user@local.test")).thenReturn(Optional.of(user));
         when(jobRepository.findById(10L)).thenReturn(Optional.of(job));
         when(applicationRepository.findByUserAndJob(user, job)).thenReturn(Optional.of(withdrawn));
         when(applicationRepository.save(withdrawn)).thenReturn(withdrawn);
 
-        Application result = applicationService.applyForJob("user", 10L);
+        Application result = applicationService.applyForJob("user@local.test", 10L);
 
         assertSame(withdrawn, result);
         assertEquals(ApplicationStatus.APPLIED, result.getStatus());
@@ -151,16 +155,17 @@ class ApplicationServiceTest {
     void applyForJobShouldRejectClosedJobs() {
         User user = new User();
         user.setName("user");
+        user.setEmail("user@local.test");
         Job job = new Job();
         job.setId(10L);
         job.setStatus(JobStatus.CLOSED);
 
-        when(userRepository.findByName("user")).thenReturn(Optional.of(user));
+        when(userRepository.findByEmailIgnoreCase("user@local.test")).thenReturn(Optional.of(user));
         when(jobRepository.findById(10L)).thenReturn(Optional.of(job));
 
         ResponseStatusException ex = assertThrows(
                 ResponseStatusException.class,
-                () -> applicationService.applyForJob("user", 10L)
+                () -> applicationService.applyForJob("user@local.test", 10L)
         );
 
         assertEquals(409, ex.getStatusCode().value());
@@ -179,10 +184,10 @@ class ApplicationServiceTest {
     }
 
     @Test
-    void getApplicationsByUsernameShouldReturnRepositoryData() {
-        when(applicationRepository.findByUser_Name("user")).thenReturn(List.of(new Application()));
+    void getApplicationsByEmailShouldReturnRepositoryData() {
+        when(applicationRepository.findByUser_EmailIgnoreCase("user@local.test")).thenReturn(List.of(new Application()));
 
-        List<Application> applications = applicationService.getApplicationsByUsername("user");
+        List<Application> applications = applicationService.getApplicationsByEmail("user@local.test");
 
         assertEquals(1, applications.size());
     }

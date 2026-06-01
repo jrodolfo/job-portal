@@ -39,10 +39,10 @@ class LoginControllerTest {
 
     @Test
     void loginShouldReturnTokenForAuthenticatedUser() throws Exception {
-        when(jwtUtil.generateToken("user")).thenReturn("mock-token");
+        when(jwtUtil.generateToken("user@local.test")).thenReturn("mock-token");
 
         mockMvc.perform(post("/api/auth/login")
-                        .with(httpBasic("user", "user123")))
+                        .with(httpBasic("user@local.test", "user123")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").value("mock-token"));
     }
@@ -50,9 +50,9 @@ class LoginControllerTest {
     @Test
     void detailsShouldReturnAuthenticatedUserPayload() throws Exception {
         mockMvc.perform(get("/api/auth/details")
-                        .with(httpBasic("user", "user123")))
+                        .with(httpBasic("user@local.test", "user123")))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.username").value("user"))
+                .andExpect(jsonPath("$.username").value("user@local.test"))
                 .andExpect(jsonPath("$.roles[0]").value("ROLE_APPLICANT"));
     }
 }

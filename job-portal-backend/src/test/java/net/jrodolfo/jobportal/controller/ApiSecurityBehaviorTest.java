@@ -34,7 +34,7 @@ class ApiSecurityBehaviorTest {
     @Test
     void createJobWithApplicantCredentialsShouldReturnForbiddenInsteadOfRedirectingToOauth() throws Exception {
         mockMvc.perform(post("/api/jobs")
-                        .with(httpBasic("user", "user123")))
+                        .with(httpBasic("user@local.test", "user123")))
                 .andExpect(status().isForbidden())
                 .andExpect(header().doesNotExist("Location"));
     }

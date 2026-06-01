@@ -7,7 +7,7 @@
 
 The application needs to support more than one authentication path:
 
-- local username/password access for development and application flows
+- local email/password access for development and application flows
 - Google-based login for OAuth/OpenID Connect scenarios
 - JWT issuance for bearer-token-based API use after authentication
 

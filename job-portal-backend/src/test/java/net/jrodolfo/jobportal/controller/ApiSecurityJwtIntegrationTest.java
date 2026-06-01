@@ -29,7 +29,7 @@ class ApiSecurityJwtIntegrationTest {
 
     @Test
     void adminEndpointShouldAcceptRealJwtTokenThroughSecurityChain() throws Exception {
-        String token = jwtUtil.generateToken("admin");
+        String token = jwtUtil.generateToken("admin@local.test");
 
         mockMvc.perform(get("/api/jobs/admin")
                         .header("Authorization", "Bearer " + token))
@@ -39,7 +39,7 @@ class ApiSecurityJwtIntegrationTest {
 
     @Test
     void adminEndpointShouldRejectApplicantTokenThroughSecurityChain() throws Exception {
-        String token = jwtUtil.generateToken("user");
+        String token = jwtUtil.generateToken("user@local.test");
 
         mockMvc.perform(get("/api/jobs/admin")
                         .header("Authorization", "Bearer " + token))

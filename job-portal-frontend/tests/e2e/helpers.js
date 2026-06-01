@@ -1,19 +1,19 @@
 import { expect } from '@playwright/test';
 
 export async function loginAsAdmin(page) {
-    await login(page, 'admin', 'admin123', '/admin-dashboard');
+    await login(page, 'admin@local.test', 'admin123', '/admin-dashboard');
 }
 
 export async function loginAsApplicant(page) {
-    await login(page, 'user', 'user123', '/applicant-dashboard');
+    await login(page, 'user@local.test', 'user123', '/applicant-dashboard');
 }
 
-export async function login(page, username, password, expectedPath) {
+export async function login(page, email, password, expectedPath) {
     await page.goto(expectedPath);
     await expect(page).toHaveURL(/\/$/);
 
-    await page.getByPlaceholder('Username').fill(username);
-    await page.getByPlaceholder('Password').fill(password);
+    await page.getByLabel('Email').fill(email);
+    await page.getByLabel('Password').fill(password);
     await page.getByRole('button', { name: 'Login' }).click();
 
     await expect(page).toHaveURL(new RegExp(`${expectedPath.replace('/', '\\/')}$`));

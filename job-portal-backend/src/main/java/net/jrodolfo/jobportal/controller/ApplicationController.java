@@ -71,8 +71,8 @@ public class ApplicationController {
             @ApiResponse(responseCode = "409", description = "Application already exists", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     public ResponseEntity<Application> applyForJob(Principal principal, @PathVariable Long jobId) {
-        String username = principal.getName();
-        return ResponseEntity.status(HttpStatus.CREATED).body(applicationService.applyForJob(username, jobId));
+        String email = principal.getName();
+        return ResponseEntity.status(HttpStatus.CREATED).body(applicationService.applyForJob(email, jobId));
     }
 
     /**
@@ -90,7 +90,7 @@ public class ApplicationController {
         if (isAdmin(authentication)) {
             return ResponseEntity.ok(applicationService.getAllApplications());
         }
-        return ResponseEntity.ok(applicationService.getApplicationsByUsername(authentication.getName()));
+        return ResponseEntity.ok(applicationService.getApplicationsByEmail(authentication.getName()));
     }
 
     /**
@@ -175,8 +175,8 @@ public class ApplicationController {
             return application;
         }
 
-        if (application.getUser() == null || application.getUser().getName() == null ||
-                !application.getUser().getName().equals(authentication.getName())) {
+        if (application.getUser() == null || application.getUser().getEmail() == null ||
+                !application.getUser().getEmail().equalsIgnoreCase(authentication.getName())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not allowed to access this application");
         }
 

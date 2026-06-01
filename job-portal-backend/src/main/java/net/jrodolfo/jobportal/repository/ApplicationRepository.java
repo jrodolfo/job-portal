@@ -41,10 +41,10 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
     boolean existsByJob_Id(Long jobId);
 
     /**
-     * Finds all applications submitted by a user with the specified name.
+     * Finds all applications submitted by a user with the specified email.
      *
-     * @param username the name of the user
-     * @return a list of applications matching the username
+     * @param email the email of the user
+     * @return a list of applications matching the email
      */
-    List<Application> findByUser_Name(String username);
+    List<Application> findByUser_EmailIgnoreCase(String email);
 }

@@ -51,8 +51,8 @@ URLs:
 - Jaeger UI: http://localhost:16686
 
 Frontend login credentials:
-- Applicant user: user / user123
-- Admin user: admin / admin123
+- Applicant user: user@local.test / user123
+- Admin user: admin@local.test / admin123
 
 Helpful commands:
 - Stop the stack: bash scripts/local/stop.sh

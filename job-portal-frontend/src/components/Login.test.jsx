@@ -24,15 +24,15 @@ describe('Login', () => {
     it('should login applicant, save token, set user details and navigate', async () => {
         axios.post.mockResolvedValueOnce({data: {token: 'jwt-123'}});
         axios.get.mockResolvedValueOnce({
-            data: {roles: ['ROLE_APPLICANT'], username: 'alice'}
+            data: {roles: ['ROLE_APPLICANT'], username: 'alice@example.com'}
         });
 
         const {store} = renderWithProviders(<Login/>);
         const user = userEvent.setup();
 
-        expect(screen.getByText('Use the account name, for example admin, user, or Rod Oliveira.')).toBeInTheDocument();
+        expect(screen.getByText('Use your account email, for example admin@local.test or user@local.test.')).toBeInTheDocument();
 
-        await user.type(screen.getByLabelText('Account Name'), 'alice');
+        await user.type(screen.getByLabelText('Email'), 'alice@example.com');
         await user.type(screen.getByLabelText('Password'), 'secret');
         await user.click(screen.getByRole('button', {name: 'Login'}));
 
@@ -50,7 +50,7 @@ describe('Login', () => {
 
         expect(localStorage.getItem('token')).toBe('jwt-123');
         expect(store.getState().user).toEqual({
-            username: 'alice',
+            username: 'alice@example.com',
             role: 'ROLE_APPLICANT'
         });
         expect(mockNavigate).toHaveBeenCalledWith('/applicant-dashboard');
@@ -62,11 +62,11 @@ describe('Login', () => {
         renderWithProviders(<Login/>);
         const user = userEvent.setup();
 
-        await user.type(screen.getByLabelText('Account Name'), 'alice');
+        await user.type(screen.getByLabelText('Email'), 'alice@example.com');
         await user.type(screen.getByLabelText('Password'), 'bad');
         await user.click(screen.getByRole('button', {name: 'Login'}));
 
-        expect(await screen.findByRole('alert')).toHaveTextContent('Invalid account name or password.');
+        expect(await screen.findByRole('alert')).toHaveTextContent('Invalid email or password.');
     });
 
     it('should show an inline error when the login request fails with a server error', async () => {
@@ -82,11 +82,11 @@ describe('Login', () => {
         const {store} = renderWithProviders(<Login/>);
         const user = userEvent.setup();
 
-        await user.type(screen.getByLabelText('Account Name'), 'alice');
+        await user.type(screen.getByLabelText('Email'), 'alice@example.com');
         await user.type(screen.getByLabelText('Password'), 'secret');
         await user.click(screen.getByRole('button', {name: 'Login'}));
 
-        expect(await screen.findByRole('alert')).toHaveTextContent('Invalid account name or password.');
+        expect(await screen.findByRole('alert')).toHaveTextContent('Invalid email or password.');
         expect(mockNavigate).not.toHaveBeenCalled();
         expect(store.getState().user).toEqual({
             username: '',
@@ -101,11 +101,11 @@ describe('Login', () => {
         const {store} = renderWithProviders(<Login/>);
         const user = userEvent.setup();
 
-        await user.type(screen.getByLabelText('Account Name'), 'alice');
+        await user.type(screen.getByLabelText('Email'), 'alice@example.com');
         await user.type(screen.getByLabelText('Password'), 'secret');
         await user.click(screen.getByRole('button', {name: 'Login'}));
 
-        expect(await screen.findByRole('alert')).toHaveTextContent('Invalid account name or password.');
+        expect(await screen.findByRole('alert')).toHaveTextContent('Invalid email or password.');
         expect(mockNavigate).not.toHaveBeenCalled();
         expect(store.getState().user).toEqual({
             username: '',

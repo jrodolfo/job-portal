@@ -8,13 +8,13 @@ import {useNavigate} from "react-router-dom";
 import {BACKEND_API_URL} from '../config/backend'
 
 /**
- * Login component provides a user interface for authenticating with username and password,
+ * Login component provides a user interface for authenticating with email and password,
  * or via Google OAuth2.
  *
  * @returns {JSX.Element} The rendered Login component.
  */
 const Login = () => {
-    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
     const dispatch = useDispatch();
@@ -27,7 +27,7 @@ const Login = () => {
             const response = await axios.post(BACKEND_API_URL + '/api/auth/login', {},
                 {
                     headers: {
-                        "Authorization": "Basic " + window.btoa(username + ":" + password)
+                        "Authorization": "Basic " + window.btoa(email + ":" + password)
                     }
                 })
             let token = response.data.token;
@@ -64,7 +64,7 @@ const Login = () => {
             }
 
         } catch (error) {
-            setErrorMessage('Invalid account name or password.')
+            setErrorMessage('Invalid email or password.')
         }
     }
 
@@ -95,20 +95,20 @@ const Login = () => {
                                 }}>
                                     <div className="mb-3">
                                         <label className="form-label body-text" htmlFor="login-account-name">
-                                            Account Name
+                                            Email
                                         </label>
                                         <input
                                             id="login-account-name"
-                                            type="text"
+                                            type="email"
                                             className="form-control"
-                                            placeholder="Account name"
-                                            autoComplete="username"
-                                            value={username}
-                                            onChange={(e) => setUsername(e.target.value)}
+                                            placeholder="Email"
+                                            autoComplete="email"
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
                                             required
                                         />
                                         <div className="form-text body-text">
-                                            Use the account name, for example admin, user, or Rod Oliveira.
+                                            Use your account email, for example admin@local.test or user@local.test.
                                         </div>
                                     </div>
                                     <div className="mb-3">

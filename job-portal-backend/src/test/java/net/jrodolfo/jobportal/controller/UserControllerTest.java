@@ -58,34 +58,34 @@ class UserControllerTest {
         when(userService.updateApplicantEnabled(eq(10L), eq(false))).thenReturn(disabledUser);
 
         mockMvc.perform(get("/api/users/admin")
-                        .with(httpBasic("admin", "admin123")))
+                        .with(httpBasic("admin@local.test", "admin123")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].name").value("Alice"))
                 .andExpect(jsonPath("$[0].role").value("APPLICANT"))
                 .andExpect(jsonPath("$[0].enabled").value(true));
 
         mockMvc.perform(get("/api/users/10")
-                        .with(httpBasic("admin", "admin123")))
+                        .with(httpBasic("admin@local.test", "admin123")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Alice"))
                 .andExpect(jsonPath("$.password").doesNotExist());
 
         mockMvc.perform(post("/api/users/admin/applicants")
-                        .with(httpBasic("admin", "admin123"))
+                        .with(httpBasic("admin@local.test", "admin123"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(new CreateApplicantUserRequest("Alice", "alice@example.com", "alice123"))))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.role").value("APPLICANT"));
 
         mockMvc.perform(put("/api/users/admin/applicants/10")
-                        .with(httpBasic("admin", "admin123"))
+                        .with(httpBasic("admin@local.test", "admin123"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(new UpdateApplicantUserRequest("Alice Smith", "alice.smith@example.com"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Alice Smith"));
 
         mockMvc.perform(put("/api/users/admin/applicants/10/enabled")
-                        .with(httpBasic("admin", "admin123"))
+                        .with(httpBasic("admin@local.test", "admin123"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(new UpdateUserEnabledRequest(false))))
                 .andExpect(status().isOk())
@@ -94,20 +94,20 @@ class UserControllerTest {
         verify(userService).updateApplicantEnabled(10L, false);
 
         mockMvc.perform(get("/api/users/admin")
-                        .with(httpBasic("user", "user123")))
+                        .with(httpBasic("user@local.test", "user123")))
                 .andExpect(status().isForbidden());
     }
 
     @Test
     void legacyUserMutationEndpointsShouldBeRetired() throws Exception {
         mockMvc.perform(post("/api/users")
-                        .with(httpBasic("admin", "admin123"))
+                        .with(httpBasic("admin@local.test", "admin123"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{}"))
                 .andExpect(status().isGone());
 
         mockMvc.perform(put("/api/users/1")
-                        .with(httpBasic("admin", "admin123"))
+                        .with(httpBasic("admin@local.test", "admin123"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{}"))
                 .andExpect(status().isGone());

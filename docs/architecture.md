@@ -246,7 +246,7 @@ Representative persistence files:
 
 The project uses a hybrid authentication model:
 
-- database-backed local username/password support for application and
+- database-backed local email/password support for application and
   development flows
 - Google OAuth2 / OpenID Connect support through Spring Security
 - JWT-based backend access after authentication where appropriate

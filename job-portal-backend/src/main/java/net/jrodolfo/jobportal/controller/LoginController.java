@@ -58,10 +58,10 @@ public class LoginController {
             @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content)
     })
     public Map<String, String> login(Principal principal) {
-        String username = principal.getName(); // fetched from Spring Security
-        System.out.println("username: " + username);
+        String email = principal.getName(); // fetched from Spring Security
+        System.out.println("email: " + email);
         // Generate token
-        String token = jwtUtil.generateToken(username);
+        String token = jwtUtil.generateToken(email);
         System.out.println("token: " + token);
 
         // Return as JSON

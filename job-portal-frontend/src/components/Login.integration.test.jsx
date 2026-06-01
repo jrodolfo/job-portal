@@ -39,7 +39,7 @@ describe('Login integration', () => {
 
                 return HttpResponse.json({
                     roles: ['ROLE_APPLICANT'],
-                    username: 'alice'
+                    username: 'alice@example.com'
                 });
             })
         );
@@ -47,14 +47,14 @@ describe('Login integration', () => {
         const {store} = renderWithProviders(<Login/>);
         const user = userEvent.setup();
 
-        await user.type(screen.getByLabelText('Account Name'), 'alice');
+        await user.type(screen.getByLabelText('Email'), 'alice@example.com');
         await user.type(screen.getByLabelText('Password'), 'secret');
         await user.click(screen.getByRole('button', {name: 'Login'}));
 
         await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/applicant-dashboard'));
         expect(localStorage.getItem('token')).toBe('jwt-123');
         expect(store.getState().user).toEqual({
-            username: 'alice',
+            username: 'alice@example.com',
             role: 'ROLE_APPLICANT'
         });
     });
@@ -67,11 +67,11 @@ describe('Login integration', () => {
         renderWithProviders(<Login/>);
         const user = userEvent.setup();
 
-        await user.type(screen.getByLabelText('Account Name'), 'alice');
+        await user.type(screen.getByLabelText('Email'), 'alice@example.com');
         await user.type(screen.getByLabelText('Password'), 'secret');
         await user.click(screen.getByRole('button', {name: 'Login'}));
 
-        expect(await screen.findByRole('alert')).toHaveTextContent('Invalid account name or password.');
+        expect(await screen.findByRole('alert')).toHaveTextContent('Invalid email or password.');
         expect(mockNavigate).not.toHaveBeenCalled();
     });
 });

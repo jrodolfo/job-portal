@@ -54,20 +54,20 @@ public class SecurityConfig {
     }
 
     /**
-     * Loads local users from the database for Basic authentication and JWT validation.
+     * Loads local users from the database by email for Basic authentication and JWT validation.
      *
-     * @param userRepository repository used to resolve local users by their login name
+     * @param userRepository repository used to resolve local users by their login email
      * @return a {@link UserDetailsService} backed by the users table
      */
     @Bean
     UserDetailsService userDetailsService(UserRepository userRepository) {
-        return username -> userRepository.findByName(username)
-                .map(user -> User.withUsername(user.getName())
+        return email -> userRepository.findByEmailIgnoreCase(email)
+                .map(user -> User.withUsername(user.getEmail())
                         .password(user.getPassword() == null ? "" : user.getPassword())
                         .roles(user.getRole().getValue())
                         .disabled(!user.isEnabled())
                         .build())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
     }
 
     /**

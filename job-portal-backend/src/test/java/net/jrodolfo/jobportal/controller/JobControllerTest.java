@@ -57,7 +57,7 @@ class JobControllerTest {
         Job job = new Job("Java Developer", "Build APIs", "ACME");
 
         mockMvc.perform(post("/api/jobs")
-                        .with(httpBasic("user", "user123"))
+                        .with(httpBasic("user@local.test", "user123"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(job)))
                 .andExpect(status().isForbidden());
@@ -72,7 +72,7 @@ class JobControllerTest {
         when(jobService.createJob(any(Job.class))).thenReturn(response);
 
         mockMvc.perform(post("/api/jobs")
-                        .with(httpBasic("admin", "admin123"))
+                        .with(httpBasic("admin@local.test", "admin123"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -110,13 +110,13 @@ class JobControllerTest {
         when(jobService.getAllJobs()).thenReturn(List.of(openJob, closedJob));
 
         mockMvc.perform(get("/api/jobs/admin")
-                        .with(httpBasic("admin", "admin123")))
+                        .with(httpBasic("admin@local.test", "admin123")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].status").value("OPEN"))
                 .andExpect(jsonPath("$[1].status").value("CLOSED"));
 
         mockMvc.perform(get("/api/jobs/admin")
-                        .with(httpBasic("user", "user123")))
+                        .with(httpBasic("user@local.test", "user123")))
                 .andExpect(status().isForbidden());
     }
 
@@ -138,13 +138,13 @@ class JobControllerTest {
         when(jobService.updateJob(eq(1L), any(Job.class))).thenReturn(response);
 
         mockMvc.perform(put("/api/jobs/1")
-                        .with(httpBasic("admin", "admin123"))
+                        .with(httpBasic("admin@local.test", "admin123"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk());
 
         mockMvc.perform(put("/api/jobs/1")
-                        .with(httpBasic("user", "user123"))
+                        .with(httpBasic("user@local.test", "user123"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isForbidden());
@@ -157,7 +157,7 @@ class JobControllerTest {
                 .thenThrow(new ResourceException("Job with id 99 was not found"));
 
         mockMvc.perform(put("/api/jobs/99")
-                        .with(httpBasic("admin", "admin123"))
+                        .with(httpBasic("admin@local.test", "admin123"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isNotFound())
@@ -171,7 +171,7 @@ class JobControllerTest {
                 .thenThrow(new RuntimeException("Database write failed"));
 
         mockMvc.perform(put("/api/jobs/1")
-                        .with(httpBasic("admin", "admin123"))
+                        .with(httpBasic("admin@local.test", "admin123"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isInternalServerError())
@@ -183,7 +183,7 @@ class JobControllerTest {
         Job request = new Job("  ", "Build APIs", "ACME");
 
         mockMvc.perform(post("/api/jobs")
-                        .with(httpBasic("admin", "admin123"))
+                        .with(httpBasic("admin@local.test", "admin123"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
@@ -197,7 +197,7 @@ class JobControllerTest {
         Job request = new Job("Java Developer", "Build APIs", " ");
 
         mockMvc.perform(post("/api/jobs")
-                        .with(httpBasic("admin", "admin123"))
+                        .with(httpBasic("admin@local.test", "admin123"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
@@ -211,7 +211,7 @@ class JobControllerTest {
         Job request = new Job("Java Developer", "   ", "ACME");
 
         mockMvc.perform(post("/api/jobs")
-                        .with(httpBasic("admin", "admin123"))
+                        .with(httpBasic("admin@local.test", "admin123"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
@@ -225,7 +225,7 @@ class JobControllerTest {
         Job request = new Job("Java Developer", "x".repeat(2001), "ACME");
 
         mockMvc.perform(post("/api/jobs")
-                        .with(httpBasic("admin", "admin123"))
+                        .with(httpBasic("admin@local.test", "admin123"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
@@ -237,11 +237,11 @@ class JobControllerTest {
     @Test
     void deleteJobShouldRequireAdmin() throws Exception {
         mockMvc.perform(delete("/api/jobs/1")
-                        .with(httpBasic("admin", "admin123")))
+                        .with(httpBasic("admin@local.test", "admin123")))
                 .andExpect(status().isNoContent());
 
         mockMvc.perform(delete("/api/jobs/1")
-                        .with(httpBasic("user", "user123")))
+                        .with(httpBasic("user@local.test", "user123")))
                 .andExpect(status().isForbidden());
     }
 
@@ -250,7 +250,7 @@ class JobControllerTest {
         doThrow(new ResourceException("Job with id 99 was not found")).when(jobService).deleteJob(99L);
 
         mockMvc.perform(delete("/api/jobs/99")
-                        .with(httpBasic("admin", "admin123")))
+                        .with(httpBasic("admin@local.test", "admin123")))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Job with id 99 was not found"));
     }
@@ -261,7 +261,7 @@ class JobControllerTest {
                 .when(jobService).deleteJob(1L);
 
         mockMvc.perform(delete("/api/jobs/1")
-                        .with(httpBasic("admin", "admin123")))
+                        .with(httpBasic("admin@local.test", "admin123")))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.message").value("Cannot delete job with existing applications"));
     }
@@ -274,13 +274,13 @@ class JobControllerTest {
         when(jobService.updateJobStatus(1L, JobStatus.CLOSED)).thenReturn(response);
 
         mockMvc.perform(put("/api/jobs/1/status")
-                        .with(httpBasic("admin", "admin123"))
+                        .with(httpBasic("admin@local.test", "admin123"))
                         .param("status", "CLOSED"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("CLOSED"));
 
         mockMvc.perform(put("/api/jobs/1/status")
-                        .with(httpBasic("user", "user123"))
+                        .with(httpBasic("user@local.test", "user123"))
                         .param("status", "CLOSED"))
                 .andExpect(status().isForbidden());
     }
@@ -293,7 +293,7 @@ class JobControllerTest {
         when(jobService.updateJobStatus(1L, JobStatus.OPEN)).thenReturn(response);
 
         mockMvc.perform(put("/api/jobs/1/status")
-                        .with(httpBasic("admin", "admin123"))
+                        .with(httpBasic("admin@local.test", "admin123"))
                         .param("status", "OPEN"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
@@ -306,7 +306,7 @@ class JobControllerTest {
                 .thenThrow(new ResourceException("Job with id 99 was not found"));
 
         mockMvc.perform(put("/api/jobs/99/status")
-                        .with(httpBasic("admin", "admin123"))
+                        .with(httpBasic("admin@local.test", "admin123"))
                         .param("status", "CLOSED"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Job with id 99 was not found"));
@@ -315,7 +315,7 @@ class JobControllerTest {
     @Test
     void updateJobStatusShouldReturnBadRequestForInvalidStatus() throws Exception {
         mockMvc.perform(put("/api/jobs/1/status")
-                        .with(httpBasic("admin", "admin123"))
+                        .with(httpBasic("admin@local.test", "admin123"))
                         .param("status", "NOT_A_REAL_STATUS"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Invalid request"));

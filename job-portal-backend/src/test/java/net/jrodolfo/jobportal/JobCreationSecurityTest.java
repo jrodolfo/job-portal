@@ -37,7 +37,7 @@ public class JobCreationSecurityTest {
                 """;
 
         mockMvc.perform(post("/api/jobs")
-                        .with(httpBasic("user", "user123"))
+                        .with(httpBasic("user@local.test", "user123"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jobJson))
                 .andExpect(status().isForbidden());
@@ -54,7 +54,7 @@ public class JobCreationSecurityTest {
                 """;
 
         mockMvc.perform(post("/api/jobs")
-                        .with(httpBasic("admin", "admin123"))
+                        .with(httpBasic("admin@local.test", "admin123"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jobJson))
                 .andExpect(status().isCreated());

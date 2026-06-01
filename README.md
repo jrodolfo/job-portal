@@ -78,8 +78,8 @@ bash scripts/local/stop.sh
 
 Default local frontend login credentials:
 
-- Applicant user: `user` / `user123`
-- Admin user: `admin` / `admin123`
+- Applicant user: `user@local.test` / `user123`
+- Admin user: `admin@local.test` / `admin123`
 
 Optional demo seed data:
 
@@ -240,8 +240,8 @@ After starting with `bash scripts/local/start.sh`, run:
 
 ```bash
 curl -i http://localhost:8080/api/jobs
-curl -i -u user:user123 -X POST http://localhost:8080/api/auth/login
-curl -i -u admin:admin123 -H "Content-Type: application/json" \
+curl -i -u user@local.test:user123 -X POST http://localhost:8080/api/auth/login
+curl -i -u admin@local.test:admin123 -H "Content-Type: application/json" \
   -d '{"title":"OTel Test","description":"trace smoke test","company":"Local"}' \
   http://localhost:8080/api/jobs
 ```
@@ -508,7 +508,7 @@ Google OAuth note:
 
 1. **Load the Insomnia collection** (inside the folder `docs/insomnia`).
 2. **Execute the "create applicant user" POST request** to add a new applicant user:
-   Use Basic Auth with `admin` / `admin123` (ROLE_ADMIN). Admins can create applicant users only; admin user creation and role promotion are intentionally not supported by this workflow.
+   Use Basic Auth with `admin@local.test` / `admin123` (ROLE_ADMIN). Admins can create applicant users only; admin user creation and role promotion are intentionally not supported by this workflow.
    ```json
    {
      "name": "demo-applicant",
@@ -517,7 +517,7 @@ Google OAuth note:
    }
    ```
 3. **Execute the "add job" POST request** to add a new job:
-   Use Basic Auth with `admin` / `admin123` (ROLE_ADMIN). The default `user` / `user123` (ROLE_APPLICANT) will receive 403 Forbidden for this endpoint by design.
+   Use Basic Auth with `admin@local.test` / `admin123` (ROLE_ADMIN). The default `user@local.test` / `user123` (ROLE_APPLICANT) will receive 403 Forbidden for this endpoint by design.
    ```json
    {
      "title": "Java Developer",
@@ -536,7 +536,7 @@ Google OAuth note:
    npm run dev
    ```
 2. **Go to the URL of the Web Application**: [http://localhost:5173](http://localhost:5173)
-3. **Login with credentials**: `user`, `user123` and run tests.
+3. **Login with credentials**: `user@local.test`, `user123` and run tests.
 4. **Try to apply for a job**. Check the database running the queries on `docs/database/queries.sql`.
 
 ---
@@ -672,7 +672,7 @@ docker compose ps
 docker compose logs -f backend
 ```
 
-If `job-portal-backend` is restarting, fix the backend startup problem first, then try logging in again with `user` / `user123`.
+If `job-portal-backend` is restarting, fix the backend startup problem first, then try logging in again with `user@local.test` / `user123`.
 
 ## Contact
 

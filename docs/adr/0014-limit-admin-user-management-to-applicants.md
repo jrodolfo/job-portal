@@ -10,7 +10,7 @@ would create unnecessary authorization complexity. In particular, admin account
 creation, admin promotion, and admin deletion require clearer governance than
 this practice project needs.
 
-The project also uses local username/password authentication for development
+The project also uses local email/password authentication for development
 and demo flows. Those local users need to be real database records so applicant
 users created from the UI can authenticate consistently with the rest of the
 system.
@@ -34,7 +34,7 @@ Admins cannot:
 - promote applicants to admins
 - disable admin users from the dashboard
 
-Local username/password authentication is database-backed. The application
+Local email/password authentication is database-backed. The application
 bootstraps the default local `admin` and `user` accounts when they are missing.
 
 ## Rationale

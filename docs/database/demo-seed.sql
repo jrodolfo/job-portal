@@ -5,9 +5,9 @@
 --   - 30 applications with mixed lifecycle statuses
 --
 -- Local login uses database-backed users with these demo credentials:
---   - admin / admin123
---   - user / user123
---   - Maya Patel / applicant123
+--   - admin@local.test / admin123
+--   - user@local.test / user123
+--   - maya.patel@example.com / applicant123
 --
 -- The seeded `user` row below is intentionally named `user` so the
 -- default applicant login can see seeded application history.
