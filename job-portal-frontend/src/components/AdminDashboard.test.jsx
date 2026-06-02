@@ -127,8 +127,8 @@ describe("AdminDashboard", () => {
         expect(within(summary).getByText("Closed").closest(".admin-stat-pill")).toHaveTextContent("0");
         expect(within(summary).getByText("Applications").closest(".admin-stat-pill")).toHaveTextContent("1");
         expect(within(summary).getByText("Users").closest(".admin-stat-pill")).toHaveTextContent("2");
-        expect(screen.getByLabelText("Job status color legend")).toHaveTextContent("Open");
-        expect(screen.getByLabelText("Job status color legend")).toHaveTextContent("Closed");
+        expect(screen.getByLabelText("Jobs color legend")).toHaveTextContent("Open");
+        expect(screen.getByLabelText("Jobs color legend")).toHaveTextContent("Closed");
         expect(screen.getByText("Open: 1 | Closed: 0")).toBeInTheDocument();
         expect(screen.getByText("Applied: 1 | Reviewing: 0 | Accepted: 0 | Rejected: 0 | Withdrawn: 0")).toBeInTheDocument();
     });
@@ -168,10 +168,16 @@ describe("AdminDashboard", () => {
         await openAddJobTab(user);
         expect(screen.getByRole("heading", {name: "Add New Job"})).toBeInTheDocument();
         expect(screen.getByLabelText("Title")).toBeInTheDocument();
+        expect(screen.queryByLabelText(/color legend/i)).not.toBeInTheDocument();
 
         await openApplicationsTab(user);
         expect(screen.getByRole("heading", {name: "Applied (1)"})).toBeInTheDocument();
         expect(screen.getByText(byTextContent("Applicant: user"))).toBeInTheDocument();
+        expect(screen.getByLabelText("Applications color legend")).toHaveTextContent("Applied");
+        expect(screen.getByLabelText("Applications color legend")).toHaveTextContent("Reviewing");
+        expect(screen.getByLabelText("Applications color legend")).toHaveTextContent("Accepted");
+        expect(screen.getByLabelText("Applications color legend")).toHaveTextContent("Rejected");
+        expect(screen.getByLabelText("Applications color legend")).toHaveTextContent("Withdrawn");
     });
 
     it("should show admin users as read-only and applicant users as manageable", async () => {
@@ -204,6 +210,8 @@ describe("AdminDashboard", () => {
         await openUsersTab(user);
 
         expect(screen.getByRole("heading", {name: "Create Applicant"})).toBeInTheDocument();
+        expect(screen.getByLabelText("Users color legend")).toHaveTextContent("Enabled");
+        expect(screen.getByLabelText("Users color legend")).toHaveTextContent("Disabled");
         const adminCard = screen.getByText(byTextContent("admin")).closest(".user-card");
         expect(within(adminCard).getByText("Admin users are read-only here.")).toBeInTheDocument();
         expect(within(adminCard).getByRole("button", {name: "Edit"})).toBeDisabled();

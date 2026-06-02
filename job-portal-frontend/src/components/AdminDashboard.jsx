@@ -33,10 +33,51 @@ const applicationStatuses = ["APPLIED", "REVIEWING", "ACCEPTED", "REJECTED", "WI
  */
 const jobStatuses = ["OPEN", "CLOSED"];
 
-const jobStatusLegend = [
-    {label: "Open", className: "job-card-open"},
-    {label: "Closed", className: "job-card-closed"}
-];
+const adminLegends = {
+    jobs: {
+        ariaLabel: "Jobs color legend",
+        items: [
+            {label: "Open", className: "job-card-open"},
+            {label: "Closed", className: "job-card-closed"}
+        ]
+    },
+    applications: {
+        ariaLabel: "Applications color legend",
+        items: [
+            {label: "Applied", className: "application-card-applied"},
+            {label: "Reviewing", className: "application-card-reviewing"},
+            {label: "Accepted", className: "application-card-accepted"},
+            {label: "Rejected", className: "application-card-rejected"},
+            {label: "Withdrawn", className: "application-card-withdrawn"}
+        ]
+    },
+    users: {
+        ariaLabel: "Users color legend",
+        items: [
+            {label: "Enabled", className: "user-card-enabled"},
+            {label: "Disabled", className: "user-card-disabled"}
+        ]
+    }
+};
+
+const getAdminLegend = (activeTab) => adminLegends[activeTab] || null;
+
+const AdminLegend = ({legend}) => {
+    if (!legend) {
+        return null;
+    }
+
+    return (
+        <div className="status-legend admin-status-legend" aria-label={legend.ariaLabel}>
+            {legend.items.map((item) => (
+                <span className="status-legend-item" key={item.label}>
+                    <span className={`status-legend-swatch ${item.className}`} aria-hidden="true"></span>
+                    <span>{item.label}</span>
+                </span>
+            ))}
+        </div>
+    );
+};
 
 /**
  * Tabs available in the Admin Dashboard.
@@ -180,6 +221,7 @@ const AdminDashboard = () => {
     const getApplicationCount = (jobId) => applications.filter((application) => application?.job?.id === jobId).length;
     const openJobsCount = jobs.filter((job) => job.status === "OPEN").length;
     const closedJobsCount = jobs.filter((job) => job.status === "CLOSED").length;
+    const activeLegend = getAdminLegend(activeTab);
     const applicationStatusSummary = applicationStatuses
         .map((status) => `${formatStatus(status)}: ${applications.filter((application) => application.status === status).length}`)
         .join(" | ");
@@ -573,14 +615,7 @@ const AdminDashboard = () => {
                         <span className="admin-stat-pill"><span>Applications</span><strong>{applications.length}</strong></span>
                         <span className="admin-stat-pill"><span>Users</span><strong>{users.length}</strong></span>
                     </div>
-                    <div className="status-legend admin-status-legend" aria-label="Job status color legend">
-                        {jobStatusLegend.map((item) => (
-                            <span className="status-legend-item" key={item.label}>
-                                <span className={`status-legend-swatch ${item.className}`} aria-hidden="true"></span>
-                                <span>{item.label}</span>
-                            </span>
-                        ))}
-                    </div>
+                    <AdminLegend legend={activeLegend}/>
                 </div>
 
                 {statusMessage ? (

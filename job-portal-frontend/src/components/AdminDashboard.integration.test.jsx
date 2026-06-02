@@ -65,8 +65,8 @@ describe('AdminDashboard integration', () => {
         const summary = screen.getByLabelText('Admin dashboard summary');
         expect(within(summary).getByText('Total Jobs').closest('.admin-stat-pill')).toHaveTextContent('1');
         expect(within(summary).getByText('Applications').closest('.admin-stat-pill')).toHaveTextContent('1');
-        expect(screen.getByLabelText('Job status color legend')).toHaveTextContent('Open');
-        expect(screen.getByLabelText('Job status color legend')).toHaveTextContent('Closed');
+        expect(screen.getByLabelText('Jobs color legend')).toHaveTextContent('Open');
+        expect(screen.getByLabelText('Jobs color legend')).toHaveTextContent('Closed');
         expect(screen.getByText('Open: 1 | Closed: 0')).toBeInTheDocument();
         expect(screen.getByText('Applied: 1 | Reviewing: 0 | Accepted: 0 | Rejected: 0 | Withdrawn: 0')).toBeInTheDocument();
         expect(screen.getByText(byTextContent('Applications: 1'))).toBeInTheDocument();
