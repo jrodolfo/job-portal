@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -36,6 +37,13 @@ class ApiSecurityBehaviorTest {
         mockMvc.perform(post("/api/jobs")
                         .with(httpBasic("user@local.test", "user123")))
                 .andExpect(status().isForbidden())
+                .andExpect(header().doesNotExist("Location"));
+    }
+
+    @Test
+    void protectedUserEndpointsShouldStillRequireAuthentication() throws Exception {
+        mockMvc.perform(get("/api/users/admin"))
+                .andExpect(status().isUnauthorized())
                 .andExpect(header().doesNotExist("Location"));
     }
 }

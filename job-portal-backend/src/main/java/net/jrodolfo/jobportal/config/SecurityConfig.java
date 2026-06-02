@@ -105,6 +105,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/jobs/admin").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/jobs").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/jobs/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll()
                         .requestMatchers("/api/users/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/applications/**").hasRole("APPLICANT")
                         .requestMatchers(HttpMethod.GET, "/api/applications/**").hasAnyRole("APPLICANT", "ADMIN")

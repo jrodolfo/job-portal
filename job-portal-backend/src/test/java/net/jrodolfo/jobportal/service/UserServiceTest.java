@@ -4,6 +4,7 @@ import net.jrodolfo.jobportal.constant.AuthProvider;
 import net.jrodolfo.jobportal.constant.Role;
 import net.jrodolfo.jobportal.dto.AdminUserResponse;
 import net.jrodolfo.jobportal.dto.CreateApplicantUserRequest;
+import net.jrodolfo.jobportal.dto.RegisterApplicantRequest;
 import net.jrodolfo.jobportal.dto.UpdateApplicantUserRequest;
 import net.jrodolfo.jobportal.model.User;
 import net.jrodolfo.jobportal.repository.UserRepository;
@@ -135,6 +136,29 @@ class UserServiceTest {
         assertEquals("alice@example.com", result.email());
         assertEquals(true, result.enabled());
         verify(passwordEncoder).encode("alice123");
+    }
+
+    @Test
+    void registerApplicantShouldForceApplicantRoleAndEncodePassword() {
+        when(userRepository.findByName("Rafael Costa")).thenReturn(Optional.empty());
+        when(userRepository.findByEmailIgnoreCase("rafael@example.com")).thenReturn(Optional.empty());
+        when(passwordEncoder.encode("applicant123")).thenReturn("encoded-password");
+        when(userRepository.save(org.mockito.ArgumentMatchers.any(User.class))).thenAnswer(invocation -> {
+            User user = invocation.getArgument(0);
+            user.setId(11L);
+            return user;
+        });
+
+        AdminUserResponse result = userService.registerApplicant(
+                new RegisterApplicantRequest("Rafael Costa", "rafael@example.com", "applicant123")
+        );
+
+        assertEquals(11L, result.id());
+        assertEquals(Role.APPLICANT, result.role());
+        assertEquals("Rafael Costa", result.name());
+        assertEquals("rafael@example.com", result.email());
+        assertEquals(true, result.enabled());
+        verify(passwordEncoder).encode("applicant123");
     }
 
     @Test

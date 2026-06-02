@@ -80,6 +80,7 @@ Default local frontend login credentials:
 
 - Applicant user: `user@local.test` / `user123`
 - Admin user: `admin@local.test` / `admin123`
+- New applicants can also create their own account from the login page.
 
 Optional demo seed data:
 
@@ -107,7 +108,7 @@ docker exec -i mysql-db mysql -ujobuser -pjobpass jobportal < docs/database/demo
 
 Current local role workflows:
 
-- Applicants can browse open jobs, apply, withdraw, and reapply.
+- Applicants can create an account, browse open jobs, apply, withdraw, and reapply.
 - Admins can create, edit, close, reopen, and delete jobs.
 - Admins can review applications, update application statuses, and filter/sort the application list.
 - Admins can list users, create applicant users, edit applicant name/email, and enable or disable applicant users.

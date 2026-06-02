@@ -4,7 +4,7 @@ import axios from "axios";
 import React, {useState} from "react";
 import {useDispatch} from "react-redux";
 import {setUserDetails} from "../store/userActions";
-import {useNavigate} from "react-router-dom";
+import {Link, useLocation, useNavigate} from "react-router-dom";
 import {BACKEND_API_URL} from '../config/backend'
 
 /**
@@ -17,6 +17,8 @@ const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
+    const location = useLocation();
+    const registrationMessage = location.state?.registrationMessage || "";
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -90,6 +92,11 @@ const Login = () => {
                                         {errorMessage}
                                     </div>
                                 ) : null}
+                                {registrationMessage ? (
+                                    <div className="alert alert-success" role="status">
+                                        {registrationMessage}
+                                    </div>
+                                ) : null}
                                 <form onSubmit={(e) => {
                                     e.preventDefault();
                                     processLogin()
@@ -145,7 +152,7 @@ const Login = () => {
 
                             {/* Footer */}
                             <div className="card-footer login-footer text-center">
-                                <small>Don't have an account? Sign up here </small>
+                                <small>Don't have an account? <Link to="/register">Create one</Link></small>
                             </div>
                         </div>
                     </div>

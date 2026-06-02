@@ -8,9 +8,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import net.jrodolfo.jobportal.dto.AdminUserResponse;
+import net.jrodolfo.jobportal.dto.RegisterApplicantRequest;
 import net.jrodolfo.jobportal.repository.UserRepository;
+import net.jrodolfo.jobportal.service.UserService;
 import net.jrodolfo.jobportal.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,6 +24,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -46,6 +53,9 @@ public class LoginController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private UserService userService;
+
     /**
      * Authenticates a user and generates a JWT token.
      * <p>
@@ -73,6 +83,17 @@ public class LoginController {
         response.put("token", token);
 
         return response;
+    }
+
+    @PostMapping("/register")
+    @Operation(summary = "Register applicant account")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Applicant account registered"),
+            @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content),
+            @ApiResponse(responseCode = "409", description = "Duplicate account", content = @Content)
+    })
+    public ResponseEntity<AdminUserResponse> register(@Valid @RequestBody RegisterApplicantRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.registerApplicant(request));
     }
 
     /**

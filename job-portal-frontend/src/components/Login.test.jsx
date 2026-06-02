@@ -31,6 +31,7 @@ describe('Login', () => {
         const user = userEvent.setup();
 
         expect(screen.getByText('Use your account email, for example admin@local.test or user@local.test.')).toBeInTheDocument();
+        expect(screen.getByRole('link', {name: 'Create one'})).toHaveAttribute('href', '/register');
 
         await user.type(screen.getByLabelText('Email'), 'alice@example.com');
         await user.type(screen.getByLabelText('Password'), 'secret');

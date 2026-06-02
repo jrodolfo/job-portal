@@ -4,6 +4,7 @@ import ApplicantDashboard from "./components/ApplicantDashboard"
 import AdminDashboard from "./components/AdminDashboard"
 import OAuthLogin from "./components/OAuthLogin"
 import ProtectedRoute from "./components/ProtectedRoute"
+import Register from "./components/Register"
 
 function App() {
 
@@ -12,6 +13,7 @@ function App() {
             <BrowserRouter>
                 <Routes>
                     <Route path="/" element={<Login/>}/>
+                    <Route path="register" element={<Register/>}/>
                     <Route path="applicant-dashboard" element={
                         <ProtectedRoute>
                             <ApplicantDashboard/>

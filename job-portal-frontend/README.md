@@ -5,6 +5,7 @@ This module is the React frontend for the `Job Portal` repository.
 It provides the browser UI for:
 
 - login and OAuth-related flows
+- applicant self-registration
 - applicant job application flows
 - admin job, application, and applicant user management
 - navigation and page composition
@@ -15,6 +16,7 @@ It provides the browser UI for:
 
 Applicants can:
 
+- create their own applicant account
 - log in with local credentials or OAuth
 - browse open jobs only
 - apply, withdraw, and reapply
