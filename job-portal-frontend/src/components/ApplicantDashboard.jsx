@@ -277,7 +277,7 @@ const ApplicantDashboard = () => {
                 <h1 className="section-title">Applicant Dashboard</h1>
                 {statusMessage ? <p className="body-text text-success">{statusMessage}</p> : null}
                 {errorMessage ? <p className="body-text text-danger">{errorMessage}</p> : null}
-                <div className="row">
+                <div className="row g-4">
                     {
                         jobs.map((job, index) => (
                             (() => {
@@ -290,8 +290,8 @@ const ApplicantDashboard = () => {
                                     : null;
 
                                 return (
-                                    <div className="col-sm-4" key={index}>
-                                        <div className={`card mb-4 job-card accent-${(index % 3) + 1}`}>
+                                    <div className="col-12 col-md-6 col-xl-4" key={index}>
+                                        <div className={`card job-card accent-${(index % 3) + 1}`}>
                                             <div className="card-body">
                                                 <h4 className="heading-text">{job.title}</h4>
                                                 <p className="body-text">
