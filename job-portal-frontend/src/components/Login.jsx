@@ -27,6 +27,7 @@ const Login = () => {
     const [errorMessage, setErrorMessage] = useState("");
     const location = useLocation();
     const registrationMessage = location.state?.registrationMessage || "";
+    const sessionMessage = location.state?.sessionMessage || "";
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -104,6 +105,11 @@ const Login = () => {
                                 {registrationMessage ? (
                                     <div className="alert alert-success" role="status">
                                         {registrationMessage}
+                                    </div>
+                                ) : null}
+                                {sessionMessage ? (
+                                    <div className="alert alert-warning" role="status">
+                                        {sessionMessage}
                                     </div>
                                 ) : null}
                                 <form onSubmit={(e) => {

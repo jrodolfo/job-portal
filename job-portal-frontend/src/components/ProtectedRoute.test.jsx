@@ -1,15 +1,25 @@
 import {screen, waitFor} from "@testing-library/react";
-import {Route, Routes} from "react-router-dom";
+import {Route, Routes, useLocation} from "react-router-dom";
 import axios from "axios";
 import ProtectedRoute from "./ProtectedRoute";
 import {renderWithProviders} from "../test/test-utils";
 
 vi.mock("axios");
 
+const LoginScreen = () => {
+    const location = useLocation();
+    return (
+        <div>
+            <div>Login Screen</div>
+            {location.state?.sessionMessage ? <div role="status">{location.state.sessionMessage}</div> : null}
+        </div>
+    );
+};
+
 const renderProtectedRoute = ({route = "/admin-dashboard", preloadedState} = {}) =>
     renderWithProviders(
         <Routes>
-            <Route path="/" element={<div>Login Screen</div>}/>
+            <Route path="/" element={<LoginScreen/>}/>
             <Route
                 path="/applicant-dashboard"
                 element={<div>Applicant Screen</div>}
@@ -75,5 +85,28 @@ describe("ProtectedRoute", () => {
         renderProtectedRoute();
 
         expect(await screen.findByText("Applicant Screen")).toBeInTheDocument();
+    });
+
+    it("should clear session and redirect with a message when token hydration returns unauthorized", async () => {
+        localStorage.setItem("token", "jwt-user");
+        axios.get.mockRejectedValueOnce({
+            response: {
+                status: 401,
+                data: {
+                    message: "Your account is disabled. Please contact an administrator."
+                }
+            }
+        });
+
+        const {store} = renderProtectedRoute();
+
+        expect(await screen.findByText("Login Screen")).toBeInTheDocument();
+        expect(screen.getByRole("status")).toHaveTextContent("Your account is disabled. Please contact an administrator.");
+        expect(localStorage.getItem("token")).toBeNull();
+        expect(store.getState().user).toEqual({
+            username: "",
+            displayName: "",
+            role: ""
+        });
     });
 });

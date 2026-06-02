@@ -61,6 +61,36 @@ describe('ApplicantDashboard', () => {
         expect(screen.getByText(byTextContent('Java Developer')).closest('.job-card')).toHaveClass('application-card-not-applied');
     });
 
+    it('should clear the session when application loading returns unauthorized', async () => {
+        axios.get
+            .mockResolvedValueOnce({data: []})
+            .mockRejectedValueOnce({
+                response: {
+                    status: 401,
+                    data: {
+                        message: 'Your account is disabled. Please contact an administrator.'
+                    }
+                }
+            });
+
+        const {store} = renderWithProviders(<ApplicantDashboard/>, {
+            preloadedState: {
+                user: {
+                    username: 'alice@example.com',
+                    displayName: 'Alice Smith',
+                    role: 'ROLE_APPLICANT'
+                }
+            }
+        });
+
+        await waitFor(() => expect(localStorage.getItem('token')).toBeNull());
+        expect(store.getState().user).toEqual({
+            username: '',
+            displayName: '',
+            role: ''
+        });
+    });
+
     it('should send apply request with bearer token', async () => {
         axios.get
             .mockResolvedValueOnce({

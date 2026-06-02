@@ -98,6 +98,21 @@ describe('Login', () => {
         expect(await screen.findByRole('alert')).toHaveTextContent('Your account is disabled. Please contact an administrator.');
     });
 
+    it('should show a session message from navigation state', async () => {
+        renderWithProviders(<Login/>, {
+            route: '/',
+            initialEntries: [{
+                pathname: '/',
+                state: {
+                    sessionMessage: 'Your account is disabled. Please contact an administrator.'
+                }
+            }]
+        });
+
+        expect(screen.getByRole('status')).toHaveTextContent('Your account is disabled. Please contact an administrator.');
+    });
+
+
     it('should show an inline error when the login request fails with a server error', async () => {
         axios.post.mockRejectedValueOnce({
             response: {

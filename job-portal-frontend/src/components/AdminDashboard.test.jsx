@@ -133,6 +133,35 @@ describe("AdminDashboard", () => {
         expect(screen.getByText("Applied: 1 | Reviewing: 0 | Accepted: 0 | Rejected: 0 | Withdrawn: 0")).toBeInTheDocument();
     });
 
+    it("should clear the session when admin data loading returns unauthorized", async () => {
+        localStorage.setItem("token", "jwt-admin");
+        axios.get.mockRejectedValueOnce({
+            response: {
+                status: 401,
+                data: {
+                    message: "Your account is disabled. Please contact an administrator."
+                }
+            }
+        });
+
+        const {store} = renderWithProviders(<AdminDashboard/>, {
+            preloadedState: {
+                user: {
+                    username: "admin@local.test",
+                    displayName: "Admin",
+                    role: "ROLE_ADMIN"
+                }
+            }
+        });
+
+        await waitFor(() => expect(localStorage.getItem("token")).toBeNull());
+        expect(store.getState().user).toEqual({
+            username: "",
+            displayName: "",
+            role: ""
+        });
+    });
+
     it("should switch between jobs, add job, and applications tabs", async () => {
         localStorage.setItem("token", "jwt-admin");
         axios.get

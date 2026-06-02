@@ -5,15 +5,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {selectUser} from "../store/userSelectors";
 import {setUserDetails} from "../store/userActions";
 import {BACKEND_API_URL} from "../config/backend";
-
-/**
- * Initial empty state for the user details.
- */
-const initialUserState = {
-    username: "",
-    displayName: "",
-    role: ""
-};
+import {clearStoredSession, getSessionMessage, isUnauthorizedError} from "../auth/session";
 
 /**
  * ProtectedRoute component wraps other components to ensure the user is authenticated
@@ -29,6 +21,7 @@ const ProtectedRoute = ({children, requiredRole}) => {
     const dispatch = useDispatch();
     const token = localStorage.getItem("token");
     const [authResolved, setAuthResolved] = useState(Boolean(user.role) || !token);
+    const [redirectState, setRedirectState] = useState(null);
 
     useEffect(() => {
         if (!token || user.role) {
@@ -51,21 +44,23 @@ const ProtectedRoute = ({children, requiredRole}) => {
                 }
 
                 if (response.data?.username && response.data?.roles?.[0]) {
+                    setRedirectState(null);
                     setUserDetails(dispatch)({
                         username: response.data.username,
                         displayName: response.data.displayName,
                         role: response.data.roles[0]
                     });
                 } else {
-                    localStorage.removeItem("token");
-                    setUserDetails(dispatch)(initialUserState);
+                    clearStoredSession(dispatch);
                 }
             } catch (error) {
                 if (!active) {
                     return;
                 }
-                localStorage.removeItem("token");
-                setUserDetails(dispatch)(initialUserState);
+                if (isUnauthorizedError(error)) {
+                    setRedirectState({sessionMessage: getSessionMessage(error)});
+                }
+                clearStoredSession(dispatch);
             } finally {
                 if (active) {
                     setAuthResolved(true);
@@ -81,7 +76,7 @@ const ProtectedRoute = ({children, requiredRole}) => {
     }, [dispatch, token, user.role]);
 
     if (!token) {
-        return <Navigate to="/" replace/>;
+        return <Navigate to="/" replace state={redirectState || undefined}/>;
     }
 
     if (!authResolved) {
@@ -89,7 +84,7 @@ const ProtectedRoute = ({children, requiredRole}) => {
     }
 
     if (!user.role) {
-        return <Navigate to="/" replace/>;
+        return <Navigate to="/" replace state={redirectState || undefined}/>;
     }
 
     if (requiredRole && user.role !== requiredRole) {

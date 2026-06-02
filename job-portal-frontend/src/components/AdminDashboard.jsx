@@ -6,6 +6,7 @@ import AdminJobForm from "./AdminJobForm";
 import AdminJobList from "./AdminJobList";
 import AdminApplicationsPanel from "./AdminApplicationsPanel";
 import AdminUsersPanel from "./AdminUsersPanel";
+import {useSessionTimeout} from "../auth/session";
 
 /**
  * Initial empty state for the job form.
@@ -159,6 +160,7 @@ const parseSortableTimestamp = (timestamp) => {
  * @returns {JSX.Element} The rendered AdminDashboard component.
  */
 const AdminDashboard = () => {
+    const handleSessionTimeout = useSessionTimeout();
     const [jobs, setJobs] = useState([]);
     const [applications, setApplications] = useState([]);
     const [users, setUsers] = useState([]);
@@ -211,6 +213,9 @@ const AdminDashboard = () => {
             setUsers(usersResponse.data);
             setStatusSelections(buildStatusSelections(applicationsResponse.data));
         } catch (error) {
+            if (handleSessionTimeout(error)) {
+                return;
+            }
             setErrorMessage("We couldn't load admin data right now. Please refresh and try again.");
         }
     };
@@ -366,6 +371,9 @@ const AdminDashboard = () => {
             resetForm();
             setActiveTab("jobs");
         } catch (error) {
+            if (handleSessionTimeout(error)) {
+                return;
+            }
             showRequestError(error, editingJobId
                 ? "We couldn't update the job right now. Please try again."
                 : "We couldn't create the job right now. Please try again.");
@@ -412,6 +420,9 @@ const AdminDashboard = () => {
             }
             setStatusMessage("Job deleted successfully.");
         } catch (error) {
+            if (handleSessionTimeout(error)) {
+                return;
+            }
             showRequestError(error, "We couldn't delete the job right now. Please try again.");
         } finally {
             setDeletingJobId(null);
@@ -447,6 +458,9 @@ const AdminDashboard = () => {
                 ? "Job closed successfully."
                 : "Job reopened successfully.");
         } catch (error) {
+            if (handleSessionTimeout(error)) {
+                return;
+            }
             showRequestError(error, "We couldn't update the job status right now. Please try again.");
         } finally {
             setUpdatingJobStatusId(null);
@@ -490,6 +504,9 @@ const AdminDashboard = () => {
             }));
             setStatusMessage("Application status updated successfully.");
         } catch (error) {
+            if (handleSessionTimeout(error)) {
+                return;
+            }
             showRequestError(error, "We couldn't update the application status right now. Please try again.");
         } finally {
             setUpdatingApplicationId(null);
@@ -518,6 +535,9 @@ const AdminDashboard = () => {
             setUsers((prev) => prev.map((user) => user.id === userId ? response.data : user));
             setStatusMessage(enabled ? "User enabled successfully." : "User disabled successfully.");
         } catch (error) {
+            if (handleSessionTimeout(error)) {
+                return;
+            }
             showRequestError(error, "We couldn't update the user status right now. Please try again.");
         } finally {
             setUpdatingUserId(null);

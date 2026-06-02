@@ -2,6 +2,7 @@ import {useEffect, useState} from "react";
 import Navbar from "./Navbar";
 import axios from "axios";
 import {BACKEND_API_URL} from '../config/backend'
+import {useSessionTimeout} from "../auth/session";
 
 /**
  * Formatter for application date and time.
@@ -179,6 +180,7 @@ const getActionLabel = (application, isSubmitting) => {
  * @returns {JSX.Element} The rendered component.
  */
 const ApplicantDashboard = () => {
+    const handleSessionTimeout = useSessionTimeout();
 
     const [jobs, setJobs] = useState([]);
     const [applicationsByJobId, setApplicationsByJobId] = useState({});
@@ -213,6 +215,9 @@ const ApplicantDashboard = () => {
             setJobs(jobsResponse.data);
             setApplicationsByJobId(buildApplicationsLookup(applicationsResponse.data));
         } catch (error) {
+            if (handleSessionTimeout(error)) {
+                return;
+            }
             setErrorMessage("We couldn't load your jobs and applications right now. Please refresh and try again.");
         }
     };
@@ -243,6 +248,9 @@ const ApplicantDashboard = () => {
             }));
             setStatusMessage("Application submitted successfully.");
         } catch (error) {
+            if (handleSessionTimeout(error)) {
+                return;
+            }
             const backendMessage = error?.response?.data?.message;
             const message = backendMessage
                 ? backendMessage
@@ -288,6 +296,9 @@ const ApplicantDashboard = () => {
             }));
             setStatusMessage("Application withdrawn successfully.");
         } catch (error) {
+            if (handleSessionTimeout(error)) {
+                return;
+            }
             const backendMessage = error?.response?.data?.message;
             const message = backendMessage
                 ? backendMessage

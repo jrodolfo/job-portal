@@ -29,6 +29,7 @@ export function createTestStore(preloadedState) {
  * @param {Object} [options.preloadedState] - Initial state for the Redux store.
  * @param {Object} [options.store] - A custom store instance.
  * @param {string} [options.route='/'] - The initial route for the MemoryRouter.
+ * @param {Array} [options.initialEntries] - Optional MemoryRouter entries with route state.
  * @returns {Object} An object containing the store and all standard RTL render results.
  */
 export function renderWithProviders(
@@ -36,12 +37,13 @@ export function renderWithProviders(
     {
         preloadedState = {user: {username: '', displayName: '', role: ''}},
         store = createTestStore(preloadedState),
-        route = '/'
+        route = '/',
+        initialEntries
     } = {}
 ) {
     const Wrapper = ({children}) => (
         <Provider store={store}>
-            <MemoryRouter initialEntries={[route]}>{children}</MemoryRouter>
+            <MemoryRouter initialEntries={initialEntries || [route]}>{children}</MemoryRouter>
         </Provider>
     );
 
