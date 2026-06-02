@@ -239,6 +239,7 @@ describe("AdminDashboard", () => {
         await openUsersTab(user);
 
         expect(screen.getByText("Admins are read-only here. Applicant users can be enabled or disabled.")).toBeInTheDocument();
+        expect(screen.getByText("Enabled users can log in and use the portal. Disabled users cannot log in and active sessions are ended.")).toBeInTheDocument();
         expect(screen.queryByRole("heading", {name: "Create Applicant"})).not.toBeInTheDocument();
         expect(screen.queryByRole("button", {name: "Edit"})).not.toBeInTheDocument();
         expect(screen.getByLabelText("Users color legend")).toHaveTextContent("Enabled");

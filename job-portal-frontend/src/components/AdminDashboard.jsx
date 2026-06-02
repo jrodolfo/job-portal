@@ -714,6 +714,9 @@ const AdminDashboard = () => {
                     <p className="body-text muted-meta admin-summary-text">
                         Admins are read-only here. Applicant users can be enabled or disabled.
                     </p>
+                    <p className="body-text muted-meta admin-summary-text">
+                        Enabled users can log in and use the portal. Disabled users cannot log in and active sessions are ended.
+                    </p>
                     <div className="row g-2 mb-3 admin-filter-row">
                         <div className="col-md-5">
                             <label className="form-label body-text" htmlFor="user-search">Search Users</label>
