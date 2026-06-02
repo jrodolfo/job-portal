@@ -71,23 +71,43 @@ class JwtAuthFilterTest {
     }
 
     @Test
-    void shouldAuthenticateGoogleUserWhenNotFoundInUserDetailsServiceButTokenValid() throws Exception {
+    void shouldNotAuthenticateWhenUserIsMissingFromDatabase() throws Exception {
         JwtAuthFilter filter = new JwtAuthFilter(jwtUtil, userDetailsService);
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.addHeader("Authorization", "Bearer google-token");
+        request.addHeader("Authorization", "Bearer missing-user-token");
         MockHttpServletResponse response = new MockHttpServletResponse();
         FilterChain chain = (req, res) -> {
         };
 
-        when(jwtUtil.extractEmail("google-token")).thenReturn("google@example.com");
-        when(userDetailsService.loadUserByUsername("google@example.com"))
+        when(jwtUtil.extractEmail("missing-user-token")).thenReturn("missing@example.com");
+        when(userDetailsService.loadUserByUsername("missing@example.com"))
                 .thenThrow(new UsernameNotFoundException("not found"));
-        when(jwtUtil.validateToken("google-token", "google@example.com")).thenReturn(true);
 
         filter.doFilter(request, response, chain);
 
-        assertNotNull(SecurityContextHolder.getContext().getAuthentication());
-        assertEquals("google@example.com", SecurityContextHolder.getContext().getAuthentication().getName());
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
+    }
+
+    @Test
+    void shouldNotAuthenticateWhenUserIsDisabled() throws Exception {
+        JwtAuthFilter filter = new JwtAuthFilter(jwtUtil, userDetailsService);
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("Authorization", "Bearer disabled-token");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        FilterChain chain = (req, res) -> {
+        };
+
+        when(jwtUtil.extractEmail("disabled-token")).thenReturn("disabled@example.com");
+        when(userDetailsService.loadUserByUsername("disabled@example.com"))
+                .thenReturn(User.withUsername("disabled@example.com")
+                        .password("pwd")
+                        .authorities("ROLE_APPLICANT")
+                        .disabled(true)
+                        .build());
+
+        filter.doFilter(request, response, chain);
+
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
     }
 
     @Test
