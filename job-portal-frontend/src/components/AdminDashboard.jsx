@@ -521,6 +521,12 @@ const AdminDashboard = () => {
         }
 
         const currentUser = users.find((user) => user.id === userId);
+        const currentUserLabel = getUserLabel(currentUser) || "User";
+
+        if (!enabled && !window.confirm(`Disable ${currentUserLabel}? This user will be signed out and will not be able to log in.`)) {
+            return;
+        }
+
         setUpdatingUserId(userId);
         setErrorMessage("");
         setStatusMessage("");

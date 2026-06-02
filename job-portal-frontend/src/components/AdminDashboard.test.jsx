@@ -47,6 +47,7 @@ const byTextContent = (text) => (_, element) => element?.textContent === text;
 
 describe("AdminDashboard", () => {
     beforeEach(() => {
+        vi.unstubAllGlobals();
         vi.clearAllMocks();
         localStorage.clear();
         axios.get.mockResolvedValue({data: []});
@@ -88,8 +89,8 @@ describe("AdminDashboard", () => {
                     },
                     {
                         id: 2,
-                        name: "Rod Oliveira",
-                        email: "jrodolfo@gmail.com",
+                        name: "user",
+                        email: "user@local.test",
                         role: "APPLICANT",
                         enabled: true
                     }
@@ -225,8 +226,8 @@ describe("AdminDashboard", () => {
                     },
                     {
                         id: 2,
-                        name: "user",
-                        email: "user@local.test",
+                        name: "Rod Oliveira",
+                        email: "jrodolfo@gmail.com",
                         role: "APPLICANT",
                         enabled: true
                     }
@@ -248,7 +249,7 @@ describe("AdminDashboard", () => {
         expect(within(adminCard).getByText("Admin users are read-only here.")).toBeInTheDocument();
         expect(within(adminCard).getByRole("button", {name: "Disable"})).toBeDisabled();
 
-        const applicantCard = screen.getByText(byTextContent("user")).closest(".user-card");
+        const applicantCard = screen.getByText(byTextContent("Rod Oliveira")).closest(".user-card");
         expect(within(applicantCard).getByText(byTextContent("Role: Applicant"))).toBeInTheDocument();
         expect(within(applicantCard).getByRole("button", {name: "Disable"})).toBeEnabled();
     });
@@ -331,8 +332,8 @@ describe("AdminDashboard", () => {
                 data: [
                     {
                         id: 2,
-                        name: "user",
-                        email: "user@local.test",
+                        name: "Rod Oliveira",
+                        email: "jrodolfo@gmail.com",
                         role: "APPLICANT",
                         enabled: true
                     }
@@ -350,9 +351,12 @@ describe("AdminDashboard", () => {
 
         renderWithProviders(<AdminDashboard/>);
         const user = userEvent.setup();
+        const confirmMock = vi.fn(() => true);
+        vi.stubGlobal("confirm", confirmMock);
 
         await openUsersTab(user);
         await user.click(screen.getByRole("button", {name: "Disable"}));
+        expect(confirmMock).toHaveBeenCalledWith("Disable Rod Oliveira? This user will be signed out and will not be able to log in.");
         await waitFor(() => expect(axios.put).toHaveBeenCalledWith(
             "http://localhost:8080/api/users/admin/applicants/2/enabled",
             {enabled: false},
@@ -365,6 +369,84 @@ describe("AdminDashboard", () => {
         expect(await screen.findByText("User Rod Oliveira was disabled successfully.")).toBeInTheDocument();
         expect(screen.getByText(byTextContent("Status: Disabled"))).toBeInTheDocument();
         expect(screen.getByRole("button", {name: "Enable"})).toBeInTheDocument();
+    });
+
+    it("should not disable applicant users when confirmation is canceled", async () => {
+        localStorage.setItem("token", "jwt-admin");
+        axios.get
+            .mockResolvedValueOnce({data: []})
+            .mockResolvedValueOnce({data: []})
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 2,
+                        name: "Rod Oliveira",
+                        email: "jrodolfo@gmail.com",
+                        role: "APPLICANT",
+                        enabled: true
+                    }
+                ]
+            });
+
+        renderWithProviders(<AdminDashboard/>);
+        const user = userEvent.setup();
+        const confirmMock = vi.fn(() => false);
+        vi.stubGlobal("confirm", confirmMock);
+
+        await openUsersTab(user);
+        await user.click(screen.getByRole("button", {name: "Disable"}));
+
+        expect(confirmMock).toHaveBeenCalledWith("Disable Rod Oliveira? This user will be signed out and will not be able to log in.");
+        expect(axios.put).not.toHaveBeenCalled();
+        expect(screen.getByText(byTextContent("Status: Enabled"))).toBeInTheDocument();
+    });
+
+    it("should enable applicant users without confirmation", async () => {
+        localStorage.setItem("token", "jwt-admin");
+        axios.get
+            .mockResolvedValueOnce({data: []})
+            .mockResolvedValueOnce({data: []})
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 2,
+                        name: "Rod Oliveira",
+                        email: "jrodolfo@gmail.com",
+                        role: "APPLICANT",
+                        enabled: false
+                    }
+                ]
+            });
+        axios.put.mockResolvedValueOnce({
+            data: {
+                id: 2,
+                name: "Rod Oliveira",
+                email: "jrodolfo@gmail.com",
+                role: "APPLICANT",
+                enabled: true
+            }
+        });
+
+        renderWithProviders(<AdminDashboard/>);
+        const user = userEvent.setup();
+        const confirmMock = vi.fn(() => false);
+        vi.stubGlobal("confirm", confirmMock);
+
+        await openUsersTab(user);
+        await user.click(screen.getByRole("button", {name: "Enable"}));
+
+        expect(confirmMock).not.toHaveBeenCalled();
+        await waitFor(() => expect(axios.put).toHaveBeenCalledWith(
+            "http://localhost:8080/api/users/admin/applicants/2/enabled",
+            {enabled: true},
+            {
+                headers: {
+                    Authorization: "Bearer jwt-admin"
+                }
+            }
+        ));
+        expect(await screen.findByText("User Rod Oliveira was enabled successfully.")).toBeInTheDocument();
+        expect(screen.getByText(byTextContent("Status: Enabled"))).toBeInTheDocument();
     });
 
     it("should show the posted date with time when a timestamp is available", async () => {
