@@ -88,8 +88,8 @@ describe("AdminDashboard", () => {
                     },
                     {
                         id: 2,
-                        name: "user",
-                        email: "user@local.test",
+                        name: "Rod Oliveira",
+                        email: "jrodolfo@gmail.com",
                         role: "APPLICANT",
                         enabled: true
                     }
@@ -340,8 +340,8 @@ describe("AdminDashboard", () => {
         axios.put.mockResolvedValueOnce({
             data: {
                 id: 2,
-                name: "user",
-                email: "user@local.test",
+                name: "Rod Oliveira",
+                email: "jrodolfo@gmail.com",
                 role: "APPLICANT",
                 enabled: false
             }
@@ -361,7 +361,7 @@ describe("AdminDashboard", () => {
                 }
             }
         ));
-        expect(await screen.findByText("User disabled successfully.")).toBeInTheDocument();
+        expect(await screen.findByText("User Rod Oliveira was disabled successfully.")).toBeInTheDocument();
         expect(screen.getByText(byTextContent("Status: Disabled"))).toBeInTheDocument();
         expect(screen.getByRole("button", {name: "Enable"})).toBeInTheDocument();
     });

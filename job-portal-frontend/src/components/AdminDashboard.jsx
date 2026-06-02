@@ -153,6 +153,8 @@ const parseSortableTimestamp = (timestamp) => {
     return Number.isNaN(parsedDate.getTime()) ? 0 : parsedDate.getTime();
 };
 
+const getUserLabel = (user) => user?.name || user?.email;
+
 /**
  * AdminDashboard component serves as the main administrative interface.
  * It allows admins to manage job postings and view/update job applications.
@@ -518,6 +520,7 @@ const AdminDashboard = () => {
             return;
         }
 
+        const currentUser = users.find((user) => user.id === userId);
         setUpdatingUserId(userId);
         setErrorMessage("");
         setStatusMessage("");
@@ -533,7 +536,8 @@ const AdminDashboard = () => {
                 }
             );
             setUsers((prev) => prev.map((user) => user.id === userId ? response.data : user));
-            setStatusMessage(enabled ? "User enabled successfully." : "User disabled successfully.");
+            const userLabel = getUserLabel(response.data) || getUserLabel(currentUser) || "User";
+            setStatusMessage(`User ${userLabel} was ${enabled ? "enabled" : "disabled"} successfully.`);
         } catch (error) {
             if (handleSessionTimeout(error)) {
                 return;

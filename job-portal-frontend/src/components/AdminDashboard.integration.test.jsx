@@ -182,7 +182,7 @@ describe('AdminDashboard integration', () => {
 
         await user.click(within(userCard).getByRole('button', {name: 'Disable'}));
 
-        expect(await screen.findByText('User disabled successfully.')).toBeInTheDocument();
+        expect(await screen.findByText('User Sofia Ribeiro was disabled successfully.')).toBeInTheDocument();
         expect(screen.getByRole('tab', {name: 'Users (2)'})).toBeInTheDocument();
         const updatedUserCard = screen.getByText('Sofia Ribeiro').closest('.user-card');
         expect(within(updatedUserCard).getByText(/Disabled/)).toBeInTheDocument();
