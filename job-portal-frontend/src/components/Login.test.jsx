@@ -59,7 +59,14 @@ describe('Login', () => {
     });
 
     it('should show an inline error on invalid credentials', async () => {
-        axios.post.mockRejectedValueOnce(new Error('unauthorized'));
+        axios.post.mockRejectedValueOnce({
+            response: {
+                status: 401,
+                data: {
+                    message: 'Invalid email or password.'
+                }
+            }
+        });
 
         renderWithProviders(<Login/>);
         const user = userEvent.setup();
@@ -69,6 +76,26 @@ describe('Login', () => {
         await user.click(screen.getByRole('button', {name: 'Login'}));
 
         expect(await screen.findByRole('alert')).toHaveTextContent('Invalid email or password.');
+    });
+
+    it('should show an inline error when the account is disabled', async () => {
+        axios.post.mockRejectedValueOnce({
+            response: {
+                status: 401,
+                data: {
+                    message: 'Your account is disabled. Please contact an administrator.'
+                }
+            }
+        });
+
+        renderWithProviders(<Login/>);
+        const user = userEvent.setup();
+
+        await user.type(screen.getByLabelText('Email'), 'alice@example.com');
+        await user.type(screen.getByLabelText('Password'), 'secret');
+        await user.click(screen.getByRole('button', {name: 'Login'}));
+
+        expect(await screen.findByRole('alert')).toHaveTextContent('Your account is disabled. Please contact an administrator.');
     });
 
     it('should show an inline error when the login request fails with a server error', async () => {
@@ -90,6 +117,7 @@ describe('Login', () => {
 
         expect(await screen.findByRole('alert')).toHaveTextContent('Invalid email or password.');
         expect(mockNavigate).not.toHaveBeenCalled();
+        expect(localStorage.getItem('token')).toBeNull();
         expect(store.getState().user).toEqual({
             username: '',
             displayName: '',

@@ -7,6 +7,14 @@ import {setUserDetails} from "../store/userActions";
 import {Link, useLocation, useNavigate} from "react-router-dom";
 import {BACKEND_API_URL} from '../config/backend'
 
+const getLoginErrorMessage = (error) => {
+    if (error?.response?.status === 401 && error.response.data?.message) {
+        return error.response.data.message;
+    }
+
+    return "Invalid email or password.";
+};
+
 /**
  * Login component provides a user interface for authenticating with email and password,
  * or via Google OAuth2.
@@ -67,7 +75,8 @@ const Login = () => {
             }
 
         } catch (error) {
-            setErrorMessage('Invalid email or password.')
+            localStorage.removeItem('token');
+            setErrorMessage(getLoginErrorMessage(error))
         }
     }
 

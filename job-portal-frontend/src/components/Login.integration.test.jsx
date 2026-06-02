@@ -76,4 +76,22 @@ describe('Login integration', () => {
         expect(await screen.findByRole('alert')).toHaveTextContent('Invalid email or password.');
         expect(mockNavigate).not.toHaveBeenCalled();
     });
+
+    it('shows an inline error when the backend reports a disabled account', async () => {
+        server.use(
+            http.post(`${api}/api/auth/login`, () => HttpResponse.json({
+                message: 'Your account is disabled. Please contact an administrator.'
+            }, {status: 401}))
+        );
+
+        renderWithProviders(<Login/>);
+        const user = userEvent.setup();
+
+        await user.type(screen.getByLabelText('Email'), 'alice@example.com');
+        await user.type(screen.getByLabelText('Password'), 'secret');
+        await user.click(screen.getByRole('button', {name: 'Login'}));
+
+        expect(await screen.findByRole('alert')).toHaveTextContent('Your account is disabled. Please contact an administrator.');
+        expect(mockNavigate).not.toHaveBeenCalled();
+    });
 });

@@ -1,6 +1,8 @@
 package net.jrodolfo.jobportal.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.jrodolfo.jobportal.model.User;
+import net.jrodolfo.jobportal.repository.UserRepository;
 import net.jrodolfo.jobportal.util.JwtUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,13 +37,17 @@ class LoginControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @MockitoBean
     private JwtUtil jwtUtil;
 
     @Test
     void loginShouldRequireAuthentication() throws Exception {
         mockMvc.perform(post("/api/auth/login"))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").value("Invalid email or password."));
     }
 
     @Test
@@ -52,6 +58,24 @@ class LoginControllerTest {
                         .with(httpBasic("user@local.test", "user123")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").value("mock-token"));
+    }
+
+    @Test
+    void loginShouldShowDisabledAccountMessage() throws Exception {
+        User user = userRepository.findByEmailIgnoreCase("user@local.test").orElseThrow();
+
+        try {
+            user.setEnabled(false);
+            userRepository.saveAndFlush(user);
+
+            mockMvc.perform(post("/api/auth/login")
+                            .with(httpBasic("user@local.test", "user123")))
+                    .andExpect(status().isUnauthorized())
+                    .andExpect(jsonPath("$.message").value("Your account is disabled. Please contact an administrator."));
+        } finally {
+            user.setEnabled(true);
+            userRepository.saveAndFlush(user);
+        }
     }
 
     @Test

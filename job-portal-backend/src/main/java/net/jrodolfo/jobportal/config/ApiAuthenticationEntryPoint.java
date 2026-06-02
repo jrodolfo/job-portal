@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
@@ -34,6 +35,25 @@ public class ApiAuthenticationEntryPoint implements AuthenticationEntryPoint {
                          AuthenticationException authException) throws IOException, ServletException {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.getWriter().write("{\"message\":\"Authentication is required for this API request.\"}");
+        response.getWriter().write("{\"message\":\"" + getMessage(authException) + "\"}");
+    }
+
+    private String getMessage(AuthenticationException authException) {
+        if (isDisabledAccount(authException)) {
+            return "Your account is disabled. Please contact an administrator.";
+        }
+
+        return "Invalid email or password.";
+    }
+
+    private boolean isDisabledAccount(Throwable throwable) {
+        Throwable current = throwable;
+        while (current != null) {
+            if (current instanceof DisabledException) {
+                return true;
+            }
+            current = current.getCause();
+        }
+        return false;
     }
 }

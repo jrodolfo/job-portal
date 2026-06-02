@@ -127,7 +127,7 @@ public class SecurityConfig {
                         )
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .httpBasic(Customizer.withDefaults())
+                .httpBasic(basic -> basic.authenticationEntryPoint(apiAuthenticationEntryPoint))
                 //.oauth2Login(Customizer.withDefaults()) //Enable Google OAuth login
                 .oauth2Login(oauth -> oauth
                         .userInfoEndpoint(userInfo -> userInfo
