@@ -173,8 +173,6 @@ describe('AdminDashboard integration', () => {
 
         renderWithProviders(<AdminDashboard/>);
         const user = userEvent.setup();
-        const confirmMock = vi.fn(() => true);
-        vi.stubGlobal('confirm', confirmMock);
 
         await user.click(await screen.findByRole('tab', {name: /^Users \(\d+\)$/}));
         const userCard = screen.getByText('Sofia Ribeiro').closest('.user-card');
@@ -185,7 +183,9 @@ describe('AdminDashboard integration', () => {
 
         await user.click(within(userCard).getByRole('button', {name: 'Disable'}));
 
-        expect(confirmMock).toHaveBeenCalledWith('Disable Sofia Ribeiro? This user will be signed out and will not be able to log in.');
+        const dialog = screen.getByRole('dialog', {name: 'Disable Sofia Ribeiro?'});
+        expect(within(dialog).getByText('This user will be signed out and will not be able to log in.')).toBeInTheDocument();
+        await user.click(within(dialog).getByRole('button', {name: 'Disable User'}));
         expect(await screen.findByText('User Sofia Ribeiro was disabled successfully.')).toBeInTheDocument();
         expect(screen.getByRole('tab', {name: 'Users (2)'})).toBeInTheDocument();
         const updatedUserCard = screen.getByText('Sofia Ribeiro').closest('.user-card');

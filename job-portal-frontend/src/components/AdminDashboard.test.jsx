@@ -351,12 +351,12 @@ describe("AdminDashboard", () => {
 
         renderWithProviders(<AdminDashboard/>);
         const user = userEvent.setup();
-        const confirmMock = vi.fn(() => true);
-        vi.stubGlobal("confirm", confirmMock);
 
         await openUsersTab(user);
         await user.click(screen.getByRole("button", {name: "Disable"}));
-        expect(confirmMock).toHaveBeenCalledWith("Disable Rod Oliveira? This user will be signed out and will not be able to log in.");
+        const dialog = screen.getByRole("dialog", {name: "Disable Rod Oliveira?"});
+        expect(within(dialog).getByText("This user will be signed out and will not be able to log in.")).toBeInTheDocument();
+        await user.click(within(dialog).getByRole("button", {name: "Disable User"}));
         await waitFor(() => expect(axios.put).toHaveBeenCalledWith(
             "http://localhost:8080/api/users/admin/applicants/2/enabled",
             {enabled: false},
@@ -390,14 +390,15 @@ describe("AdminDashboard", () => {
 
         renderWithProviders(<AdminDashboard/>);
         const user = userEvent.setup();
-        const confirmMock = vi.fn(() => false);
-        vi.stubGlobal("confirm", confirmMock);
 
         await openUsersTab(user);
         await user.click(screen.getByRole("button", {name: "Disable"}));
+        const dialog = screen.getByRole("dialog", {name: "Disable Rod Oliveira?"});
+        expect(within(dialog).getByText("This user will be signed out and will not be able to log in.")).toBeInTheDocument();
+        await user.click(within(dialog).getByRole("button", {name: "Cancel"}));
 
-        expect(confirmMock).toHaveBeenCalledWith("Disable Rod Oliveira? This user will be signed out and will not be able to log in.");
         expect(axios.put).not.toHaveBeenCalled();
+        expect(screen.queryByRole("dialog", {name: "Disable Rod Oliveira?"})).not.toBeInTheDocument();
         expect(screen.getByText(byTextContent("Status: Enabled"))).toBeInTheDocument();
     });
 
@@ -429,13 +430,11 @@ describe("AdminDashboard", () => {
 
         renderWithProviders(<AdminDashboard/>);
         const user = userEvent.setup();
-        const confirmMock = vi.fn(() => false);
-        vi.stubGlobal("confirm", confirmMock);
 
         await openUsersTab(user);
         await user.click(screen.getByRole("button", {name: "Enable"}));
 
-        expect(confirmMock).not.toHaveBeenCalled();
+        expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
         await waitFor(() => expect(axios.put).toHaveBeenCalledWith(
             "http://localhost:8080/api/users/admin/applicants/2/enabled",
             {enabled: true},

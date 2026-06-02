@@ -184,6 +184,7 @@ const AdminDashboard = () => {
     const [updatingJobStatusId, setUpdatingJobStatusId] = useState(null);
     const [updatingApplicationId, setUpdatingApplicationId] = useState(null);
     const [updatingUserId, setUpdatingUserId] = useState(null);
+    const [pendingDisableUser, setPendingDisableUser] = useState(null);
     const [statusMessage, setStatusMessage] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
 
@@ -521,12 +522,6 @@ const AdminDashboard = () => {
         }
 
         const currentUser = users.find((user) => user.id === userId);
-        const currentUserLabel = getUserLabel(currentUser) || "User";
-
-        if (!enabled && !window.confirm(`Disable ${currentUserLabel}? This user will be signed out and will not be able to log in.`)) {
-            return;
-        }
-
         setUpdatingUserId(userId);
         setErrorMessage("");
         setStatusMessage("");
@@ -553,6 +548,34 @@ const AdminDashboard = () => {
             setUpdatingUserId(null);
         }
     };
+
+    const requestUserEnabledChange = (userId, enabled) => {
+        if (!enabled) {
+            const currentUser = users.find((user) => user.id === userId);
+            setPendingDisableUser(currentUser || {id: userId});
+            setErrorMessage("");
+            setStatusMessage("");
+            return;
+        }
+
+        updateUserEnabled(userId, enabled);
+    };
+
+    const cancelDisableUser = () => {
+        setPendingDisableUser(null);
+    };
+
+    const confirmDisableUser = async () => {
+        if (!pendingDisableUser) {
+            return;
+        }
+
+        const userId = pendingDisableUser.id;
+        setPendingDisableUser(null);
+        await updateUserEnabled(userId, false);
+    };
+
+    const pendingDisableUserLabel = getUserLabel(pendingDisableUser) || "User";
 
     return (
         <>
@@ -770,10 +793,50 @@ const AdminDashboard = () => {
                         updatingUserId={updatingUserId}
                         emptyMessage={users.length === 0 ? "No users available." : "No users match the current filters."}
                         formatStatus={formatStatus}
-                        onUpdateEnabled={updateUserEnabled}
+                        onUpdateEnabled={requestUserEnabledChange}
                     />
                 </div>
             </div>
+            {pendingDisableUser ? (
+                <>
+                    <div
+                        className="modal fade show d-block"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="disable-user-modal-title"
+                    >
+                        <div className="modal-dialog modal-dialog-centered">
+                            <div className="modal-content">
+                                <div className="modal-header">
+                                    <h2 className="modal-title h5" id="disable-user-modal-title">
+                                        Disable {pendingDisableUserLabel}?
+                                    </h2>
+                                    <button
+                                        type="button"
+                                        className="btn-close"
+                                        aria-label="Close disable dialog"
+                                        onClick={cancelDisableUser}
+                                    />
+                                </div>
+                                <div className="modal-body">
+                                    <p className="body-text mb-0">
+                                        This user will be signed out and will not be able to log in.
+                                    </p>
+                                </div>
+                                <div className="modal-footer">
+                                    <button type="button" className="btn btn-outline-secondary" onClick={cancelDisableUser}>
+                                        Cancel
+                                    </button>
+                                    <button type="button" className="btn btn-danger" onClick={confirmDisableUser}>
+                                        Disable User
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="modal-backdrop fade show"/>
+                </>
+            ) : null}
         </>
     );
 };
