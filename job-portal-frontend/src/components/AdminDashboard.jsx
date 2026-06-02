@@ -33,6 +33,10 @@ const applicationStatuses = ["APPLIED", "REVIEWING", "ACCEPTED", "REJECTED", "WI
  */
 const jobStatuses = ["OPEN", "CLOSED"];
 
+const userRoleFilters = ["ALL", "ADMIN", "APPLICANT"];
+
+const userStatusFilters = ["ALL", "ENABLED", "DISABLED"];
+
 const adminLegends = {
     jobs: {
         ariaLabel: "Jobs color legend",
@@ -171,6 +175,9 @@ const AdminDashboard = () => {
     const [applicationSearchTerm, setApplicationSearchTerm] = useState("");
     const [applicationFilterStatus, setApplicationFilterStatus] = useState("ALL");
     const [applicationSortOrder, setApplicationSortOrder] = useState("newest");
+    const [userSearchTerm, setUserSearchTerm] = useState("");
+    const [userRoleFilter, setUserRoleFilter] = useState("ALL");
+    const [userStatusFilter, setUserStatusFilter] = useState("ALL");
     const [statusSelections, setStatusSelections] = useState({});
     const [activeTab, setActiveTab] = useState("jobs");
     const [form, setForm] = useState(emptyForm);
@@ -288,6 +295,22 @@ const AdminDashboard = () => {
 
             return rightTimestamp - leftTimestamp;
         });
+
+    const visibleUsers = users.filter((user) => {
+        const normalizedSearchTerm = userSearchTerm.trim().toLowerCase();
+        const matchesRole = userRoleFilter === "ALL" || user.role === userRoleFilter;
+        const matchesStatus = userStatusFilter === "ALL"
+            || (userStatusFilter === "ENABLED" && user.enabled)
+            || (userStatusFilter === "DISABLED" && !user.enabled);
+
+        if (!normalizedSearchTerm) {
+            return matchesRole && matchesStatus;
+        }
+
+        const name = user.name?.toLowerCase() || "";
+        const email = user.email?.toLowerCase() || "";
+        return matchesRole && matchesStatus && (name.includes(normalizedSearchTerm) || email.includes(normalizedSearchTerm));
+    });
 
     const handleChange = (event) => {
         const {name, value} = event.target;
@@ -764,12 +787,55 @@ const AdminDashboard = () => {
                     <p className="body-text muted-meta admin-summary-text">
                         Admins are read-only here. Applicant users can be created, edited, enabled, or disabled.
                     </p>
+                    <div className="row g-2 mb-3 admin-filter-row">
+                        <div className="col-md-5">
+                            <label className="form-label body-text" htmlFor="user-search">Search Users</label>
+                            <input
+                                id="user-search"
+                                className="form-control"
+                                placeholder="Search by name or email"
+                                value={userSearchTerm}
+                                onChange={(event) => setUserSearchTerm(event.target.value)}
+                            />
+                        </div>
+                        <div className="col-md-4">
+                            <label className="form-label body-text" htmlFor="user-role-filter">User Role</label>
+                            <select
+                                id="user-role-filter"
+                                className="form-select"
+                                value={userRoleFilter}
+                                onChange={(event) => setUserRoleFilter(event.target.value)}
+                            >
+                                {userRoleFilters.map((role) => (
+                                    <option key={role} value={role}>
+                                        {role === "ALL" ? "All roles" : formatStatus(role)}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="col-md-3">
+                            <label className="form-label body-text" htmlFor="user-status-filter">User Status</label>
+                            <select
+                                id="user-status-filter"
+                                className="form-select"
+                                value={userStatusFilter}
+                                onChange={(event) => setUserStatusFilter(event.target.value)}
+                            >
+                                {userStatusFilters.map((status) => (
+                                    <option key={status} value={status}>
+                                        {status === "ALL" ? "All statuses" : formatStatus(status)}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
                     <AdminUsersPanel
-                        users={users}
+                        users={visibleUsers}
                         form={userForm}
                         editingUserId={editingUserId}
                         isSubmitting={isUserSubmitting}
                         updatingUserId={updatingUserId}
+                        emptyMessage={users.length === 0 ? "No users available." : "No users match the current filters."}
                         formatStatus={formatStatus}
                         onChange={handleUserChange}
                         onSubmit={saveUser}

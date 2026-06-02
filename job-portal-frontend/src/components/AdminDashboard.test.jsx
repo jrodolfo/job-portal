@@ -222,6 +222,73 @@ describe("AdminDashboard", () => {
         expect(within(applicantCard).getByRole("button", {name: "Disable"})).toBeEnabled();
     });
 
+    it("should search and filter users without hiding the create form", async () => {
+        localStorage.setItem("token", "jwt-admin");
+        axios.get
+            .mockResolvedValueOnce({data: []})
+            .mockResolvedValueOnce({data: []})
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 1,
+                        name: "admin",
+                        email: "admin@local.test",
+                        role: "ADMIN",
+                        enabled: true
+                    },
+                    {
+                        id: 2,
+                        name: "Alice Smith",
+                        email: "alice@example.com",
+                        role: "APPLICANT",
+                        enabled: true
+                    },
+                    {
+                        id: 3,
+                        name: "Beta User",
+                        email: "beta@example.com",
+                        role: "APPLICANT",
+                        enabled: false
+                    }
+                ]
+            });
+
+        renderWithProviders(<AdminDashboard/>);
+        const user = userEvent.setup();
+
+        await openUsersTab(user);
+
+        const searchInput = screen.getByLabelText("Search Users");
+        const roleFilter = screen.getByLabelText("User Role");
+        const statusFilter = screen.getByLabelText("User Status");
+
+        await user.type(searchInput, "alice");
+        expect(screen.getByText(byTextContent("Alice Smith"))).toBeInTheDocument();
+        expect(screen.queryByText(byTextContent("admin"))).not.toBeInTheDocument();
+        expect(screen.queryByText(byTextContent("Beta User"))).not.toBeInTheDocument();
+
+        await user.clear(searchInput);
+        await user.type(searchInput, "beta@example.com");
+        expect(screen.getByText(byTextContent("Beta User"))).toBeInTheDocument();
+        expect(screen.queryByText(byTextContent("Alice Smith"))).not.toBeInTheDocument();
+
+        await user.clear(searchInput);
+        await user.selectOptions(roleFilter, "APPLICANT");
+        expect(screen.getByText(byTextContent("Alice Smith"))).toBeInTheDocument();
+        expect(screen.getByText(byTextContent("Beta User"))).toBeInTheDocument();
+        expect(screen.queryByText(byTextContent("admin"))).not.toBeInTheDocument();
+
+        await user.selectOptions(statusFilter, "DISABLED");
+        expect(screen.getByText(byTextContent("Beta User"))).toBeInTheDocument();
+        expect(screen.queryByText(byTextContent("Alice Smith"))).not.toBeInTheDocument();
+
+        await user.selectOptions(roleFilter, "ALL");
+        await user.selectOptions(statusFilter, "ALL");
+        await user.type(searchInput, "not-a-real-user");
+        expect(screen.getByText("No users match the current filters.")).toBeInTheDocument();
+        expect(screen.getByRole("heading", {name: "Create Applicant"})).toBeInTheDocument();
+    });
+
     it("should create applicant users from the users tab", async () => {
         localStorage.setItem("token", "jwt-admin");
         axios.get

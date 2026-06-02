@@ -2,6 +2,7 @@ const AdminUsersPanel = ({
     users,
     form,
     editingUserId,
+    emptyMessage = "No users available.",
     isSubmitting,
     updatingUserId,
     formatStatus,
@@ -89,7 +90,7 @@ const AdminUsersPanel = ({
             </div>
             <div className="col-lg-8">
                 {users.length === 0 ? (
-                    <p className="body-text">No users available.</p>
+                    <p className="body-text">{emptyMessage}</p>
                 ) : (
                     <div className="row g-4">
                         {users.map((user) => {
