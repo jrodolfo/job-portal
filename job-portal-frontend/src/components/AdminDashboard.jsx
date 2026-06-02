@@ -16,13 +16,6 @@ const emptyForm = {
     company: ""
 };
 
-const emptyUserForm = {
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: ""
-};
-
 /**
  * List of valid application statuses.
  */
@@ -181,11 +174,8 @@ const AdminDashboard = () => {
     const [statusSelections, setStatusSelections] = useState({});
     const [activeTab, setActiveTab] = useState("jobs");
     const [form, setForm] = useState(emptyForm);
-    const [userForm, setUserForm] = useState(emptyUserForm);
     const [editingJobId, setEditingJobId] = useState(null);
-    const [editingUserId, setEditingUserId] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [isUserSubmitting, setIsUserSubmitting] = useState(false);
     const [deletingJobId, setDeletingJobId] = useState(null);
     const [updatingJobStatusId, setUpdatingJobStatusId] = useState(null);
     const [updatingApplicationId, setUpdatingApplicationId] = useState(null);
@@ -317,11 +307,6 @@ const AdminDashboard = () => {
         setForm((prev) => ({...prev, [name]: value}));
     };
 
-    const handleUserChange = (event) => {
-        const {name, value} = event.target;
-        setUserForm((prev) => ({...prev, [name]: value}));
-    };
-
     const handleApplicationStatusChange = (applicationId, status) => {
         setStatusSelections((prev) => ({
             ...prev,
@@ -334,18 +319,9 @@ const AdminDashboard = () => {
         setEditingJobId(null);
     };
 
-    const resetUserForm = () => {
-        setUserForm(emptyUserForm);
-        setEditingUserId(null);
-    };
-
     const cancelEdit = () => {
         resetForm();
         setActiveTab("jobs");
-    };
-
-    const cancelUserEdit = () => {
-        resetUserForm();
     };
 
     const showRequestError = (error, fallbackMessage) => {
@@ -518,79 +494,6 @@ const AdminDashboard = () => {
         } finally {
             setUpdatingApplicationId(null);
         }
-    };
-
-    const saveUser = async (event) => {
-        event.preventDefault();
-        if (isUserSubmitting) {
-            return;
-        }
-
-        setIsUserSubmitting(true);
-        setErrorMessage("");
-        setStatusMessage("");
-
-        try {
-            const requestConfig = {
-                headers: {
-                    Authorization: "Bearer " + localStorage.getItem("token")
-                }
-            };
-
-            if (editingUserId) {
-                const response = await axios.put(
-                    `${BACKEND_API_URL}/api/users/admin/applicants/${editingUserId}`,
-                    {
-                        name: userForm.name,
-                        email: userForm.email
-                    },
-                    requestConfig
-                );
-                setUsers((prev) => prev.map((user) => user.id === editingUserId ? response.data : user));
-                setStatusMessage("User updated successfully.");
-            } else {
-                if (userForm.password !== userForm.confirmPassword) {
-                    setErrorMessage("Passwords do not match.");
-                    return;
-                }
-
-                const response = await axios.post(
-                    `${BACKEND_API_URL}/api/users/admin/applicants`,
-                    {
-                        name: userForm.name,
-                        email: userForm.email,
-                        password: userForm.password
-                    },
-                    requestConfig
-                );
-                setUsers((prev) => [response.data, ...prev]);
-                setStatusMessage("Applicant user created successfully.");
-            }
-
-            resetUserForm();
-        } catch (error) {
-            showRequestError(error, editingUserId
-                ? "We couldn't update the user right now. Please try again."
-                : "We couldn't create the user right now. Please try again.");
-        } finally {
-            setIsUserSubmitting(false);
-        }
-    };
-
-    const startUserEdit = (user) => {
-        if (user.role !== "APPLICANT") {
-            return;
-        }
-
-        setErrorMessage("");
-        setStatusMessage("");
-        setEditingUserId(user.id);
-        setUserForm({
-            name: user.name,
-            email: user.email,
-            password: "",
-            confirmPassword: ""
-        });
     };
 
     const updateUserEnabled = async (userId, enabled) => {
@@ -785,7 +688,7 @@ const AdminDashboard = () => {
                 >
                     <h2 className="section-title">Users</h2>
                     <p className="body-text muted-meta admin-summary-text">
-                        Admins are read-only here. Applicant users can be created, edited, enabled, or disabled.
+                        Admins are read-only here. Applicant users can be enabled or disabled.
                     </p>
                     <div className="row g-2 mb-3 admin-filter-row">
                         <div className="col-md-5">
@@ -831,16 +734,9 @@ const AdminDashboard = () => {
                     </div>
                     <AdminUsersPanel
                         users={visibleUsers}
-                        form={userForm}
-                        editingUserId={editingUserId}
-                        isSubmitting={isUserSubmitting}
                         updatingUserId={updatingUserId}
                         emptyMessage={users.length === 0 ? "No users available." : "No users match the current filters."}
                         formatStatus={formatStatus}
-                        onChange={handleUserChange}
-                        onSubmit={saveUser}
-                        onEdit={startUserEdit}
-                        onCancelEdit={cancelUserEdit}
                         onUpdateEnabled={updateUserEnabled}
                     />
                 </div>

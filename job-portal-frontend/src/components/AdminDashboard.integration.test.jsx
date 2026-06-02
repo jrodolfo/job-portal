@@ -133,13 +133,17 @@ describe('AdminDashboard integration', () => {
         expect(within(updatedApplicationCard).getByText(/Last Updated:/)).toBeInTheDocument();
     });
 
-    it('creates applicant users through the admin users network flow', async () => {
-        const createdUser = {
+    it('disables applicant users through the admin users network flow', async () => {
+        const applicantUser = {
             id: 20,
             name: 'Sofia Ribeiro',
             email: 'sofia.ribeiro@example.com',
             role: 'APPLICANT',
             enabled: true
+        };
+        const disabledUser = {
+            ...applicantUser,
+            enabled: false
         };
 
         server.use(
@@ -152,21 +156,17 @@ describe('AdminDashboard integration', () => {
                     email: 'admin@local.test',
                     role: 'ADMIN',
                     enabled: true
-                }
+                },
+                applicantUser
             ])),
-            http.post(`${api}/api/users/admin/applicants`, async ({request}) => {
+            http.put(`${api}/api/users/admin/applicants/20/enabled`, async ({request}) => {
                 const body = await request.json();
 
-                if (
-                    body.name !== 'Sofia Ribeiro' ||
-                    body.email !== 'sofia.ribeiro@example.com' ||
-                    body.password !== 'applicant123' ||
-                    Object.hasOwn(body, 'confirmPassword')
-                ) {
-                    return HttpResponse.json({message: 'Unexpected applicant payload'}, {status: 400});
+                if (body.enabled !== false) {
+                    return HttpResponse.json({message: 'Unexpected enabled payload'}, {status: 400});
                 }
 
-                return HttpResponse.json(createdUser, {status: 201});
+                return HttpResponse.json(disabledUser);
             })
         );
 
@@ -174,18 +174,18 @@ describe('AdminDashboard integration', () => {
         const user = userEvent.setup();
 
         await user.click(await screen.findByRole('tab', {name: /^Users \(\d+\)$/}));
-        await user.type(screen.getByLabelText('Name'), 'Sofia Ribeiro');
-        await user.type(screen.getByLabelText('Email'), 'sofia.ribeiro@example.com');
-        await user.type(screen.getByLabelText('Password'), 'applicant123');
-        await user.type(screen.getByLabelText('Confirm Password'), 'applicant123');
-        await user.click(screen.getByRole('button', {name: 'Create Applicant'}));
-
-        expect(await screen.findByText('Applicant user created successfully.')).toBeInTheDocument();
-        expect(screen.getByRole('tab', {name: 'Users (2)'})).toBeInTheDocument();
         const userCard = screen.getByText('Sofia Ribeiro').closest('.user-card');
         expect(within(userCard).getByText('Email:')).toBeInTheDocument();
         expect(within(userCard).getByText(/sofia\.ribeiro@example\.com/)).toBeInTheDocument();
         expect(within(userCard).getByText('Status:')).toBeInTheDocument();
         expect(within(userCard).getByText(/Enabled/)).toBeInTheDocument();
+
+        await user.click(within(userCard).getByRole('button', {name: 'Disable'}));
+
+        expect(await screen.findByText('User disabled successfully.')).toBeInTheDocument();
+        expect(screen.getByRole('tab', {name: 'Users (2)'})).toBeInTheDocument();
+        const updatedUserCard = screen.getByText('Sofia Ribeiro').closest('.user-card');
+        expect(within(updatedUserCard).getByText(/Disabled/)).toBeInTheDocument();
+        expect(within(updatedUserCard).getByRole('button', {name: 'Enable'})).toBeInTheDocument();
     });
 });

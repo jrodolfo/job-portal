@@ -180,7 +180,7 @@ describe("AdminDashboard", () => {
         expect(screen.getByLabelText("Applications color legend")).toHaveTextContent("Withdrawn");
     });
 
-    it("should show admin users as read-only and applicant users as manageable", async () => {
+    it("should show admin users as read-only and applicant users as enable-disable only", async () => {
         localStorage.setItem("token", "jwt-admin");
         axios.get
             .mockResolvedValueOnce({data: []})
@@ -209,20 +209,21 @@ describe("AdminDashboard", () => {
 
         await openUsersTab(user);
 
-        expect(screen.getByRole("heading", {name: "Create Applicant"})).toBeInTheDocument();
+        expect(screen.getByText("Admins are read-only here. Applicant users can be enabled or disabled.")).toBeInTheDocument();
+        expect(screen.queryByRole("heading", {name: "Create Applicant"})).not.toBeInTheDocument();
+        expect(screen.queryByRole("button", {name: "Edit"})).not.toBeInTheDocument();
         expect(screen.getByLabelText("Users color legend")).toHaveTextContent("Enabled");
         expect(screen.getByLabelText("Users color legend")).toHaveTextContent("Disabled");
         const adminCard = screen.getByText(byTextContent("admin")).closest(".user-card");
         expect(within(adminCard).getByText("Admin users are read-only here.")).toBeInTheDocument();
-        expect(within(adminCard).getByRole("button", {name: "Edit"})).toBeDisabled();
+        expect(within(adminCard).getByRole("button", {name: "Disable"})).toBeDisabled();
 
         const applicantCard = screen.getByText(byTextContent("user")).closest(".user-card");
         expect(within(applicantCard).getByText(byTextContent("Role: Applicant"))).toBeInTheDocument();
-        expect(within(applicantCard).getByRole("button", {name: "Edit"})).toBeEnabled();
         expect(within(applicantCard).getByRole("button", {name: "Disable"})).toBeEnabled();
     });
 
-    it("should search and filter users without hiding the create form", async () => {
+    it("should search and filter users without hiding the controls", async () => {
         localStorage.setItem("token", "jwt-admin");
         axios.get
             .mockResolvedValueOnce({data: []})
@@ -286,88 +287,12 @@ describe("AdminDashboard", () => {
         await user.selectOptions(statusFilter, "ALL");
         await user.type(searchInput, "not-a-real-user");
         expect(screen.getByText("No users match the current filters.")).toBeInTheDocument();
-        expect(screen.getByRole("heading", {name: "Create Applicant"})).toBeInTheDocument();
+        expect(screen.getByLabelText("Search Users")).toBeInTheDocument();
+        expect(screen.getByLabelText("User Role")).toBeInTheDocument();
+        expect(screen.getByLabelText("User Status")).toBeInTheDocument();
     });
 
-    it("should create applicant users from the users tab", async () => {
-        localStorage.setItem("token", "jwt-admin");
-        axios.get
-            .mockResolvedValueOnce({data: []})
-            .mockResolvedValueOnce({data: []})
-            .mockResolvedValueOnce({data: []});
-        axios.post.mockResolvedValueOnce({
-            data: {
-                id: 10,
-                name: "Alice Smith",
-                email: "alice@example.com",
-                role: "APPLICANT",
-                enabled: true
-            }
-        });
-
-        renderWithProviders(<AdminDashboard/>);
-        const user = userEvent.setup();
-
-        await openUsersTab(user);
-        const nameInput = screen.getByLabelText("Name");
-        const emailInput = screen.getByLabelText("Email");
-        const passwordInput = screen.getByLabelText("Password");
-        const confirmPasswordInput = screen.getByLabelText("Confirm Password");
-
-        expect(nameInput).toHaveAttribute("autocomplete", "off");
-        expect(emailInput).toHaveAttribute("autocomplete", "off");
-        expect(passwordInput).toHaveAttribute("autocomplete", "new-password");
-        expect(confirmPasswordInput).toHaveAttribute("autocomplete", "new-password");
-
-        await user.type(nameInput, "Alice Smith");
-        await user.type(emailInput, "alice@example.com");
-        await user.type(passwordInput, "alice123");
-        await user.type(confirmPasswordInput, "alice123");
-        await user.click(screen.getByRole("button", {name: "Create Applicant"}));
-
-        await waitFor(() => expect(axios.post).toHaveBeenCalledWith(
-            "http://localhost:8080/api/users/admin/applicants",
-            {
-                name: "Alice Smith",
-                email: "alice@example.com",
-                password: "alice123"
-            },
-            {
-                headers: {
-                    Authorization: "Bearer jwt-admin"
-                }
-            }
-        ));
-        expect(await screen.findByText("Applicant user created successfully.")).toBeInTheDocument();
-        expect(screen.getByText(byTextContent("Alice Smith"))).toBeInTheDocument();
-    });
-
-    it("should block applicant creation when passwords do not match", async () => {
-        localStorage.setItem("token", "jwt-admin");
-        axios.get
-            .mockResolvedValueOnce({data: []})
-            .mockResolvedValueOnce({data: []})
-            .mockResolvedValueOnce({data: []});
-
-        renderWithProviders(<AdminDashboard/>);
-        const user = userEvent.setup();
-
-        await openUsersTab(user);
-        await user.type(screen.getByLabelText("Name"), "Alice Smith");
-        await user.type(screen.getByLabelText("Email"), "alice@example.com");
-        await user.type(screen.getByLabelText("Password"), "alice123");
-        await user.type(screen.getByLabelText("Confirm Password"), "different123");
-        await user.click(screen.getByRole("button", {name: "Create Applicant"}));
-
-        expect(await screen.findByRole("alert")).toHaveTextContent("Passwords do not match.");
-        expect(axios.post).not.toHaveBeenCalledWith(
-            "http://localhost:8080/api/users/admin/applicants",
-            expect.anything(),
-            expect.anything()
-        );
-    });
-
-    it("should edit and disable applicant users from the users tab", async () => {
+    it("should disable applicant users from the users tab", async () => {
         localStorage.setItem("token", "jwt-admin");
         axios.get
             .mockResolvedValueOnce({data: []})
@@ -383,54 +308,20 @@ describe("AdminDashboard", () => {
                     }
                 ]
             });
-        axios.put
-            .mockResolvedValueOnce({
-                data: {
-                    id: 2,
-                    name: "Applicant One",
-                    email: "applicant.one@example.com",
-                    role: "APPLICANT",
-                    enabled: true
-                }
-            })
-            .mockResolvedValueOnce({
-                data: {
-                    id: 2,
-                    name: "Applicant One",
-                    email: "applicant.one@example.com",
-                    role: "APPLICANT",
-                    enabled: false
-                }
-            });
+        axios.put.mockResolvedValueOnce({
+            data: {
+                id: 2,
+                name: "user",
+                email: "user@local.test",
+                role: "APPLICANT",
+                enabled: false
+            }
+        });
 
         renderWithProviders(<AdminDashboard/>);
         const user = userEvent.setup();
 
         await openUsersTab(user);
-        await user.click(screen.getByRole("button", {name: "Edit"}));
-
-        const nameInput = screen.getByLabelText("Name");
-        await user.clear(nameInput);
-        await user.type(nameInput, "Applicant One");
-        const emailInput = screen.getByLabelText("Email");
-        await user.clear(emailInput);
-        await user.type(emailInput, "applicant.one@example.com");
-        await user.click(screen.getByRole("button", {name: "Save User"}));
-
-        await waitFor(() => expect(axios.put).toHaveBeenCalledWith(
-            "http://localhost:8080/api/users/admin/applicants/2",
-            {
-                name: "Applicant One",
-                email: "applicant.one@example.com"
-            },
-            {
-                headers: {
-                    Authorization: "Bearer jwt-admin"
-                }
-            }
-        ));
-        expect(await screen.findByText("User updated successfully.")).toBeInTheDocument();
-
         await user.click(screen.getByRole("button", {name: "Disable"}));
         await waitFor(() => expect(axios.put).toHaveBeenCalledWith(
             "http://localhost:8080/api/users/admin/applicants/2/enabled",

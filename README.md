@@ -111,8 +111,8 @@ Current local role workflows:
 - Applicants can create an account, browse open jobs, apply, withdraw, and reapply.
 - Admins can create, edit, close, reopen, and delete jobs.
 - Admins can review applications, update application statuses, and filter/sort the application list.
-- Admins can list users, create applicant users, edit applicant name/email, and enable or disable applicant users.
-- Admin users are read-only from the admin UI and cannot be created, edited, deleted, or promoted through this feature.
+- Admins can list users and enable or disable applicant users.
+- Applicant accounts are created through public registration; admin users are read-only from the admin UI and cannot be created, edited, deleted, or promoted through this feature.
 - Jobs with existing applications still cannot be deleted; they should be closed instead.
 
 If you prefer to run Docker Compose directly instead of using the helper script:
@@ -508,8 +508,8 @@ Google OAuth note:
 ### F. Steps for smoke test the backend API:
 
 1. **Load the Insomnia collection** (inside the folder `docs/insomnia`).
-2. **Execute the "create applicant user" POST request** to add a new applicant user:
-   Use Basic Auth with `admin@local.test` / `admin123` (ROLE_ADMIN). Admins can create applicant users only; admin user creation and role promotion are intentionally not supported by this workflow.
+2. **Execute the applicant registration request** to add a new applicant user:
+   Use the public registration endpoint. Admins can list users and enable or disable applicant access, but they do not create applicant accounts from the admin API.
    ```json
    {
      "name": "demo-applicant",

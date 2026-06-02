@@ -189,8 +189,8 @@ In practice, that shows up in the UI as:
   `Users` workflows
 - grouped admin application review sections with filtering, status updates, and
   lifecycle summaries
-- applicant-only admin user management, where admins can create applicants,
-  edit applicant name/email, and enable or disable applicant access
+- applicant-only admin user management, where admins can list users and enable
+  or disable applicant access
 
 Related ADR:
 

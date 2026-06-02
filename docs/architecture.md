@@ -254,10 +254,11 @@ The project uses a hybrid authentication model:
 This keeps the project useful both as a runnable application and as an example
 of more realistic auth integration.
 
-Local default accounts are bootstrapped when missing. Admin user management is
-intentionally scoped to applicant accounts: admins can create applicants, edit
-applicant name/email, and enable or disable applicant access. Admin accounts are
-not created, deleted, promoted, or edited through this dashboard flow.
+Local default accounts are bootstrapped when missing. Applicant accounts are
+created through public registration. Admin user management is intentionally
+limited to access control: admins can list users and enable or disable applicant
+access. Admin accounts are not created, deleted, promoted, or edited through this
+dashboard flow.
 
 Representative authentication files:
 
@@ -316,8 +317,7 @@ Admins can:
 - see application counts per job
 - review applications in grouped admin views
 - update application states such as `REVIEWING`, `ACCEPTED`, and `REJECTED`
-- create applicant users
-- edit applicant name/email
+- list users
 - enable or disable applicant users
 
 The visibility rule is intentionally asymmetric:

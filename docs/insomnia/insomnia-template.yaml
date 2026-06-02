@@ -591,8 +591,8 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: "{{ local_api_base_url }}/api/users/admin/applicants"
-                name: create applicant user
+              - url: "{{ local_api_base_url }}/api/auth/register"
+                name: register applicant user
                 meta:
                   id: req_fa9ae080aa6046168b71c082ad3751a2
                   created: 1769732706021
@@ -637,8 +637,8 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: "{{ local_api_base_url }}/api/users/admin/applicants/2"
-                name: update applicant user
+              - url: "{{ local_api_base_url }}/api/users/admin/applicants/2/enabled"
+                name: enable applicant user
                 meta:
                   id: req_ab432e5ca2704288965db73746f78c8a
                   created: 1769732706022
@@ -661,8 +661,7 @@ collection:
                   mimeType: application/json
                   text: |-
                     {
-                      "name": "Updated Applicant",
-                      "email": "updated.applicant@example.com"
+                      "enabled": true
                     }
                 headers:
                   - name: Content-Type
@@ -722,8 +721,8 @@ collection:
               sortKey: -1771006067304.5
               description: ""
             children:
-              - url: "{{ aws_api_base_url }}/api/users/admin/applicants/2"
-                name: update applicant user
+              - url: "{{ aws_api_base_url }}/api/users/admin/applicants/2/enabled"
+                name: enable applicant user
                 meta:
                   id: req_474a20ea704945feb2f81cc317ec8f4b
                   created: 1771006312798
@@ -746,8 +745,7 @@ collection:
                   mimeType: application/json
                   text: |-
                     {
-                      "name": "Updated Applicant",
-                      "email": "updated.applicant@example.com"
+                      "enabled": true
                     }
                 headers:
                   - name: Content-Type
@@ -883,8 +881,8 @@ collection:
                     send: true
                     store: true
                   rebuildPath: true
-              - url: "{{ aws_api_base_url }}/api/users/admin/applicants"
-                name: create applicant user
+              - url: "{{ aws_api_base_url }}/api/auth/register"
+                name: register applicant user
                 meta:
                   id: req_fd75232ea252423b98588599ad3719e9
                   created: 1771006312798

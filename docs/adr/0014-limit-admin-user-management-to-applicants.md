@@ -11,9 +11,9 @@ creation, admin promotion, and admin deletion require clearer governance than
 this practice project needs.
 
 The project also uses local email/password authentication for development
-and demo flows. Those local users need to be real database records so applicant
-users created from the UI can authenticate consistently with the rest of the
-system.
+and demo flows. Applicant users can create their own accounts through public
+registration, so the admin dashboard does not need to create or edit applicant
+identity fields.
 
 ## Decision
 
@@ -22,13 +22,13 @@ Admin user management is limited to applicant users.
 Admins can:
 
 - list users through a safe admin response DTO
-- create applicant users
-- edit applicant name and email
 - enable or disable applicant users
 
 Admins cannot:
 
+- create applicant users from the admin dashboard
 - create admin users
+- edit applicant name or email
 - edit admin users
 - delete users
 - promote applicants to admins
@@ -39,10 +39,11 @@ bootstraps the default local `admin` and `user` accounts when they are missing.
 
 ## Rationale
 
-This gives the admin persona useful user-management functionality without
-introducing a Super Admin model, role escalation rules, or admin deletion edge
-cases. It also keeps the demo realistic: users shown in the database and users
-used for local login are the same kind of records.
+This gives the admin persona useful access-control functionality without
+duplicating the public registration flow or introducing a Super Admin model,
+role escalation rules, or admin deletion edge cases. It also keeps the demo
+realistic: users shown in the database and users used for local login are the
+same kind of records.
 
 Using a safe DTO for admin user lists avoids exposing password hashes to the
 frontend while still giving the UI the fields it needs.

@@ -26,8 +26,8 @@ Current backend behavior:
 - Applying to a closed job is rejected by the backend.
 - Admins can review application statuses such as `REVIEWING`, `ACCEPTED`, and `REJECTED`.
 - Applicants can create their own account through the public registration endpoint.
-- Admins can list users, create applicant users, edit applicant name/email, and enable or disable applicant users.
-- Admin users are protected from this management flow: they cannot be created, edited, deleted, or promoted through the admin user endpoints.
+- Admins can list users and enable or disable applicant users.
+- Applicant accounts are created through public registration. Admin users are protected from this management flow: they cannot be created, edited, deleted, or promoted through the admin user endpoints.
 - Jobs with existing applications cannot be deleted; the backend returns a clear `409 Conflict` instead.
 - Application response payloads can include `createdAt` and `updatedAt`, which the frontend uses for `Applied On` and `Last Updated` display.
 - Local email/password authentication is database-backed. The local bootstrap creates the default `admin@local.test` and `user@local.test` accounts when they are missing.

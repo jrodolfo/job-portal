@@ -3,9 +3,7 @@ package net.jrodolfo.jobportal.service;
 import net.jrodolfo.jobportal.constant.AuthProvider;
 import net.jrodolfo.jobportal.constant.Role;
 import net.jrodolfo.jobportal.dto.AdminUserResponse;
-import net.jrodolfo.jobportal.dto.CreateApplicantUserRequest;
 import net.jrodolfo.jobportal.dto.RegisterApplicantRequest;
-import net.jrodolfo.jobportal.dto.UpdateApplicantUserRequest;
 import net.jrodolfo.jobportal.model.User;
 import net.jrodolfo.jobportal.repository.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -116,29 +114,6 @@ class UserServiceTest {
     }
 
     @Test
-    void createApplicantUserShouldForceApplicantRoleAndEncodePassword() {
-        when(userRepository.findByName("Alice")).thenReturn(Optional.empty());
-        when(userRepository.findByEmailIgnoreCase("alice@example.com")).thenReturn(Optional.empty());
-        when(passwordEncoder.encode("alice123")).thenReturn("encoded-password");
-        when(userRepository.save(org.mockito.ArgumentMatchers.any(User.class))).thenAnswer(invocation -> {
-            User user = invocation.getArgument(0);
-            user.setId(10L);
-            return user;
-        });
-
-        AdminUserResponse result = userService.createApplicantUser(
-                new CreateApplicantUserRequest("Alice", "alice@example.com", "alice123")
-        );
-
-        assertEquals(10L, result.id());
-        assertEquals(Role.APPLICANT, result.role());
-        assertEquals("Alice", result.name());
-        assertEquals("alice@example.com", result.email());
-        assertEquals(true, result.enabled());
-        verify(passwordEncoder).encode("alice123");
-    }
-
-    @Test
     void registerApplicantShouldForceApplicantRoleAndEncodePassword() {
         when(userRepository.findByName("Rafael Costa")).thenReturn(Optional.empty());
         when(userRepository.findByEmailIgnoreCase("rafael@example.com")).thenReturn(Optional.empty());
@@ -162,13 +137,13 @@ class UserServiceTest {
     }
 
     @Test
-    void updateApplicantUserShouldRejectAdminUsers() {
+    void updateApplicantEnabledShouldRejectAdminUsers() {
         User admin = new User("admin", "admin@local.test", "pwd", AuthProvider.LOCAL, Role.ADMIN);
         admin.setId(1L);
         when(userRepository.findById(1L)).thenReturn(Optional.of(admin));
 
         ResponseStatusException ex = assertThrows(ResponseStatusException.class, () ->
-                userService.updateApplicantUser(1L, new UpdateApplicantUserRequest("Admin", "admin@local.test"))
+                userService.updateApplicantEnabled(1L, false)
         );
 
         assertEquals(403, ex.getStatusCode().value());
@@ -190,13 +165,13 @@ class UserServiceTest {
     }
 
     @Test
-    void createApplicantUserShouldRejectDuplicateName() {
+    void registerApplicantShouldRejectDuplicateName() {
         User existing = new User("Alice", "other@example.com", "pwd", AuthProvider.LOCAL, Role.APPLICANT);
         existing.setId(7L);
         when(userRepository.findByName("Alice")).thenReturn(Optional.of(existing));
 
         ResponseStatusException ex = assertThrows(ResponseStatusException.class, () ->
-                userService.createApplicantUser(new CreateApplicantUserRequest("Alice", "alice@example.com", "alice123"))
+                userService.registerApplicant(new RegisterApplicantRequest("Alice", "alice@example.com", "alice123"))
         );
 
         assertEquals(409, ex.getStatusCode().value());

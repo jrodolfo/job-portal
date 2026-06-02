@@ -3,9 +3,7 @@ package net.jrodolfo.jobportal.service;
 import net.jrodolfo.jobportal.constant.AuthProvider;
 import net.jrodolfo.jobportal.constant.Role;
 import net.jrodolfo.jobportal.dto.AdminUserResponse;
-import net.jrodolfo.jobportal.dto.CreateApplicantUserRequest;
 import net.jrodolfo.jobportal.dto.RegisterApplicantRequest;
-import net.jrodolfo.jobportal.dto.UpdateApplicantUserRequest;
 import net.jrodolfo.jobportal.exception.ResourceException;
 import net.jrodolfo.jobportal.model.User;
 import net.jrodolfo.jobportal.repository.UserRepository;
@@ -107,23 +105,6 @@ public class UserService {
     }
 
     @Transactional
-    public AdminUserResponse createApplicantUser(CreateApplicantUserRequest request) {
-        ensureNameAvailable(request.name(), null);
-        ensureEmailAvailable(request.email(), null);
-
-        User user = new User(
-                request.name().trim(),
-                request.email().trim(),
-                passwordEncoder.encode(request.password()),
-                AuthProvider.LOCAL,
-                Role.APPLICANT
-        );
-        user.setEnabled(true);
-
-        return AdminUserResponse.from(userRepository.save(user));
-    }
-
-    @Transactional
     public AdminUserResponse registerApplicant(RegisterApplicantRequest request) {
         ensureNameAvailable(request.name(), null);
         ensureEmailAvailable(request.email(), null);
@@ -136,18 +117,6 @@ public class UserService {
                 Role.APPLICANT
         );
         user.setEnabled(true);
-
-        return AdminUserResponse.from(userRepository.save(user));
-    }
-
-    @Transactional
-    public AdminUserResponse updateApplicantUser(Long id, UpdateApplicantUserRequest request) {
-        User user = getManagedApplicant(id);
-        ensureNameAvailable(request.name(), id);
-        ensureEmailAvailable(request.email(), id);
-
-        user.setName(request.name().trim());
-        user.setEmail(request.email().trim());
 
         return AdminUserResponse.from(userRepository.save(user));
     }

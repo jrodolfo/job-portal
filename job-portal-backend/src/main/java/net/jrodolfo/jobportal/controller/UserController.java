@@ -10,8 +10,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.Valid;
 import net.jrodolfo.jobportal.dto.AdminUserResponse;
-import net.jrodolfo.jobportal.dto.CreateApplicantUserRequest;
-import net.jrodolfo.jobportal.dto.UpdateApplicantUserRequest;
 import net.jrodolfo.jobportal.dto.UpdateUserEnabledRequest;
 import net.jrodolfo.jobportal.exception.ErrorResponse;
 import net.jrodolfo.jobportal.exception.ResourceException;
@@ -65,7 +63,7 @@ public class UserController {
             @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     public ResponseEntity<User> createUser(@RequestBody User user) {
-        throw new ResponseStatusException(HttpStatus.GONE, "Use /api/users/admin/applicants for user management");
+        throw new ResponseStatusException(HttpStatus.GONE, "Applicant users must register through /api/auth/register");
     }
 
     /**
@@ -85,31 +83,6 @@ public class UserController {
     @ApiResponse(responseCode = "200", description = "Admin user list returned")
     public ResponseEntity<List<AdminUserResponse>> getAdminUsers() {
         return ResponseEntity.ok(userService.getAdminUserList());
-    }
-
-    @PostMapping("/admin/applicants")
-    @Operation(summary = "Create applicant user", security = @SecurityRequirement(name = "basicAuth"))
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Applicant user created"),
-            @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-            @ApiResponse(responseCode = "409", description = "Duplicate user", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
-    })
-    public ResponseEntity<AdminUserResponse> createApplicantUser(@Valid @RequestBody CreateApplicantUserRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createApplicantUser(request));
-    }
-
-    @PutMapping("/admin/applicants/{id}")
-    @Operation(summary = "Update applicant user", security = @SecurityRequirement(name = "basicAuth"))
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Applicant user updated"),
-            @ApiResponse(responseCode = "400", description = "Invalid request", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-            @ApiResponse(responseCode = "403", description = "Not an applicant user", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-            @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-            @ApiResponse(responseCode = "409", description = "Duplicate user", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
-    })
-    public ResponseEntity<AdminUserResponse> updateApplicantUser(@PathVariable @Min(value = 1) long id,
-                                                                 @Valid @RequestBody UpdateApplicantUserRequest request) {
-        return ResponseEntity.ok(userService.updateApplicantUser(id, request));
     }
 
     @PutMapping("/admin/applicants/{id}/enabled")
@@ -164,7 +137,7 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     public ResponseEntity<User> updateUser(@PathVariable @Min(value = 1) long id, @RequestBody User user) {
-        throw new ResponseStatusException(HttpStatus.GONE, "Use /api/users/admin/applicants/{id} for user management");
+        throw new ResponseStatusException(HttpStatus.GONE, "Admin user identity edits are not supported");
     }
 
     /**
