@@ -6,6 +6,12 @@ import net.jrodolfo.jobportal.model.User;
 
 import java.time.LocalDateTime;
 
+/**
+ * Admin-safe user payload.
+ * <p>
+ * This DTO exposes identity, role, provider, enabled state, and audit
+ * timestamps while intentionally excluding password hashes.
+ */
 public record AdminUserResponse(
         Long id,
         String name,
@@ -16,6 +22,12 @@ public record AdminUserResponse(
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
+    /**
+     * Builds the admin-safe response from a managed user entity.
+     *
+     * @param user the user entity to project
+     * @return a response DTO without password data
+     */
     public static AdminUserResponse from(User user) {
         return new AdminUserResponse(
                 user.getId(),

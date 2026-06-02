@@ -32,14 +32,16 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 /**
- * REST controller for managing users.
+ * REST controller for user administration.
  * <p>
- * Provides endpoints for creating, retrieving, updating, and deleting {@link User} entities.
- * Most operations are restricted to administrators.
+ * The current admin workflow is intentionally narrow: admins can list users and
+ * enable or disable applicant accounts. Generic create, identity update, and
+ * hard-delete endpoints remain present for API compatibility but return
+ * {@code 410 Gone}.
  */
 @RestController
 @RequestMapping("/api/users")
-@Tag(name = "Users", description = "User CRUD operations")
+@Tag(name = "Users", description = "Admin user visibility and applicant status management")
 public class UserController {
 
     /**
@@ -49,17 +51,19 @@ public class UserController {
     private UserService userService;
 
     /**
-     * Creates a new user.
+     * Rejects legacy direct user creation.
      * <p>
-     * Access is typically restricted to users with the ADMIN role.
+     * Applicant accounts are created through the public registration endpoint.
+     * Admin-created users, role promotion, and direct admin creation are not
+     * supported.
      *
-     * @param user the {@link User} entity to create
-     * @return a {@link ResponseEntity} containing the created {@link User}
+     * @param user ignored legacy request body
+     * @return never returns normally because this endpoint is disabled
      */
     @PostMapping
-    @Operation(summary = "Create user", security = @SecurityRequirement(name = "basicAuth"))
+    @Operation(summary = "Legacy direct user creation is disabled", security = @SecurityRequirement(name = "basicAuth"))
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "User created"),
+            @ApiResponse(responseCode = "410", description = "Applicant users must register through /api/auth/register"),
             @ApiResponse(responseCode = "403", description = "Forbidden", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     public ResponseEntity<User> createUser(@RequestBody User user) {
@@ -67,17 +71,22 @@ public class UserController {
     }
 
     /**
-     * Retrieves a list of all users.
+     * Retrieves users in the admin-safe response shape.
      *
-     * @return a {@link ResponseEntity} containing a list of all {@link User} objects
+     * @return a {@link ResponseEntity} containing all users without password data
      */
     @GetMapping
-    @Operation(summary = "Get all users", security = @SecurityRequirement(name = "basicAuth"))
+    @Operation(summary = "Get users for admin management", security = @SecurityRequirement(name = "basicAuth"))
     @ApiResponse(responseCode = "200", description = "Users returned")
     public ResponseEntity<List<AdminUserResponse>> getAllUsers() {
         return ResponseEntity.ok(userService.getAdminUserList());
     }
 
+    /**
+     * Retrieves users for the Admin dashboard Users tab.
+     *
+     * @return a {@link ResponseEntity} containing all users without password data
+     */
     @GetMapping("/admin")
     @Operation(summary = "Get users for admin management", security = @SecurityRequirement(name = "basicAuth"))
     @ApiResponse(responseCode = "200", description = "Admin user list returned")
@@ -85,6 +94,17 @@ public class UserController {
         return ResponseEntity.ok(userService.getAdminUserList());
     }
 
+    /**
+     * Enables or disables an applicant user.
+     * <p>
+     * Admin accounts cannot be modified through this endpoint. Disabling an
+     * applicant prevents future login and invalidates active sessions because
+     * JWT requests reload the enabled flag from the database.
+     *
+     * @param id      the applicant user ID, must be at least 1
+     * @param request the requested enabled state
+     * @return the updated admin-safe user response
+     */
     @PutMapping("/admin/applicants/{id}/enabled")
     @Operation(summary = "Enable or disable applicant user", security = @SecurityRequirement(name = "basicAuth"))
     @ApiResponses({
@@ -98,10 +118,10 @@ public class UserController {
     }
 
     /**
-     * Retrieves a specific user by their ID.
+     * Retrieves a specific user by ID in the admin-safe response shape.
      *
      * @param id the ID of the user to retrieve, must be at least 1
-     * @return a {@link ResponseEntity} containing the requested {@link User}
+     * @return a {@link ResponseEntity} containing the requested user without password data
      * @throws ResourceException if no user is found with the given ID
      */
     @Operation(summary = "Get a user by id", description = "Retrieve a user by id")
@@ -123,17 +143,19 @@ public class UserController {
     }
 
     /**
-     * Updates an existing user's information.
+     * Rejects legacy direct user identity updates.
+     * <p>
+     * Admins can only enable or disable applicant users. Name, email, password,
+     * role, and provider edits are intentionally unsupported.
      *
-     * @param id   the ID of the user to update, must be at least 1
-     * @param user the updated {@link User} entity
-     * @return a {@link ResponseEntity} containing the updated {@link User}
-     * @throws ResourceException if no user is found with the given ID
+     * @param id   ignored legacy user ID
+     * @param user ignored legacy request body
+     * @return never returns normally because this endpoint is disabled
      */
     @PutMapping("/{id}")
-    @Operation(summary = "Update user", security = @SecurityRequirement(name = "basicAuth"))
+    @Operation(summary = "Legacy direct user update is disabled", security = @SecurityRequirement(name = "basicAuth"))
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "User updated"),
+            @ApiResponse(responseCode = "410", description = "Admin user identity edits are not supported"),
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     public ResponseEntity<User> updateUser(@PathVariable @Min(value = 1) long id, @RequestBody User user) {
@@ -141,16 +163,18 @@ public class UserController {
     }
 
     /**
-     * Deletes a specific user.
+     * Rejects legacy user hard deletion.
+     * <p>
+     * Users are disabled instead of deleted so application history remains
+     * intact.
      *
-     * @param id the ID of the user to delete, must be at least 1
-     * @return a {@link ResponseEntity} with no content upon successful deletion
-     * @throws ResourceException if no user is found with the given ID
+     * @param id ignored legacy user ID
+     * @return never returns normally because this endpoint is disabled
      */
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete user", security = @SecurityRequirement(name = "basicAuth"))
+    @Operation(summary = "Legacy user hard delete is disabled", security = @SecurityRequirement(name = "basicAuth"))
     @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "User deleted"),
+            @ApiResponse(responseCode = "410", description = "User hard delete is not supported"),
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     public ResponseEntity<Void> deleteUser(@PathVariable @Min(value = 1) long id) {

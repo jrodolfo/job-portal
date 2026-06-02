@@ -18,7 +18,8 @@ import java.util.List;
 
 /**
  * Service class for managing {@link User} entities.
- * Handles user creation, updates, and retrieval.
+ * Handles legacy user persistence helpers, public applicant registration, and
+ * the intentionally narrow admin workflow for enabling or disabling applicants.
  */
 @Service
 public class UserService {
@@ -48,6 +49,11 @@ public class UserService {
         return userRepository.findAll(); // findAll() method from JPA Repository
     }
 
+    /**
+     * Retrieves all users in the admin-safe response shape.
+     *
+     * @return all users without password data
+     */
     public List<AdminUserResponse> getAdminUserList() {
         return userRepository.findAll()
                 .stream()
@@ -55,6 +61,12 @@ public class UserService {
                 .toList();
     }
 
+    /**
+     * Retrieves a single user in the admin-safe response shape.
+     *
+     * @param id the user ID
+     * @return the requested user without password data
+     */
     public AdminUserResponse getAdminUserById(Long id) {
         return AdminUserResponse.from(getUserById(id));
     }
@@ -104,6 +116,16 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
+    /**
+     * Registers a self-service applicant account.
+     * <p>
+     * The account is always local-auth, applicant role, and enabled by default.
+     * User names must be unique exactly as stored; emails are matched
+     * case-insensitively.
+     *
+     * @param request the applicant registration payload
+     * @return the created user without password data
+     */
     @Transactional
     public AdminUserResponse registerApplicant(RegisterApplicantRequest request) {
         ensureNameAvailable(request.name(), null);
@@ -121,6 +143,17 @@ public class UserService {
         return AdminUserResponse.from(userRepository.save(user));
     }
 
+    /**
+     * Enables or disables an applicant account.
+     * <p>
+     * Admin users cannot be modified here. Disabling an applicant prevents
+     * future login and invalidates active JWT sessions because authenticated
+     * requests reload the enabled flag.
+     *
+     * @param id      the applicant user ID
+     * @param enabled the requested enabled state
+     * @return the updated user without password data
+     */
     @Transactional
     public AdminUserResponse updateApplicantEnabled(Long id, boolean enabled) {
         User user = getManagedApplicant(id);

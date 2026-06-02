@@ -1,3 +1,13 @@
+/**
+ * Confirmation modal shown before an admin disables an applicant user.
+ *
+ * @param {Object} props - Component props.
+ * @param {string} props.userLabel - Display name or email shown in the modal title.
+ * @param {React.RefObject<HTMLButtonElement>} props.cancelButtonRef - Ref used by the parent to focus the safe action.
+ * @param {Function} props.onCancel - Called when the admin cancels or closes the modal.
+ * @param {Function} props.onConfirm - Called when the admin confirms the disable action.
+ * @returns {JSX.Element} The rendered confirmation modal and backdrop.
+ */
 const AdminDisableUserModal = ({
     userLabel,
     cancelButtonRef,
