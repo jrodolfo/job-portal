@@ -6,6 +6,7 @@ import AdminJobForm from "./AdminJobForm";
 import AdminJobList from "./AdminJobList";
 import AdminApplicationsPanel from "./AdminApplicationsPanel";
 import AdminUsersPanel from "./AdminUsersPanel";
+import AdminDisableUserModal from "./AdminDisableUserModal";
 import {useSessionTimeout} from "../auth/session";
 
 /**
@@ -829,49 +830,12 @@ const AdminDashboard = () => {
                 </div>
             </div>
             {pendingDisableUser ? (
-                <>
-                    <div
-                        className="modal fade show d-block"
-                        role="dialog"
-                        aria-modal="true"
-                        aria-labelledby="disable-user-modal-title"
-                    >
-                        <div className="modal-dialog modal-dialog-centered">
-                            <div className="modal-content">
-                                <div className="modal-header">
-                                    <h2 className="modal-title h5" id="disable-user-modal-title">
-                                        Disable {pendingDisableUserLabel}?
-                                    </h2>
-                                    <button
-                                        type="button"
-                                        className="btn-close"
-                                        aria-label="Close disable dialog"
-                                        onClick={cancelDisableUser}
-                                    />
-                                </div>
-                                <div className="modal-body">
-                                    <p className="body-text mb-0">
-                                        This user will be signed out and will not be able to log in.
-                                    </p>
-                                </div>
-                                <div className="modal-footer">
-                                    <button
-                                        type="button"
-                                        className="btn btn-outline-secondary"
-                                        ref={disableModalCancelRef}
-                                        onClick={cancelDisableUser}
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button type="button" className="btn btn-danger" onClick={confirmDisableUser}>
-                                        Disable User
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="modal-backdrop fade show"/>
-                </>
+                <AdminDisableUserModal
+                    userLabel={pendingDisableUserLabel}
+                    cancelButtonRef={disableModalCancelRef}
+                    onCancel={cancelDisableUser}
+                    onConfirm={confirmDisableUser}
+                />
             ) : null}
         </>
     );
