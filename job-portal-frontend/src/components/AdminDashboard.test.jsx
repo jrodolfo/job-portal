@@ -50,6 +50,7 @@ describe("AdminDashboard", () => {
         vi.unstubAllGlobals();
         vi.clearAllMocks();
         localStorage.clear();
+        document.body.style.overflow = "";
         axios.get.mockResolvedValue({data: []});
     });
 
@@ -392,14 +393,56 @@ describe("AdminDashboard", () => {
         const user = userEvent.setup();
 
         await openUsersTab(user);
-        await user.click(screen.getByRole("button", {name: "Disable"}));
+        const disableButton = screen.getByRole("button", {name: "Disable"});
+        await user.click(disableButton);
         const dialog = screen.getByRole("dialog", {name: "Disable Rod Oliveira?"});
         expect(within(dialog).getByText("This user will be signed out and will not be able to log in.")).toBeInTheDocument();
-        await user.click(within(dialog).getByRole("button", {name: "Cancel"}));
+        const cancelButton = within(dialog).getByRole("button", {name: "Cancel"});
+        expect(cancelButton).toHaveFocus();
+        expect(document.body.style.overflow).toBe("hidden");
+        await user.click(cancelButton);
 
         expect(axios.put).not.toHaveBeenCalled();
         expect(screen.queryByRole("dialog", {name: "Disable Rod Oliveira?"})).not.toBeInTheDocument();
+        await waitFor(() => expect(disableButton).toHaveFocus());
+        expect(document.body.style.overflow).toBe("");
         expect(screen.getByText(byTextContent("Status: Enabled"))).toBeInTheDocument();
+    });
+
+    it("should close the disable user modal with Escape and restore focus", async () => {
+        localStorage.setItem("token", "jwt-admin");
+        axios.get
+            .mockResolvedValueOnce({data: []})
+            .mockResolvedValueOnce({data: []})
+            .mockResolvedValueOnce({
+                data: [
+                    {
+                        id: 2,
+                        name: "Rod Oliveira",
+                        email: "jrodolfo@gmail.com",
+                        role: "APPLICANT",
+                        enabled: true
+                    }
+                ]
+            });
+
+        renderWithProviders(<AdminDashboard/>);
+        const user = userEvent.setup();
+
+        await openUsersTab(user);
+        const disableButton = screen.getByRole("button", {name: "Disable"});
+        await user.click(disableButton);
+
+        const dialog = screen.getByRole("dialog", {name: "Disable Rod Oliveira?"});
+        expect(within(dialog).getByRole("button", {name: "Cancel"})).toHaveFocus();
+        expect(document.body.style.overflow).toBe("hidden");
+
+        await user.keyboard("{Escape}");
+
+        expect(axios.put).not.toHaveBeenCalled();
+        expect(screen.queryByRole("dialog", {name: "Disable Rod Oliveira?"})).not.toBeInTheDocument();
+        await waitFor(() => expect(disableButton).toHaveFocus());
+        expect(document.body.style.overflow).toBe("");
     });
 
     it("should enable applicant users without confirmation", async () => {

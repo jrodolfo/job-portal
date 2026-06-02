@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import axios from "axios";
 import Navbar from "./Navbar";
 import {BACKEND_API_URL} from "../config/backend";
@@ -187,10 +187,35 @@ const AdminDashboard = () => {
     const [pendingDisableUser, setPendingDisableUser] = useState(null);
     const [statusMessage, setStatusMessage] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
+    const disableModalCancelRef = useRef(null);
+    const disableReturnFocusRef = useRef(null);
 
     useEffect(() => {
         loadAdminData();
     }, []);
+
+    useEffect(() => {
+        if (!pendingDisableUser) {
+            return undefined;
+        }
+
+        const previousOverflow = document.body.style.overflow;
+        document.body.style.overflow = "hidden";
+        disableModalCancelRef.current?.focus();
+
+        const handleKeyDown = (event) => {
+            if (event.key === "Escape") {
+                cancelDisableUser();
+            }
+        };
+
+        document.addEventListener("keydown", handleKeyDown);
+
+        return () => {
+            document.body.style.overflow = previousOverflow;
+            document.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [pendingDisableUser]);
 
     const buildStatusSelections = (items) => {
         return items.reduce((lookup, application) => {
@@ -552,6 +577,7 @@ const AdminDashboard = () => {
     const requestUserEnabledChange = (userId, enabled) => {
         if (!enabled) {
             const currentUser = users.find((user) => user.id === userId);
+            disableReturnFocusRef.current = document.activeElement;
             setPendingDisableUser(currentUser || {id: userId});
             setErrorMessage("");
             setStatusMessage("");
@@ -562,7 +588,11 @@ const AdminDashboard = () => {
     };
 
     const cancelDisableUser = () => {
+        const returnFocusTarget = disableReturnFocusRef.current;
         setPendingDisableUser(null);
+        window.setTimeout(() => {
+            returnFocusTarget?.focus?.();
+        }, 0);
     };
 
     const confirmDisableUser = async () => {
@@ -572,6 +602,7 @@ const AdminDashboard = () => {
 
         const userId = pendingDisableUser.id;
         setPendingDisableUser(null);
+        disableReturnFocusRef.current = null;
         await updateUserEnabled(userId, false);
     };
 
@@ -824,7 +855,12 @@ const AdminDashboard = () => {
                                     </p>
                                 </div>
                                 <div className="modal-footer">
-                                    <button type="button" className="btn btn-outline-secondary" onClick={cancelDisableUser}>
+                                    <button
+                                        type="button"
+                                        className="btn btn-outline-secondary"
+                                        ref={disableModalCancelRef}
+                                        onClick={cancelDisableUser}
+                                    >
                                         Cancel
                                     </button>
                                     <button type="button" className="btn btn-danger" onClick={confirmDisableUser}>
