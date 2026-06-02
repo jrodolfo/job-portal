@@ -56,6 +56,9 @@ describe('ApplicantDashboard', () => {
         expect(screen.getByText(byTextContent('Java Developer'))).toBeInTheDocument();
         expect(screen.getByText(byTextContent('Company: ACME'))).toBeInTheDocument();
         expect(screen.getByText(byTextContent('Application Status: Not applied'))).toBeInTheDocument();
+        expect(screen.getByLabelText('Application status color legend')).toHaveTextContent('Not applied');
+        expect(screen.getByLabelText('Application status color legend')).toHaveTextContent('Accepted');
+        expect(screen.getByText(byTextContent('Java Developer')).closest('.job-card')).toHaveClass('application-card-not-applied');
     });
 
     it('should send apply request with bearer token', async () => {
@@ -101,6 +104,7 @@ describe('ApplicantDashboard', () => {
         );
         expect(await screen.findByText('Application submitted successfully.')).toBeInTheDocument();
         expect(screen.getByText(byTextContent('Application Status: Applied'))).toBeInTheDocument();
+        expect(screen.getByText(byTextContent('Java Developer')).closest('.job-card')).toHaveClass('application-card-applied');
         expect(screen.getByText('Your application has been submitted and is waiting for review.')).toBeInTheDocument();
         expect(screen.getByRole('button', {name: 'Withdraw'})).toBeInTheDocument();
     });
@@ -169,6 +173,7 @@ describe('ApplicantDashboard', () => {
         renderWithProviders(<ApplicantDashboard/>);
 
         expect(await screen.findByText(byTextContent('Application Status: Applied'))).toBeInTheDocument();
+        expect(screen.getByText(byTextContent('Java Developer')).closest('.job-card')).toHaveClass('application-card-applied');
         expect(screen.getByText(byTextContent(`Applied On: ${applicationDateTimeFormatter.format(new Date(createdAt))}`))).toBeInTheDocument();
         expect(screen.queryByText(/Last Updated:/)).not.toBeInTheDocument();
         expect(screen.getByText('Your application has been submitted and is waiting for review.')).toBeInTheDocument();
@@ -313,6 +318,7 @@ describe('ApplicantDashboard', () => {
         renderWithProviders(<ApplicantDashboard/>);
 
         expect(await screen.findByText(byTextContent('Application Status: Reviewing'))).toBeInTheDocument();
+        expect(screen.getByText(byTextContent('Java Developer')).closest('.job-card')).toHaveClass('application-card-reviewing');
         expect(screen.getByText('Your application is currently under review.')).toBeInTheDocument();
     });
 
@@ -344,6 +350,7 @@ describe('ApplicantDashboard', () => {
         renderWithProviders(<ApplicantDashboard/>);
 
         expect(await screen.findByText(byTextContent('Application Status: Accepted'))).toBeInTheDocument();
+        expect(screen.getByText(byTextContent('Java Developer')).closest('.job-card')).toHaveClass('application-card-accepted');
         expect(screen.getByText('Your application has been accepted.')).toBeInTheDocument();
     });
 
@@ -375,6 +382,7 @@ describe('ApplicantDashboard', () => {
         renderWithProviders(<ApplicantDashboard/>);
 
         expect(await screen.findByText(byTextContent('Application Status: Rejected'))).toBeInTheDocument();
+        expect(screen.getByText(byTextContent('Java Developer')).closest('.job-card')).toHaveClass('application-card-rejected');
         expect(screen.getByText('Your application was not selected.')).toBeInTheDocument();
     });
 });

@@ -53,6 +53,7 @@ describe('ApplicantDashboard integration', () => {
         expect(screen.getByText(byTextContent('Frontend Engineer'))).toBeInTheDocument();
 
         const appliedJobCard = screen.getByText(byTextContent('Platform Engineer')).closest('.job-card');
+        expect(appliedJobCard).toHaveClass('application-card-applied');
         expect(within(appliedJobCard).getByText(byTextContent('Application Status: Applied'))).toBeInTheDocument();
         expect(within(appliedJobCard).getByText(/Applied On:/)).toBeInTheDocument();
         expect(within(appliedJobCard).queryByText(/Last Updated:/)).not.toBeInTheDocument();
@@ -60,6 +61,7 @@ describe('ApplicantDashboard integration', () => {
         expect(within(appliedJobCard).getByRole('button', {name: 'Withdraw'})).toBeInTheDocument();
 
         const unappliedJobCard = screen.getByText(byTextContent('Frontend Engineer')).closest('.job-card');
+        expect(unappliedJobCard).toHaveClass('application-card-not-applied');
         expect(within(unappliedJobCard).getByText(byTextContent('Application Status: Not applied'))).toBeInTheDocument();
         expect(within(unappliedJobCard).getByText('You have not applied to this job yet.')).toBeInTheDocument();
         expect(within(unappliedJobCard).getByRole('button', {name: 'Apply'})).toBeInTheDocument();
@@ -105,6 +107,7 @@ describe('ApplicantDashboard integration', () => {
         await user.click(within(jobCard).getByRole('button', {name: 'Withdraw'}));
 
         expect(await screen.findByText('Application withdrawn successfully.')).toBeInTheDocument();
+        expect(jobCard).toHaveClass('application-card-withdrawn');
         expect(within(jobCard).getByText(byTextContent('Application Status: Withdrawn'))).toBeInTheDocument();
         expect(within(jobCard).getByText(/Applied On:/)).toBeInTheDocument();
         expect(within(jobCard).getByText(/Last Updated:/)).toBeInTheDocument();

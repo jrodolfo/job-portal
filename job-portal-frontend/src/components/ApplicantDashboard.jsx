@@ -32,6 +32,38 @@ const formatStatus = (status) => {
         .join(" ");
 };
 
+const applicationStatusLegend = [
+    {status: null, label: "Not applied", className: "application-card-not-applied"},
+    {status: "APPLIED", label: "Applied", className: "application-card-applied"},
+    {status: "REVIEWING", label: "Reviewing", className: "application-card-reviewing"},
+    {status: "ACCEPTED", label: "Accepted", className: "application-card-accepted"},
+    {status: "REJECTED", label: "Rejected", className: "application-card-rejected"},
+    {status: "WITHDRAWN", label: "Withdrawn", className: "application-card-withdrawn"}
+];
+
+/**
+ * Returns the CSS class name for an applicant job card based on application status.
+ *
+ * @param {string|null|undefined} status - The application status.
+ * @returns {string} The CSS class name.
+ */
+const getApplicantJobCardStatusClass = (status) => {
+    switch (status) {
+        case "APPLIED":
+            return "application-card-applied";
+        case "REVIEWING":
+            return "application-card-reviewing";
+        case "ACCEPTED":
+            return "application-card-accepted";
+        case "REJECTED":
+            return "application-card-rejected";
+        case "WITHDRAWN":
+            return "application-card-withdrawn";
+        default:
+            return "application-card-not-applied";
+    }
+};
+
 /**
  * Returns a helper text describing the current status of an application.
  *
@@ -275,6 +307,14 @@ const ApplicantDashboard = () => {
             <Navbar/>
             <div className="container dashboard-shell">
                 <h1 className="section-title">Applicant Dashboard</h1>
+                <div className="status-legend applicant-status-legend" aria-label="Application status color legend">
+                    {applicationStatusLegend.map((item) => (
+                        <span className="status-legend-item" key={item.label}>
+                            <span className={`status-legend-swatch ${item.className}`} aria-hidden="true"></span>
+                            <span>{item.label}</span>
+                        </span>
+                    ))}
+                </div>
                 {statusMessage ? <p className="body-text text-success">{statusMessage}</p> : null}
                 {errorMessage ? <p className="body-text text-danger">{errorMessage}</p> : null}
                 <div className="row g-4">
@@ -288,10 +328,11 @@ const ApplicantDashboard = () => {
                                 const lastUpdated = shouldShowLastUpdated(application?.createdAt, application?.updatedAt)
                                     ? formatApplicationTimestamp(application?.updatedAt)
                                     : null;
+                                const cardStatusClass = getApplicantJobCardStatusClass(application?.status);
 
                                 return (
                                     <div className="col-12 col-md-6 col-xl-4" key={index}>
-                                        <div className={`card job-card accent-${(index % 3) + 1}`}>
+                                        <div className={`card job-card ${cardStatusClass}`}>
                                             <div className="card-body">
                                                 <h4 className="heading-text">{job.title}</h4>
                                                 <p className="body-text">
