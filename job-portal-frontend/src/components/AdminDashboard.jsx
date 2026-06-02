@@ -33,6 +33,11 @@ const applicationStatuses = ["APPLIED", "REVIEWING", "ACCEPTED", "REJECTED", "WI
  */
 const jobStatuses = ["OPEN", "CLOSED"];
 
+const jobStatusLegend = [
+    {label: "Open", className: "job-card-open"},
+    {label: "Closed", className: "job-card-closed"}
+];
+
 /**
  * Tabs available in the Admin Dashboard.
  */
@@ -555,51 +560,26 @@ const AdminDashboard = () => {
         <>
             <Navbar/>
             <div className="container dashboard-shell">
-                <div className="mb-4">
+                <div className="admin-page-header">
                     <h1 className="mb-1">Admin</h1>
                     <p className="body-text mb-0">Manage jobs, applications, and applicant users.</p>
                 </div>
 
-                <div className="row g-3 admin-overview-grid mb-4">
-                    <div className="col-sm-6 col-xl-3">
-                        <div className="card admin-overview-card admin-overview-card-neutral">
-                            <div className="card-body">
-                                <p className="admin-overview-label mb-1">Total Jobs</p>
-                                <p className="admin-overview-value mb-0">{jobs.length}</p>
-                            </div>
-                        </div>
+                <div className="admin-summary-panel">
+                    <div className="admin-stat-strip" aria-label="Admin dashboard summary">
+                        <span className="admin-stat-pill"><span>Total Jobs</span><strong>{jobs.length}</strong></span>
+                        <span className="admin-stat-pill"><span>Open</span><strong>{openJobsCount}</strong></span>
+                        <span className="admin-stat-pill"><span>Closed</span><strong>{closedJobsCount}</strong></span>
+                        <span className="admin-stat-pill"><span>Applications</span><strong>{applications.length}</strong></span>
+                        <span className="admin-stat-pill"><span>Users</span><strong>{users.length}</strong></span>
                     </div>
-                    <div className="col-sm-6 col-xl-3">
-                        <div className="card admin-overview-card admin-overview-card-open">
-                            <div className="card-body">
-                                <p className="admin-overview-label mb-1">Open Jobs</p>
-                                <p className="admin-overview-value mb-0">{openJobsCount}</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="col-sm-6 col-xl-3">
-                        <div className="card admin-overview-card admin-overview-card-closed">
-                            <div className="card-body">
-                                <p className="admin-overview-label mb-1">Closed Jobs</p>
-                                <p className="admin-overview-value mb-0">{closedJobsCount}</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="col-sm-6 col-xl-3">
-                        <div className="card admin-overview-card admin-overview-card-applications">
-                            <div className="card-body">
-                                <p className="admin-overview-label mb-1">Applications</p>
-                                <p className="admin-overview-value mb-0">{applications.length}</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="col-sm-6 col-xl-3">
-                        <div className="card admin-overview-card admin-overview-card-users">
-                            <div className="card-body">
-                                <p className="admin-overview-label mb-1">Users</p>
-                                <p className="admin-overview-value mb-0">{users.length}</p>
-                            </div>
-                        </div>
+                    <div className="status-legend admin-status-legend" aria-label="Job status color legend">
+                        {jobStatusLegend.map((item) => (
+                            <span className="status-legend-item" key={item.label}>
+                                <span className={`status-legend-swatch ${item.className}`} aria-hidden="true"></span>
+                                <span>{item.label}</span>
+                            </span>
+                        ))}
                     </div>
                 </div>
 
