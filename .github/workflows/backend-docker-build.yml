@@ -25,6 +25,25 @@ jobs:
       with:
         distribution: temurin
         java-version: 21
+        cache: maven
+
+    - name: Set up Node.js 24
+      uses: actions/setup-node@v5
+      with:
+        node-version: 24
+        cache: npm
+        cache-dependency-path: job-portal-frontend/package-lock.json
+
+    - name: Run Backend Tests
+      run: mvn -f job-portal-backend/pom.xml test
+
+    - name: Install Frontend Dependencies
+      working-directory: job-portal-frontend
+      run: npm ci
+
+    - name: Run Frontend Tests
+      working-directory: job-portal-frontend
+      run: npm test
 
     - name: Build Backend JAR
       run: mvn -f job-portal-backend/pom.xml clean package -DskipTests

@@ -123,9 +123,19 @@ docker compose up -d --build
 
 Current test commands:
 
-- Backend: `mvn -f job-portal-backend test`
+- Backend: `mvn -f job-portal-backend/pom.xml test`
 - Frontend unit/component tests: `cd job-portal-frontend && npm test`
 - Frontend browser tests: `cd job-portal-frontend && npm run test:e2e`
+
+GitHub Actions runs the backend and frontend unit/component test commands before
+building Docker images. Use Java 21 for backend validation; newer local JDKs may
+not match the Maven/Lombok compiler path used by this project.
+
+Release checkpoint:
+
+- No formal Git tag or GitHub Release has been published yet.
+- Until the first release tag exists, treat `main` as the active validated branch.
+- A reasonable first tag would be `v0.1.0` after the current admin/applicant workflow is accepted as a stable demo checkpoint.
 
 First-run expectations:
 
@@ -255,8 +265,9 @@ Then verify in Jaeger (`http://localhost:16686`):
 4. Trace attributes include `deployment.environment=local`.
 
 #### 8. Build Multi-Platform Images (ARM64 & AMD64)
-GitHub Actions publishes both Docker Hub images automatically on pushes to
-`main`:
+GitHub Actions validates the backend and frontend, builds both Docker images on
+pushes to `main`, and pushes them to Docker Hub when Docker Hub secrets are
+configured:
 
 - `jrodolfo/job-portal-backend`
 - `jrodolfo/job-portal-frontend`
@@ -293,7 +304,7 @@ If you prefer to run the backend or frontend locally (not in Docker) while still
 
 1) Quick builds/tests (no Docker/MySQL required)
 - The Maven build is configured so unit tests do NOT require a running database. You can run:
-  - `mvn -f job-portal-backend clean verify`
+  - `mvn -f job-portal-backend/pom.xml clean verify`
 - The application itself (when you actually run it) still expects MySQL as configured in `application.yml`.
 
 2) Run only MySQL using Docker Compose

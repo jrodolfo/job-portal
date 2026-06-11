@@ -152,7 +152,7 @@ Why:
 
 - local development hardware and deployment hardware may differ
 - the repo already includes `buildx` and bake-based image publishing
-- GitHub Actions publishes both backend and frontend Docker Hub images automatically
+- GitHub Actions validates backend/frontend tests, builds both images, and pushes them when Docker Hub secrets are configured
 - EC2-style deployment is part of the documented operating model
 
 Related ADR:
