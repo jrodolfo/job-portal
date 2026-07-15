@@ -69,6 +69,9 @@ use:
 bash scripts/local/start-with-demo-data.sh
 ```
 
+This loads [docs/database/demo-seed.sql](./docs/database/demo-seed.sql) with
+20 jobs, 4 users, and 30 applications across mixed statuses.
+
 What this starts:
 
 - frontend
@@ -98,29 +101,11 @@ Default local frontend login credentials:
 - Admin user: `admin@local.test` / `admin123`
 - New applicants can also create their own account from the login page.
 
-Optional demo seed data:
+What the demo seed includes:
 
-- Load [docs/database/demo-seed.sql](./docs/database/demo-seed.sql) if you want a fuller local UI with 20 jobs, 4 users, and 30 applications across mixed statuses.
-- This script resets the `jobs`, `users`, and `applications` tables for demo purposes.
+- The demo seed resets the `jobs`, `users`, and `applications` tables for demo purposes.
 - It seeds database-backed local login users for the default credentials above.
 - It also includes a disabled applicant user so the admin Users tab can show both enabled and disabled states.
-- Start the full stack and load demo data:
-
-```bash
-bash scripts/local/start-with-demo-data.sh
-```
-
-- Reload demo data into an already running stack:
-
-```bash
-bash scripts/local/seed-demo-data.sh
-```
-
-- Equivalent direct Docker command:
-
-```bash
-docker exec -i mysql-db mysql -ujobuser -pjobpass jobportal < docs/database/demo-seed.sql
-```
 
 Current local role workflows:
 
@@ -130,12 +115,6 @@ Current local role workflows:
 - Admins can list users and enable or disable applicant users.
 - Applicant accounts are created through public registration; admin users are read-only from the admin UI and cannot be created, edited, deleted, or promoted through this feature.
 - Jobs with existing applications still cannot be deleted; they should be closed instead.
-
-If you prefer to run Docker Compose directly instead of using the helper script:
-
-```bash
-docker compose up -d --build
-```
 
 Current test commands:
 
@@ -160,52 +139,23 @@ First-run expectations:
 - the stack is ready when `docker compose ps` shows the containers running and the frontend URL loads in the browser
 - the frontend can load before the backend is healthy, so if login fails, check `http://localhost:8080` and the backend container status too
 
-If you run the script from inside `scripts/local`, use:
-
-```bash
-./start.sh
-```
-
-If you run commands from the repository root, use:
-
-```bash
-bash scripts/local/start.sh
-```
-
-### Rebuild Guidance
-
-- Frontend-only changes: `docker compose up -d --build frontend`
-- Backend-only changes: `docker compose up -d --build backend`
-- Frontend and backend changes together: `docker compose up -d --build frontend backend`
-- Use `docker compose down -v` only when you intentionally want to reset local database state, such as after a failed local migration or when you want a clean MySQL volume.
-
 ## Local Stack
 
 ### A. Running the Application with Docker Compose
 
-This is the easiest way to run the entire stack (Database, Backend, and Frontend) with a single command.
+Use the Quick Start commands above for the normal full-stack local workflow.
+The commands below cover direct Docker Compose usage and advanced local
+development cases.
 
 #### 1. Configure Environment Variables
 Ensure you have a `.env` file in the root directory (see **Section C** below) with the necessary credentials, especially for Google OAuth2 if you plan to use it.
 
-#### 2. Start the entire stack
-Recommended from the repository root:
-
-```bash
-bash scripts/local/start.sh
-```
-
-Equivalent direct Docker Compose command:
+#### 2. Start the entire stack with Docker Compose directly
+If you prefer to run Docker Compose directly instead of using the helper script:
 
 ```bash
 docker compose up -d --build
 ```
-
-- **Frontend**: Accessible at [http://localhost:5173](http://localhost:5173)
-- **Backend API**: Accessible at [http://localhost:8080](http://localhost:8080)
-- **Swagger UI**: [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
-- **OpenAPI JSON**: [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs)
-- **Database**: Accessible at `localhost:3307`
 
 #### 3. Start specific services
 If you only want to run part of the stack:
@@ -219,7 +169,25 @@ If you only want to run part of the stack:
   docker compose up --build db backend
   ```
 
-#### 4. Stop the application
+#### 4. Rebuild individual services
+
+- Frontend-only changes: `docker compose up -d --build frontend`
+- Backend-only changes: `docker compose up -d --build backend`
+- Frontend and backend changes together: `docker compose up -d --build frontend backend`
+
+#### 5. Reload demo data into a running stack
+
+```bash
+bash scripts/local/seed-demo-data.sh
+```
+
+Equivalent direct Docker command:
+
+```bash
+docker exec -i mysql-db mysql -ujobuser -pjobpass jobportal < docs/database/demo-seed.sql
+```
+
+#### 6. Stop the application
 To stop and remove the containers:
 
 ```bash
@@ -232,7 +200,11 @@ Equivalent direct Docker Compose command:
 docker compose down
 ```
 
-#### 5. OpenTelemetry (Local)
+Use `docker compose down -v` only when you intentionally want to reset local
+database state, such as after a failed local migration or when you want a clean
+MySQL volume.
+
+#### 7. OpenTelemetry (Local)
 The Docker setup includes OpenTelemetry Java auto-instrumentation for the backend and an OpenTelemetry Collector.
 
 - Collector OTLP endpoints:
@@ -241,13 +213,9 @@ The Docker setup includes OpenTelemetry Java auto-instrumentation for the backen
 - Collector health: `http://localhost:13133`
 - Jaeger UI: [http://localhost:16686](http://localhost:16686)
 
-Use this command (same as standard local stack):
+OpenTelemetry is started automatically as part of the standard Quick Start workflow.
 
-```bash
-bash scripts/local/start.sh
-```
-
-#### 6. OpenTelemetry (EC2 / Prod)
+#### 8. OpenTelemetry (EC2 / Prod)
 Use the prod override file, which:
 - switches collector config to `docs/otel/collector-prod.yaml`
 - keeps backend tracing enabled
@@ -262,7 +230,7 @@ Required env var for prod collector export:
 docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 ```
 
-#### 7. OpenTelemetry Smoke Test (Local)
+#### 9. OpenTelemetry Smoke Test (Local)
 After starting with `bash scripts/local/start.sh`, run:
 
 ```bash
@@ -280,7 +248,7 @@ Then verify in Jaeger (`http://localhost:16686`):
 3. At least one trace includes child spans (for example Spring MVC/security/database work).
 4. Trace attributes include `deployment.environment=local`.
 
-#### 8. Build Multi-Platform Images (ARM64 & AMD64)
+#### 10. Build Multi-Platform Images (ARM64 & AMD64)
 GitHub Actions validates the backend and frontend, builds both Docker images on
 pushes to `main`, and pushes them to Docker Hub when Docker Hub secrets are
 configured:

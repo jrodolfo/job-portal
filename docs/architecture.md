@@ -6,9 +6,9 @@ Use it when you need a more structured view than the root
 [`README.md`](../README.md), but a more system-focused document than the
 conversational [`architecture-walkthrough.md`](./architecture-walkthrough.md).
 
-The Mermaid diagram below is the compact source of truth for the current system
-shape. It is easier to review in Git diffs and easier to update when runtime
-boundaries change.
+The Mermaid diagram below provides a compact view of the current system shape.
+It is easier to review in Git diffs and easier to update when runtime boundaries
+change.
 
 ## Architecture Overview
 
@@ -240,6 +240,8 @@ Representative persistence files:
 - `job-portal-backend/src/main/java/net/jrodolfo/jobportal/repository/ApplicationRepository.java`
 - `job-portal-backend/src/main/java/db/migration/V1__baseline_job_portal_schema.java`
 - `job-portal-backend/src/main/resources/db/migration/V2__expand_job_description_length.sql`
+- `job-portal-backend/src/main/resources/db/migration/V3__add_job_status.sql`
+- `job-portal-backend/src/main/resources/db/migration/V4__add_user_enabled.sql`
 - `docs/database/queries.sql`
 
 ### Authentication Model
@@ -295,8 +297,8 @@ Supporting files:
 - `job-portal-backend/Dockerfile`
 - `docs/insomnia/README.md`
 
-This arrangement is important because it makes the repo runnable as a complete
-system instead of a loose set of code folders.
+This arrangement is important because it makes the repo runnable as an
+integrated system instead of a loose set of code folders.
 
 ## Application Lifecycle
 
@@ -348,7 +350,7 @@ locally.
 
 Two deployment-related ideas are especially important:
 
-- prod startup uses `docker-compose.yml` plus `docker-compose.prod.yml`
+- host-based startup uses `docker-compose.yml` plus `docker-compose.prod.yml`
 - images are built and published for both `linux/amd64` and `linux/arm64`
 - GitHub Actions validates backend/frontend tests, builds both Docker images, and pushes them when Docker Hub secrets are configured
 
@@ -370,7 +372,7 @@ Supporting files:
 Observability is built around OpenTelemetry with a collector-centered design.
 
 The backend emits traces, the collector receives and routes them, and local
-runs expose Jaeger for visualization. Prod-oriented runs keep the collector in
+runs expose Jaeger for visualization. Deployed-host runs keep the collector in
 the middle and forward upstream through environment-driven configuration.
 
 Relevant files:
@@ -401,12 +403,14 @@ keeps security behavior centralized and easier to reason about.
 
 ## Verification Model
 
-The repository now relies on three complementary verification layers:
+The repository now relies on four complementary verification layers:
 
 - backend tests with Maven for controller, service, security, and schema-aware
   behavior
 - frontend unit and component tests with Vitest for dashboard, auth, and UI
   state behavior
+- MSW-backed frontend integration tests for realistic request/response flows
+  without the real backend
 - browser workflow tests with Playwright for end-to-end flows such as admin
   job management, applicant apply/withdraw/reapply, and admin review
 
@@ -419,6 +423,7 @@ Relevant files:
 - `job-portal-backend/src/test/java/net/jrodolfo/jobportal/controller/`
 - `job-portal-backend/src/test/java/net/jrodolfo/jobportal/service/`
 - `job-portal-frontend/src/components/*.test.jsx`
+- `job-portal-frontend/src/components/*.integration.test.jsx`
 - `job-portal-frontend/tests/e2e/admin-crud.spec.js`
 - `job-portal-frontend/tests/e2e/applicant-status.spec.js`
 - `job-portal-frontend/tests/e2e/helpers.js`

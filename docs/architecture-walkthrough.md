@@ -15,8 +15,8 @@ Suggested reading path:
 
 ## One-Minute System Summary
 
-This repository is a full-stack job portal with two main application modules
-and a root-level operations layer:
+This repository is a simplified full-stack web application with two main
+application modules and a root-level operations layer:
 
 - `job-portal-frontend`: React and Vite application for browser interaction
 - `job-portal-backend`: Spring Boot API for security, persistence, and business
@@ -78,7 +78,7 @@ Related ADRs:
 Why:
 
 - the runtime configuration, Docker Compose stack, and docs all target MySQL
-- it keeps local and production-style behavior aligned
+- it keeps local and deployed-host runtime behavior aligned
 - test-only alternatives do not replace the real runtime persistence choice
 
 Related ADR:
@@ -202,17 +202,17 @@ Related ADR:
 The frontend does not own authentication policy. The backend does. That keeps
 OAuth handling, JWT issuance, and security configuration in one place.
 
-### Observability is part of the platform story
+### Observability is part of the architecture story
 
 Tracing is not documented as a future idea. It is already wired into the
 repository through the Docker stack, collector config, and environment
 variables.
 
-### Local and prod paths are similar, but not identical
+### Local and deployed-host paths are similar, but not identical
 
-The repo deliberately distinguishes local and prod operations. Local prioritizes
-developer convenience; prod adds stricter validation and upstream telemetry
-configuration.
+The repo deliberately distinguishes local and deployed-host operations. Local
+prioritizes developer convenience; the deployed-host path adds stricter
+validation and upstream telemetry configuration.
 
 ### Schema management is explicit, but still pragmatic
 
@@ -305,7 +305,7 @@ If the system needs to evolve, likely next steps would be:
 If I needed to present this project to another engineer or reviewer, I would
 emphasize four things:
 
-- it is a real full-stack system, not just isolated frontend or backend code
+- it is an integrated full-stack codebase, not just isolated frontend or backend code
 - the backend is the primary architectural boundary for persistence, security,
   and API contracts
 - the project includes operational concerns such as Docker Compose,
@@ -329,10 +329,10 @@ emphasize four things:
 
 ### What I would improve next
 
-- **Evolve the migration strategy beyond the initial baseline:** The project now has explicit schema management through Flyway, which is a meaningful improvement over runtime schema mutation. The next step would be to keep future database changes in smaller, incremental migrations and to separate structural changes from any optional bootstrap data concerns. That would make the schema history easier to review, safer to promote across environments, and simpler to reason about when production data changes become more common.
+- **Evolve the migration strategy beyond the initial baseline:** The project now has explicit schema management through Flyway, which is a meaningful improvement over runtime schema mutation. The next step would be to keep future database changes in smaller, incremental migrations and to separate structural changes from any optional bootstrap data concerns. That would make the schema history easier to review, safer to apply across environments, and simpler to reason about when data changes become more common.
 - **Expand CI to verify both frontend and backend behavior more deeply:** The repository already has a useful baseline CI story, but a stronger pipeline would give more confidence that architectural boundaries are still working as expected. I would extend CI to run backend tests, frontend tests, and a small integration-level verification path so changes in authentication, API contracts, or container orchestration are caught earlier. The reason is simple: once a project spans UI, API, persistence, and deployment assets, shallow CI stops being enough.
 - **Add richer architecture references to specific backend packages and frontend flows:** The current architecture docs describe the system well at the component level, but they could become even more actionable by mapping major concepts to exact implementation areas. For example, I would tie the security discussion to the Spring Security configuration classes, the persistence discussion to the JPA/domain packages, and the frontend discussion to the main route, store, and auth-related components. That would make the docs more useful not only during technical reviews, but also during future maintenance when someone needs to jump from an architectural concept straight into the code.
-- **Formalize deployment further if the project grows beyond the current Linux host model:** The current deployment story is pragmatic and works well for the repo’s scope: Docker Compose, multi-architecture images, and prod scripts are enough to support the current host-based deployment flow. If the project starts needing repeatable team-operated releases, stronger environment parity, or more automated rollback and promotion behavior, I would move toward a more formal deployment pipeline. That could mean codifying more infrastructure assumptions, shifting more release behavior into CI/CD, and reducing the amount of manual operational knowledge currently carried in scripts and docs.
+- **Formalize deployment further if the project grows beyond the current Linux host model:** The current deployment story is pragmatic and works well for the repo’s scope: Docker Compose, multi-architecture images, and host-based scripts are enough to support the current host-based deployment flow. If the project starts needing repeatable team-operated releases, stronger environment parity, or more automated rollback and promotion behavior, I would move toward a more formal deployment pipeline. That could mean codifying more infrastructure assumptions, shifting more release behavior into CI/CD, and reducing the amount of manual operational knowledge currently carried in scripts and docs.
 
 ## Where To Read More
 
