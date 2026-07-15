@@ -31,6 +31,20 @@ Backend namespace reference:
 
 ## Architecture
 
+The system is organized as a React/Vite frontend that calls a Spring Boot backend over HTTP. The backend exposes the REST API, implements authentication and authorization, applies the business rules, persists data in MySQL, and emits distributed traces through OpenTelemetry.
+
+```mermaid
+flowchart LR
+  Browser[Browser] --> Frontend[React + Vite Frontend]
+  Frontend -->|HTTP| Backend[Spring Boot Backend]
+  Backend --> MySQL[(MySQL)]
+  Backend -->|OAuth2| Google[Google]
+  Backend -. traces .-> OTel[OpenTelemetry Collector]
+  OTel --> Jaeger[Jaeger]
+```
+
+The Architecture Reference provides the complete system overview, runtime details, and sequence diagrams.
+
 - Reference: [docs/architecture.md](./docs/architecture.md)
 - Walkthrough: [docs/architecture-walkthrough.md](./docs/architecture-walkthrough.md)
 - Architecture Decision Records: [docs/adr/README.md](./docs/adr/README.md)
