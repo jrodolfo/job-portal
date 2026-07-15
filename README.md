@@ -12,16 +12,18 @@
 [![OpenTelemetry](https://img.shields.io/badge/Observability-OpenTelemetry-000000?logo=opentelemetry&logoColor=white)](https://github.com/jrodolfo/job-portal/blob/main/docker-compose.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
-This project was initially developed from a [Pluralsight course](https://app.pluralsight.com/ilx/video-courses/full-stack-java-development-spring-boot-3-react) as a foundation. I extended it significantly to move beyond a learning exercise and shape it into a more production-ready application.
+Job Portal is a simplified full-stack web application that uses the job portal domain to demonstrate software engineering practices by evolving an existing codebase. The application implements a simplified subset of the functionality expected from a commercial job portal: applicants can register, browse jobs, apply, withdraw, and reapply; admins can manage jobs, review applications, update statuses, and enable or disable applicant accounts.
 
-Key improvements I implemented:
+This project began with a [Pluralsight course](https://app.pluralsight.com/ilx/video-courses/full-stack-java-development-spring-boot-3-react) as a foundation. I extended it substantially to explore software architecture, testing, observability, cloud deployment, documentation, and refactoring.
+
+Engineering work I added or expanded:
 
 * **AWS Deployment:** Adapted the application for deployment on AWS, including environment configuration and cloud readiness considerations.
-* **Containerization with Docker:** Used Docker support to simplify local development and ensure consistent runtime environments.
-* **Observability with OpenTelemetry:** Integrated OpenTelemetry to enable tracing and monitoring, providing better visibility into application behavior.
-* **Bug Fixes and Stability Improvements:** Identified and resolved issues from the original implementation, improving reliability and robustness.
-* **Documentation Enhancements:** Expanded and clarified documentation to make the project easier to understand, run, and extend.
-* **Production-Oriented Cleanup:** Refactored parts of the codebase to improve structure, maintainability, and alignment with real-world backend practices.
+* **Docker Support:** Added Docker and Docker Compose support to simplify local development and keep runtime setup consistent.
+* **OpenTelemetry Integration:** Integrated OpenTelemetry to provide distributed tracing and improve observability.
+* **Bug Fixes and Stability Improvements:** Fixed issues from the original implementation, improving reliability and robustness.
+* **Documentation Enhancements:** Expanded the project documentation, including setup, architecture, ADRs, database resources, API exploration, and helper scripts.
+* **Structural Refactoring and Maintainability:** Refactored parts of the backend, frontend, tests, and scripts to make the codebase easier to understand and extend.
 
 Backend namespace reference:
 - Maven coordinates: `net.jrodolfo:jobportal`
@@ -33,7 +35,7 @@ Backend namespace reference:
 - Walkthrough: [docs/architecture-walkthrough.md](./docs/architecture-walkthrough.md)
 - Architecture Decision Records: [docs/adr/README.md](./docs/adr/README.md)
 
-**Rod Oliveira** | Software Developer | [jrodolfo.net](https://jrodolfo.net) | Halifax, Canada 🍁
+**Rod Oliveira** | Software Developer | [jrodolfo.net](https://jrodolfo.net) | Halifax, Canada
 
 ---
 
